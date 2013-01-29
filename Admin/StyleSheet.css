@@ -1,0 +1,20 @@
+body {
+}
+.logo{
+    width: 1000px;
+    background-color: #0026ff;    
+    
+}
+.header{
+    width: 1000px;
+    background-color: #808080;
+}
+
+.content{
+     width: 1000px;
+}
+
+.sub-header{
+    width: 350px;
+    margin:  100px;
+}
