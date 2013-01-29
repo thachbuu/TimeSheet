@@ -18,13 +18,14 @@
         <div class="header">
             Header in here
             <div>
-                <span class="sub-header">Members</span>
-                <span class="sub-header">Projects</span>
+                <span class="sub-header"><a href="~/Admin/ManageMembers">Members</a></span>
+                <span class="sub-header"><a href="~/Admin/ManageProjects">Projects</a></span>
                 <span class="sub-header">TimeSheets</span>
             </div>
         </div>
         <div class="content">
             Content in here
+            @RenderBody()
         </div>
     </body>
 </html>

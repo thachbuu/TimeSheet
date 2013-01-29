@@ -18,3 +18,38 @@ body {
     width: 350px;
     margin:  100px;
 }
+
+/*
+    ------------------
+    GRID
+    ------------------       
+    */
+.grid{
+    background: #fff;
+    width: 650px;
+    border-collapse: collapse;    
+} 
+.grid th {
+    font-size: 1.1em; 
+    font-weight: normal; 
+    color: #039; 
+    padding: 10px 8px;
+    border-bottom: 2px solid #728059;
+    text-align: left; 
+}
+.grid td {
+    border-bottom: 1px solid #ccc;    
+    padding: 4px 6px; 
+}
+.alternate{
+    background: #d3ff80; 
+}
+.gridheader, .gridfooter{
+    background: #9ebf60; 
+    
+} 
+.gridheader a, .gridfooter a{
+    color: #fff;    
+    text-decoration:none; 
+    
+} 

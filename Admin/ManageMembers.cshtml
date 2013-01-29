@@ -1,0 +1,49 @@
+﻿@{
+    Layout="~/Admin/_Layout.cshtml";
+    var db = Database.Open("StarterSite");
+    var query = "SELECT UserId, Firstname, Lastname, Project FROM UserProfile";
+    var memberList = db.Query(query);
+    var grid = new WebGrid(memberList);
+    if(IsPost){
+        <div>@Request["UserId"]</div>
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        <form method="post">
+            @grid.GetHtml(
+            tableStyle: "grid",
+            alternatingRowStyle: "alternate",
+            headerStyle: "gridheader",
+            footerStyle: "gridfooter",
+            caption: "Members List",
+            columns: grid.Columns(
+                grid.Column(
+                    columnName: "Firstname"
+                ),                
+                grid.Column(
+                    columnName: "Lastname"
+                ),
+                grid.Column(
+                    columnName: "Project"
+                ),
+                grid.Column(
+                    columnName: "UserId",
+                    header: string.Empty,
+                    canSort: false,
+                    format: @<input type="checkbox" value="@item.UserId" name="UserId"></input>
+                )
+                )
+            )
+            <input type="submit" value="Delete">
+        </form>
+        
+    </body>
+</html>
