@@ -1,0 +1,45 @@
+﻿@{
+    var db = Database.Open("StarterSite");
+    var projectId = Request["ProjectId"];
+    projectId="1";
+    var query = "SELECT * FROM Projects WHERE ProjectId=@0";
+    var data = db.QuerySingle(query,projectId);
+    var members_in_project = "SELECT FirstName,UserId FROM UserProfile WHERE ProjectId=@0";
+    var userData = new WebGrid(db.Query(members_in_project,projectId));   
+    if(IsPost){
+        string userId = Request["UserId"];        
+        string removeMember = "UPDATE UserProfile SET ProjectId=NULL WHERE UserId=@0";
+        db.Execute(removeMember,userId);
+        userData = new WebGrid(db.Query(members_in_project,projectId));
+    }
+}
+<html lang="en">
+    <head>
+        <script>
+            $(function () {              
+                $("button[id*=rm]").click(function () {                   
+                    $.post("/Admin/GetMembers.cshtml", {UserId: $(this).attr('value')}, function (data) { $("#member-in-project").html(data); });                                      
+                    alert("Loaded done");
+                });
+            });               
+        </script>
+    </head>
+<body>
+        @userData.GetHtml(
+                    displayHeader: false,
+                    columns: userData.Columns(
+                        userData.Column(
+                            columnName: "FirstName",
+                            header: string.Empty                        
+                        ),
+                        userData.Column(
+                            header: string.Empty,
+                            format: @<button name="userId" value="@item.UserId" id="rm-@item.UserId">Remove</button>
+                        )                    
+                    )
+           )       
+    
+    
+</body>
+</html>
+

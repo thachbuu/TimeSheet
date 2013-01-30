@@ -16,19 +16,11 @@
     <head>
         <meta charset="utf-8" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"  type="text/javascript"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $("#dialog").click()
-                {
-                    $("#dialog").dialog();
-                };
-            });
-        </script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>    
         <title></title>
     </head>
     <body>
-        <form method="post">
+        <form method="post" action="~/Admin/ProjectDetails">
             @grid.GetHtml(
             tableStyle: "grid",
             alternatingRowStyle: "alternate",
@@ -50,11 +42,13 @@
                 ),
                 grid.Column(
                     header: string.Empty,
-                    format: @<input type="radio" name="ProjectId" value="@item.ProjectId"></input>
+                    format: @<input type="radio" name="ProjectId" value="@item.ProjectId"></input>                    
                 )
             )
             )
-            <input type="submit" value="Update Members">
+            <input type="submit" value="Update Members" id="updateMember1">
+
         </form>
+      
     </body>
 </html>

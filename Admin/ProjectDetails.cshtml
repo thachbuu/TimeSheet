@@ -1,0 +1,43 @@
+﻿@{
+    Layout="~/Admin/_Layout.cshtml";
+    var db = Database.Open("StarterSite");
+    var projectId = Request["ProjectId"];
+    var query = "SELECT * FROM Projects WHERE ProjectId=@0";
+    var data = db.QuerySingle(query,projectId);    
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+        <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/resources/demos/style.css" />
+        <script>
+            $(function () {
+                $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
+                $("#datepickerEndDate").datepicker({ showAnim: "fold" });                
+            });               
+        </script>
+    </head>
+    <body>
+        <div id="header">Project: @data.ProjectName</div>
+        <div id="description"><textarea>@data.Description</textarea></div>
+        <div>
+            <span>StartedDate</span>
+            <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")">            
+        </div>
+        <div>
+            <span>EndDate</span>
+            <input id="datepickerEndDate" value="@data.EndDate.ToString("d")">
+        </div>
+        <div>Members In Project</div>
+        <div id="member-in-project">            
+           @RenderPage("~/Admin/GetMembers.cshtml")
+        </div>
+        <a href="~/Admin/GetMembers.cshtml">GetMembers</a>
+    </body>
+</html>
