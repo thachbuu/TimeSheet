@@ -20,7 +20,7 @@
         <title></title>
     </head>
     <body>
-        <form method="post" action="~/Admin/ProjectDetails">
+        <form method="post" action="~/Admin/ProjectDetails" name="manageProjectForm">
             @grid.GetHtml(
             tableStyle: "grid",
             alternatingRowStyle: "alternate",
@@ -35,10 +35,12 @@
                     columnName: "Description"
                 ),
                 grid.Column(
-                    columnName: "StartedDate"
+                    columnName: "StartedDate",
+                    format: @<span>@item.StartedDate.ToString("d")</span>
                 ),
                 grid.Column(
-                    columnName: "EndDate"
+                    columnName: "EndDate",
+                    format: @<span>@item.EndDate.ToString("d")</span>
                 ),
                 grid.Column(
                     header: string.Empty,
@@ -46,7 +48,7 @@
                 )
             )
             )
-            <input type="submit" value="Update Members" id="updateMember1">
+            <input type="submit" value="Update Members" name="updateMember">
 
         </form>
       

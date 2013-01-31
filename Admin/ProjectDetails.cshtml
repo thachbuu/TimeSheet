@@ -2,8 +2,22 @@
     Layout="~/Admin/_Layout.cshtml";
     var db = Database.Open("StarterSite");
     var projectId = Request["ProjectId"];
-    var query = "SELECT * FROM Projects WHERE ProjectId=@0";
-    var data = db.QuerySingle(query,projectId);    
+    var feedbackMsg="";
+    
+    if(IsPost){
+        var projectDescription = Request["projectDescription"] ;
+        var datepickerStartedDate = Request["datepickerStartedDate"];
+        var datepickerEndDate = Request["datepickerEndDate"];
+
+        if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
+            var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
+            db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
+            Response.Redirect("~/Admin/ManageProjects");
+        }
+    }
+
+    var query = "SELECT * FROM Projects WHERE ProjectId=@0"; 
+    var data = db.QuerySingle(query,projectId);
 }
 
 <!DOCTYPE html>
@@ -19,25 +33,39 @@
         <script>
             $(function () {
                 $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
-                $("#datepickerEndDate").datepicker({ showAnim: "fold" });                
+                $("#datepickerEndDate").datepicker({ showAnim: "fold" });
+                $("#submit").click(function () {
+                    $("input[name=projectDescription]").attr('value',$("#projectDescription").val());
+                });
             });               
         </script>
     </head>
     <body>
-        <div id="header">Project: @data.ProjectName</div>
-        <div id="description"><textarea>@data.Description</textarea></div>
-        <div>
-            <span>StartedDate</span>
-            <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")">            
-        </div>
-        <div>
-            <span>EndDate</span>
-            <input id="datepickerEndDate" value="@data.EndDate.ToString("d")">
-        </div>
-        <div>Members In Project</div>
-        <div id="member-in-project">            
-           @RenderPage("~/Admin/GetMembers.cshtml")
-        </div>
+        <form method="post" action="">
+            <div id="projectName">Project: @data.ProjectName</div>
+
+            <div class="projectHeader">Project Description</div>
+            <div id="description"><textarea id="projectDescription">@data.Description</textarea></div>            
+            <div>
+                <div class="projectHeader">StartedDate</div>
+                <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">            
+            </div>
+
+            <div>
+                <div class="projectHeader">EndDate</div>
+                <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
+            </div>
+
+            <div id="member-in-project">            
+                @RenderPage("~/Admin/GetMembers.cshtml")
+            </div>
+
+            <input type="hidden" name="projectDescription" value="">
+            <input type="hidden" name="projectId" value="@projectId">
+            <input id="submit" type="submit" value="Update">
+            <div class="feedback">@feedbackMsg</div>
         <a href="~/Admin/GetMembers.cshtml">GetMembers</a>
+        </form>
+        
     </body>
 </html>

@@ -1,5 +1,9 @@
 body {
 }
+.content{
+    width: 1000px;
+    background-color: #ebeaea;
+}
 .logo{
     width: 1000px;
     background-color: #0026ff;    
@@ -25,6 +29,7 @@ body {
     ------------------       
     */
 .grid{
+    margin-left: 10px;
     background: #fff;
     width: 650px;
     border-collapse: collapse;    
@@ -53,3 +58,28 @@ body {
     text-decoration:none; 
     
 } 
+#projectName{
+    font-size: xx-large;
+    font-style: oblique;
+    font-weight: 900;
+    color: #0026ff;
+    text-shadow: 20px;
+    margin-bottom: 30px;
+}
+#projectDescription{
+    width: 500px;
+    height: auto;
+    margin-left: 10px;
+}
+
+#datepickerStartedDate, #datepickerEndDate{
+    margin-left: 10px;
+    width: fit-content;
+}
+.projectHeader{
+    font-size: medium;
+    font-family: 'Courier New';
+    color: #9ebf60;
+    margin-top: 10px;
+    margin-bottom: 10px;   
+}

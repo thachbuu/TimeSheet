@@ -1,45 +1,70 @@
 ﻿@{
     var db = Database.Open("StarterSite");
-    var projectId = Request["ProjectId"];
-    projectId="1";
-    var query = "SELECT * FROM Projects WHERE ProjectId=@0";
-    var data = db.QuerySingle(query,projectId);
+    var projectId = Request["ProjectId"];  
+    
     var members_in_project = "SELECT FirstName,UserId FROM UserProfile WHERE ProjectId=@0";
-    var userData = new WebGrid(db.Query(members_in_project,projectId));   
+    var userData = new WebGrid(db.Query(members_in_project,projectId));
+
+    var members_in_pool = "SELECT FirstName,UserId,ProjectId FROM UserProfile WHERE ProjectId IS NULL";    
+    var userInPoolData = new WebGrid(db.Query(members_in_pool));
+           
     if(IsPost){
+        projectId = Request["ProjectId"];
+
         string userId = Request["UserId"];        
         string removeMember = "UPDATE UserProfile SET ProjectId=NULL WHERE UserId=@0";
         db.Execute(removeMember,userId);
+
+        string addUserId = Request["AddUserId"];
+        string addUserQuery = "UPDATE UserProfile SET ProjectId=@0 WHERE UserId=@1";
+        db.Execute(addUserQuery,projectId,addUserId);
+
+        userInPoolData = new WebGrid(db.Query(members_in_pool));
         userData = new WebGrid(db.Query(members_in_project,projectId));
     }
 }
 <html lang="en">
     <head>
         <script>
-            $(function () {              
-                $("button[id*=rm]").click(function () {                   
-                    $.post("/Admin/GetMembers.cshtml", {UserId: $(this).attr('value')}, function (data) { $("#member-in-project").html(data); });                                      
-                    alert("Loaded done");
+            $(function () {
+                $("button[id*=rm]").click(function () {
+                    $.post("/Admin/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+                    alert("Remove successfully");
+                });
+                $("button[id*=add]").click(function () {
+                     $.post("/Admin/GetMembers.cshtml", { AddUserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+                    alert("Added successfully");
                 });
             });               
         </script>
     </head>
 <body>
+        <input type="hidden" value="@projectId" id="currentProjectId">
+
         @userData.GetHtml(
-                    displayHeader: false,
-                    columns: userData.Columns(
-                        userData.Column(
-                            columnName: "FirstName",
-                            header: string.Empty                        
-                        ),
-                        userData.Column(
-                            header: string.Empty,
-                            format: @<button name="userId" value="@item.UserId" id="rm-@item.UserId">Remove</button>
-                        )                    
-                    )
-           )       
-    
-    
+            tableStyle: "grid",
+            alternatingRowStyle: "alternate",
+            headerStyle: "gridheader",
+            footerStyle: "gridfooter",
+            caption: "Members In Project",
+            displayHeader: false,           
+            columns: userData.Columns(
+                userData.Column(columnName: "FirstName"),
+                userData.Column(format: @<button name="UserId" style="float: right;" value="@item.UserId" id="rm-@item.UserId">Remove</button>)
+           ))
+
+        @userInPoolData.GetHtml(
+            tableStyle: "grid",
+            alternatingRowStyle: "alternate",
+            headerStyle: "gridheader",
+            footerStyle: "gridfooter",
+            caption: "Members In Pool",
+            displayHeader: false,
+            columns: userData.Columns(
+                userData.Column(columnName: "FirstName"),
+                userData.Column(format: @<button name="AddUserId" style="float: right;"value="@item.UserId" id="add-@item.UserId">Add</button>)                    
+            )
+         )
 </body>
 </html>
 
