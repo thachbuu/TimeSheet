@@ -1,0 +1,49 @@
+﻿@{
+    var message ="";
+    var db = Database.Open("StarterSite");
+    var sql = "SELECT * FROM UserProfile";
+    var users = db.Query(sql);
+    var roles = Roles.GetAllRoles();
+    if(IsPost){
+        var user = Request["user"];
+        var role = Request["role"];
+        if(!user.IsEmpty() && !role.IsEmpty()){
+            if(!Roles.IsUserInRole(user,role)){
+                Roles.AddUsersToRoles(new []{user},new []{role});
+                message =  user + " added to the " + role + " Role";
+            }else{
+                message = role + " no longer exists";
+            }
+        }else{
+            message= user + " is already in role "+ role + " Role";
+        }
+    }
+}
+<form method="post">
+    <div>@message</div>
+    <fieldset>
+        <legend>Add User To Role</legend>
+        <div>
+            <label for="user">Select User:</label>
+            <select name="user">
+                <option value="">----choose user----</option>
+                @foreach(var user in users){
+                    <option>@user.Email</option>
+                    
+                }
+            </select>
+        </div>
+        <div>
+            <label for="role">Select Role:</label>
+            <select name="role">
+                <option value="">----choose role----</option>
+                @foreach(var role in roles){
+                    <option>@role</option>
+                }
+            </select>
+        </div>
+        <div>
+            <input type="submit" value="Add">
+        </div>
+    </fieldset>
+</form>

@@ -28,11 +28,11 @@
         <script>
             $(function () {
                 $("button[id*=rm]").click(function () {
-                    $.post("/Admin/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+                    $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
                     alert("Remove successfully");
                 });
                 $("button[id*=add]").click(function () {
-                     $.post("/Admin/GetMembers.cshtml", { AddUserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+                     $.post("/Leader/GetMembers.cshtml", { AddUserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
                     alert("Added successfully");
                 });
             });               

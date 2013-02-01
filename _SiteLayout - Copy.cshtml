@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8" />
         <title>@Page.Title - My ASP.NET Web Page</title>
-        <link href="~/Content/themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />        
-        <link href="~/Admin/StyleSheet.css" rel="stylesheet" type="text/css" />
+        <link href="~/Content/themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />
+        <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <script src="~/Scripts/jquery-1.7.1.min.js"></script>
         <script src="~/Scripts/jquery-ui-1.8.20.js"></script>
@@ -15,7 +15,7 @@
         <header>
             <div class="content-wrapper">
                 <div class="float-left">
-                    <img src="~/Images/header.gif" alt="Your logo here">                    
+                    <p class="site-title"><a href="~/">your logo here</a></p>
                 </div>
                 <div class="float-right">
                     <section id="login">
@@ -28,18 +28,19 @@
                                 </form>
                             </text>
                         } else {
-                            <ul>                                
+                            <ul>
+                                <li><a href="~/Account/Register">Register</a></li>
                                 <li><a href="~/Account/Login">Log in</a></li>
                             </ul>
                         }
                     </section>
-               @*     <nav>
+                    <nav>
                         <ul id="menu">
                             <li><a href="~/">Home</a></li>
                             <li><a href="~/About">About</a></li>
                             <li><a href="~/Contact">Contact</a></li>
                         </ul>
-                    </nav> *@
+                    </nav>
                 </div>
             </div>
         </header>

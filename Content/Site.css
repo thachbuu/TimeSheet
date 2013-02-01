@@ -1,4 +1,4 @@
-﻿html {
+﻿content-wrapperhtml {
     background-color: #e2e2e2;
     margin: 0;
     padding: 0;
@@ -95,7 +95,7 @@ h5, h6 {
 ----------------------------------------------------------*/
 .content-wrapper {
     margin: 0 auto;
-    max-width: 960px;
+    max-width: 850px;
 }
 
 #body {
@@ -321,7 +321,7 @@ aside {
 
         aside ul li {
             background: url("../Images/bullet.png") no-repeat 0 50%;
-            padding: 2px 0 2px 20px;
+            padding: 2px 0 2px 250px;
         }
 
 .label {

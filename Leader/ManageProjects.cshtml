@@ -1,5 +1,5 @@
 ﻿@{
-     Layout="~/Admin/_Layout.cshtml";
+     Page.Title = "Manage Your Projects";
      var db = Database.Open("StarterSite");
      int pjManagerId = 2;
      var query = "SELECT * FROM Projects WHERE ProjectManager=@0";
@@ -20,7 +20,7 @@
         <title></title>
     </head>
     <body>
-        <form method="post" action="~/Admin/ProjectDetails" name="manageProjectForm">
+        <form method="post" action="~/Leader/ProjectDetails" name="manageProjectForm">
             @grid.GetHtml(
             tableStyle: "grid",
             alternatingRowStyle: "alternate",

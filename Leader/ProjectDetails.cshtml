@@ -1,5 +1,5 @@
 ﻿@{
-    Layout="~/Admin/_Layout.cshtml";
+    Page.Title = "Project Details";
     var db = Database.Open("StarterSite");
     var projectId = Request["ProjectId"];
     var feedbackMsg="";
@@ -12,7 +12,7 @@
         if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
             var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
             db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
-            Response.Redirect("~/Admin/ManageProjects");
+            Response.Redirect("~/Leader/ManageProjects");
         }
     }
 
@@ -57,14 +57,14 @@
             </div>
 
             <div id="member-in-project">            
-                @RenderPage("~/Admin/GetMembers.cshtml")
+                @RenderPage("~/Leader/GetMembers.cshtml")
             </div>
 
             <input type="hidden" name="projectDescription" value="">
             <input type="hidden" name="projectId" value="@projectId">
             <input id="submit" type="submit" value="Update">
             <div class="feedback">@feedbackMsg</div>
-        <a href="~/Admin/GetMembers.cshtml">GetMembers</a>
+        <a href="~/Leader/GetMembers.cshtml">GetMembers</a>
         </form>
         
     </body>

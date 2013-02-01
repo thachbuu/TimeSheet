@@ -1,5 +1,5 @@
 ﻿@{
-    Layout="~/Admin/_Layout.cshtml";
+    Page.Title= "Manage Your Members";
     var db = Database.Open("StarterSite");
     var query = "SELECT UserId, Firstname, Lastname, Project FROM UserProfile";
     var memberList = db.Query(query);
@@ -16,7 +16,7 @@
         <meta charset="utf-8" />
         <title></title>
     </head>
-    <body>
+    <body>   
         <form method="post">
             @grid.GetHtml(
             tableStyle: "grid",

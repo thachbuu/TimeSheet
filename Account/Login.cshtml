@@ -1,11 +1,8 @@
 ﻿@* Remove this section if you are using bundling *@
-@section Scripts {
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-}
+
 
 @{
-    Layout = "~/_SiteLayout.cshtml";
+    Layout = "~/_Layout.cshtml";
     Page.Title = "Log in";
 
     // Initialize general page variables
@@ -48,7 +45,7 @@
 
             // Attempt to log in using provided credentials
             if (WebSecurity.Login(email, password, rememberMe)) {
-                Context.RedirectLocal(returnUrl);
+                Response.Redirect("~/Leader/ManageMembers");                
                 return;
             } else {
                 ModelState.AddFormError("The user name or password provided is incorrect.");
@@ -57,17 +54,12 @@
     }
 }
 
-<hgroup class="title">
-    <h1>@Page.Title.</h1>
-</hgroup>
-
-<section id="loginForm">
-    <h2>Use a local account to log in.</h2>
+<section id="loginForm" style="padding-left: 10px">    
     <form method="post">
         @AntiForgery.GetHtml()
         @* If one or more validation errors exist, show an error *@
         @Html.ValidationSummary("Log in was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null)
-
+        
         <fieldset>
             <legend>Log in to Your Account</legend>
             <ol>
@@ -93,12 +85,7 @@
         </fieldset>
     </form>
     <p>
-        <a href="~/Account/Register">Don't have a Account?</a>
         <a href="~/Account/ForgotPassword">Did you forget your password?</a>
     </p>
 </section>
 
-<section class="social" id="socialLoginForm">
-    <h2>Use another service to log in.</h2>
-    @RenderPage("~/Account/_ExternalLoginsList.cshtml")
-</section>
