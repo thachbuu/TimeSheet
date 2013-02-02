@@ -1,4 +1,5 @@
 ﻿@{
+    Layout = "";
     var db = Database.Open("StarterSite");
     var projectId = Request["ProjectId"];  
     
@@ -29,10 +30,17 @@
             $(function () {
                 $("button[id*=rm]").click(function () {
                     $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+<<<<<<< HEAD:Leader/GetMembers.cshtml
                     alert("Remove successfully");
                 });
                 $("button[id*=add]").click(function () {
                      $.post("/Leader/GetMembers.cshtml", { AddUserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+=======
+                    alert("Remove successfully");                    
+                });
+                $("button[id*=add]").click(function () {
+                    $.post("/Leader/GetMembers.cshtml", { AddUserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
+>>>>>>> Finish Login / Create Role / Add Role:Leader/GetMembers.cshtml
                     alert("Added successfully");
                 });
             });               
