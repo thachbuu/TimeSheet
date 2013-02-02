@@ -41,12 +41,7 @@
                     columnName: "UserId",
                     header: string.Empty,
                     canSort: false,
-                    format: @<div>
-                                <a href="#">Details</a>
-                                <div>@item.UserId</div>
-                                <input type="radio" value="@item.UserId" name="UserId"></input>
-                            </div>
-
+                    format: @<input type="radio" value="@item.UserId" name="UserId"></input>
                 )
                 )
             )
