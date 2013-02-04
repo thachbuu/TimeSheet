@@ -47,8 +47,8 @@
             alternatingRowStyle: "alternate",
             headerStyle: "gridheader",
             footerStyle: "gridfooter",
-            caption: "Members In Project",
-            displayHeader: false,           
+            caption: "MEMBERS IN PROJECT",
+            //displayHeader: false,           
             columns: userData.Columns(
                 userData.Column(columnName: "FirstName"),
                 userData.Column(format: @<button name="UserId" style="float: right;" value="@item.UserId" id="rm-@item.UserId">Remove</button>)
@@ -58,8 +58,7 @@
             tableStyle: "grid",
             alternatingRowStyle: "alternate",
             headerStyle: "gridheader",
-            footerStyle: "gridfooter",
-            caption: "Members In Pool",
+            footerStyle: "gridfooter",            
             displayHeader: false,
             columns: userData.Columns(
                 userData.Column(columnName: "FirstName"),

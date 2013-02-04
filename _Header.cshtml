@@ -1,0 +1,17 @@
+﻿@if(Roles.IsUserInRole("LEADER")){
+    <div>
+        <span class="sub-header">
+            @*<a href="~/Leader/ManageMembers"><img src="~/Images/memberIcon.png" alt="Member Logo" class="buttonNavigation"></a> *@
+            <img src="~/Images/memberSelected.png" alt="Member Logo" class="buttonNavigation">
+
+        </span>
+
+        <span class="sub-header"><a href="~/Leader/ManageProjects">
+            <img src="~/Images/projectIcon.png" alt="Project Logo" class="buttonNavigation"></a>
+        </span>
+
+        <span class="sub-header"><a href="~/Leader/ManageProjects">
+            <img src="~/Images/timeSheet_tr.png" alt="TimeSheet Logo" class="buttonNavigation"></a>
+        </span>
+    </div>            
+}

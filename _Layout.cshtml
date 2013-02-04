@@ -13,35 +13,30 @@
     </head>
     <body>
         <div class="logo">
-            <img src="~/Images/header.gif" alt="Logigear Logo">
-            @if(WebSecurity.IsAuthenticated){
+            <img src="~/Images/logo.png" alt="Logigear Logo">           
+        </div>
+
+        <div class="content">
+             @if(WebSecurity.IsAuthenticated){
                 <form id="logoutForm" action="~/Account/Logout" method="post">
                     @AntiForgery.GetHtml()
-                    <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a>
-                 </form>
-            }
-        </div>
-        
-        <div class="spacer"></div>        
-        <h2 id="timeSheetlabel">TIME SHEET MANAGEMENT</h2>
-         <div class="header">
-         @if(Roles.IsUserInRole("LEADER")){
-            <div>
-                <span class="sub-header"><a href="~/Leader/ManageMembers"><img src="~/Images/memberIcons.png" alt="Member Logo" class="buttonNavigation"></a></span>
-                <span class="sub-header"><a href="~/Leader/ManageProjects"><img src="~/Images/projectIcon.jpg" alt="Project Logo" class="buttonNavigation"></a></span>
-                <span class="sub-header"><a href="~/Leader/ManageProjects"><img src="~/Images/timeSheet.png" alt="TimeSheet Logo" class="buttonNavigation"></a></span>
-            </div>            
-         }
-        </div>        
-        <div class="spacer"></div>
+                    <a href="javascript:document.getElementById('logoutForm').submit()">Sign Out</a>
+                </form>
+            } 
 
-        <div class="content"> 
-            <h2>@Page.Title</h2>;                      
+            <div class="header">
+                 @RenderPage("~/_Header.cshtml")
+            </div>
+
+            <div class="spacer"></div>
+
+            <h2>@Page.Title</h2>                      
+
             @RenderBody()
         </div>
 
         <div id="footer">
             Copyright © @DateTime.Now.Year LogiGear Corporation. All rights reserved
-        </div>
+        </div>       
     </body>
 </html>

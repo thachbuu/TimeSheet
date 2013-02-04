@@ -1,10 +1,42 @@
 /*Layout page
     -----------------------------------*/
-body {
-    margin-left: 200px;
-    width: 1000px;
-    border-style: dotted;
+
+/*  LOGO 
+    ------------------------*/
+img{
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    display: inline;
 }
+
+/*--------------------CONTENT PAGE----------------------------------------------*/
+
+.content{
+    width: 1000px;
+    background-color: #fbf8f8;
+    margin-left: 150px;    
+}
+
+/*  HEADER
+    ------------------------*/
+.projectHeader{
+    font-size: medium;
+    font-family: 'Courier New';
+    color: #6d863e;
+    margin-top: 10px;
+    margin-bottom: 10px; 
+    font-weight: 900;  
+}
+
+.header{
+    width: 1000px;
+    margin-bottom: 20px;    
+}
+
+.sub-header{    
+    margin:  0px 120px 0px 120px;    
+}
+
 
 .spacer{    
     border-top: 2px solid;
@@ -13,28 +45,8 @@ body {
     padding: 0px 0px 0px 0px;
 }
 
-.buttonNavigation{
-    border-style: solid;
-    border-width: 2px;
-}
-
-
-.content{    
-    background-color: #efefef;
-    margin: auto;
-    width: 1000px;
-}
-
-.logo{    
-    background-color: #fff;  
-}
-
-.header{
-    margin-bottom: 20px;
-}
-
-.sub-header{    
-    margin:  0px 120px 0px 120px;
+.buttonNavigation{   
+    border-width: 2px;       
 }
 
 h2{  
@@ -59,41 +71,6 @@ h2{
     text-align: center;        
 }
 
-/*
-    ------------------
-    GRID
-    ------------------       
-    */
-.grid{
-    margin-left: 10px;
-    background: #fff;
-    width: 650px;
-    border-collapse: collapse;    
-} 
-.grid th {
-    font-size: 1.1em; 
-    font-weight: normal; 
-    color: #039; 
-    padding: 10px 8px;
-    border-bottom: 2px solid #728059;
-    text-align: left; 
-}
-.grid td {
-    border-bottom: 1px solid #ccc;    
-    padding: 4px 6px; 
-}
-.alternate{
-    background: #d3ff80; 
-}
-.gridheader, .gridfooter{
-    background: #9ebf60; 
-    
-} 
-.gridheader a, .gridfooter a{
-    color: #fff;    
-    text-decoration:none; 
-    
-} 
 #projectName{
     font-size: xx-large;
     font-style: oblique;
@@ -112,10 +89,44 @@ h2{
     margin-left: 10px;
     width: fit-content;
 }
-.projectHeader{
-    font-size: medium;
-    font-family: 'Courier New';
-    color: #9ebf60;
-    margin-top: 10px;
-    margin-bottom: 10px;   
+
+
+
+
+
+/*
+    ------------------
+    GRID
+    ------------------       
+    */
+.grid{
+    margin-left: 10px;
+    background: #fff;
+    width: 650px;
+    border-collapse: collapse;    
+} 
+.grid th {
+    font-size: 1.1em; 
+    font-weight: normal; 
+    color: #fff; 
+    padding: 10px 8px;
+    border-bottom: 2px solid #728059;
+    text-align: left; 
 }
+.grid td {
+    border-bottom: 1px solid #ccc;    
+    padding: 4px 6px; 
+    color: #000; 
+}
+.alternate{
+    //background: #d3ff80; 
+    background: #b0caf8;
+}
+.gridheader, .gridfooter{
+    //background: #9ebf60; 
+    background: #72286b;
+} 
+.gridheader a, .gridfooter a{
+    color: #fff;    
+    text-decoration:none;     
+} 
