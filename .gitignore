@@ -5,7 +5,7 @@
 *.pydevproject
 .project
 .metadata
-bin/
+#bin/
 tmp/
 *.tmp
 *.bak
@@ -71,7 +71,7 @@ ipch/
 *.aps
 *.ncb
 *.opensdf
-*.sdf
+#*.sdf
 
 # Visual Studio profiler
 *.psess
