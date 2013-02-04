@@ -2,6 +2,8 @@
     // Set the layout page and page title
     Layout = "~/_Layout.cshtml";
     Page.Title = "Thanks for registering";
+    var db = Database.Open("StarterSite");
+    <div>@db.GetLastInsertId()</div> 
 }
 
 @if (!WebSecurity.IsAuthenticated) {

@@ -11,29 +11,27 @@
     var confirmPassword = "";
     var firstName="";
     var lastName="";
-    int roleId ;
-    var supervisorId ="";
+    string roleName="";
+    int supervisorId;
 
-
-
-    // Get Roles
-    var db = Database.Open("StarterSite");
-    var rolesQuery = "SELECT * FROM webpages_Roles";
-    var rolesList = db.Query(rolesQuery);
+    // Open database
+    var db = Database.Open("StarterSite");   
 
     //Get Supervisor
-    var supervisorQuery = "SELECT * FROM Supervisor";
-    var supervisorData = db.Query(supervisorQuery);
+    var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
+                          "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
+                          "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName='LEADER'";
+    var supervisorData = db.Query(supervisorQuery);    
     var supervisorList = new List<SelectListItem>();
     
     foreach(var item in supervisorData ){
         var person = new SelectListItem();
         person.Text = item.Email;
-        person.Value = item.UserId as String;
+        person.Value = item.UserId.ToString();        
         person.Selected = false;
         supervisorList.Add(person);
     }
-
+            
     // Setup validation
     Validation.RequireField("email", "You must specify an email address.");
     Validation.RequireField("password", "Password cannot be blank.");
@@ -50,14 +48,13 @@
         AntiForgery.Validate();
 
         //Get information from user
-        email = Request.Form["email"];
+        email = Request.Form["email"];        
         password = Request.Form["password"];
         confirmPassword = Request.Form["confirmPassword"];
         firstName = Request.Form["firstName"];
-        lastName= Request.Form["lastName"];
-        roleId = Int32.Parse( Request.Form["role"]);
-        supervisorId = Request.Form["supervisor"];
-        <div>SupervisorID @supervisorId</div>
+        lastName= Request.Form["lastName"]; 
+        roleName= Request.Form["role"];
+        Int32.TryParse(Request.Form["supervisor"],out supervisorId);       
         
 
         // Validate the user's captcha answer
@@ -66,18 +63,16 @@
         // }
 
         // If all information is valid, create a new account
-        if (Validation.IsValid()) {
-            // Insert a new user into the database
-            // var db = Database.Open("StarterSite");
+        if (Validation.IsValid()) {         
 
             // Check if user already exists
             var user = db.QuerySingle("SELECT Email FROM UserProfile WHERE LOWER(Email) = LOWER(@0)", email);
-            if (user == null) {
-                if(roleId == 100){
-                    // Insert email into the UserProfile table
-                    db.Execute("INSERT INTO UserProfile (Email,FirstName,LastName) VALUES (@0,@1,@2)", email,firstName,lastName);
-                }
-                
+            if (user == null) { 
+
+                // Insert email into the UserProfile table
+                db.Execute("INSERT INTO UserProfile (Email,FirstName,LastName,SupervisorId) VALUES (@0,@1,@2,@3)", email,firstName,lastName,supervisorId);                  
+                Roles.AddUserToRole(email,roleName);
+                   
 
                 // Create and associate a new entry in the membership database.
                 // If successful, continue processing the request
@@ -119,18 +114,18 @@
 <form method="post">
     @AntiForgery.GetHtml()
     @* If at least one validation error exists, notify the user *@
-    @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null)
+    @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null) 
 
     <fieldset>
         <legend>Registration Form</legend>
         <ol>
-            <li class="First Name">
+            <li class="firstName">
                 <label for="firstName" @if(!ModelState.IsValidField("firstName")){<text>class="error-label"</text>}>First Name</label>
                 <input type="text" id="firstName" name="firstName" value="@firstName" @Validation.For("firstName") />
                 @* Write any email validation errors to the page *@
                 @Html.ValidationMessage("firstName")
             </li>
-            <li class="Last Name">
+            <li class="lastName">
                 <label for="lastName" @if(!ModelState.IsValidField("lastName")){<text>class="error-label"</text>}>Last Name</label>
                 <input type="text" id="lastName" name="lastName" value="@lastName" @Validation.For("lastName") />
                 @* Write any email validation errors to the page *@
@@ -154,15 +149,14 @@
                 @* Write any password validation errors to the page *@
                 @Html.ValidationMessage("confirmPassword")
             </li>
-            <li class="Roles">
-                <label for="Roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Choose Roles</label>
-                @foreach(var role in rolesList){
-                    @Html.RadioButton("role",role.RoleId,true)@role.RoleName;
+            <li class="roles">
+               @* <label for="roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Choose Roles</label>*@               
+                @foreach(var role in Roles.GetAllRoles()){
+                    @Html.RadioButton("role",role,true)@role;
                 }
             </li>
             <li class="Supervisor">
-                <label for="Roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Supervisor</label>
-             @*   @Html.ListBox("supervisor","------Select Supervisor------",supervisorList.Email); *@              
+               @* <label for="Roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Supervisor</label> *@                       
                 @Html.DropDownList("supervisor","---- Select Supervisor ----",supervisorList)
             </li>       
         </ol>
