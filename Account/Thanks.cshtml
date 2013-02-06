@@ -7,8 +7,7 @@
 }
 
 @if (!WebSecurity.IsAuthenticated) {
-    <hgroup class="title">
-        <h1>@Page.Title.</h1>
+    <hgroup class="title">        
         <h2>But you're not done yet!</h2>
     </hgroup>
 
@@ -16,8 +15,7 @@
        An email with instructions on how to activate your account is on its way to you.
     </p>
 } else {
-    <hgroup class="title">
-        <h1>@Page.Title.</h1>
+    <hgroup class="title">        
         <h2>You are all set.</h2>
     </hgroup>
 

@@ -1,0 +1,23 @@
+﻿@functions {
+
+  //  public static Database db = Database.Open("StarterSite");
+
+    public static List<SelectListItem> getSupervisorResources(){
+        var db = Database.Open("StarterSite");
+        var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
+                          "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
+                          "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName='LEADER'";
+        
+        var supervisorData = db.Query(supervisorQuery);    
+        var supervisorList = new List<SelectListItem>();
+    
+        foreach(var item in supervisorData ){
+            var person = new SelectListItem();
+            person.Text = item.Email;
+            person.Value = item.UserId.ToString();        
+            person.Selected = false;
+            supervisorList.Add(person);
+        }
+        return supervisorList;        
+    }
+}

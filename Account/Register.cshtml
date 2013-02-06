@@ -16,21 +16,6 @@
 
     // Open database
     var db = Database.Open("StarterSite");   
-
-    //Get Supervisor
-    var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
-                          "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
-                          "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName='LEADER'";
-    var supervisorData = db.Query(supervisorQuery);    
-    var supervisorList = new List<SelectListItem>();
-    
-    foreach(var item in supervisorData ){
-        var person = new SelectListItem();
-        person.Text = item.Email;
-        person.Value = item.UserId.ToString();        
-        person.Selected = false;
-        supervisorList.Add(person);
-    }
             
     // Setup validation
     Validation.RequireField("email", "You must specify an email address.");
@@ -157,7 +142,7 @@
             </li>
             <li class="Supervisor">
                @* <label for="Roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Supervisor</label> *@                       
-                @Html.DropDownList("supervisor","---- Select Supervisor ----",supervisorList)
+                @Html.DropDownList("supervisor","---- Select Supervisor ----",@Functions.getSupervisorResources())
             </li>       
         </ol>
         <input type="submit" value="Register" />
