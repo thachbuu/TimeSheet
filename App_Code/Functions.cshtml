@@ -1,8 +1,9 @@
 ﻿@functions {
-
-  //  public static Database db = Database.Open("StarterSite");
-
     public static List<SelectListItem> getSupervisorResources(){
+         /**
+            This function will create a list of Supervisor emails fully.
+         **/
+
         var db = Database.Open("StarterSite");
         var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
                           "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
@@ -19,5 +20,35 @@
             supervisorList.Add(person);
         }
         return supervisorList;        
-    }
+    } 
+
+    public static List<SelectListItem> getSupervisorResources(String selectedItem){
+        /**
+            This function will create a list of Supervisor emails but not include the ignoredEmail.
+        **/
+
+        var db = Database.Open("StarterSite");
+        var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
+                          "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
+                          "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName='LEADER'";
+        
+        var supervisorData = db.Query(supervisorQuery);    
+        var supervisorList = new List<SelectListItem>();
+
+        var defaultItem = new SelectListItem(){Text = "---- Select Item ----", Value = "0", Selected = (selectedItem != null?true:false)};
+        supervisorList.Add(defaultItem);
+    
+        foreach(var item in supervisorData ){                        
+                var person = new SelectListItem();
+                person.Text = item.Email;
+                person.Value = item.UserId.ToString();        
+                if(item.Email == selectedItem){
+                    person.Selected = true;
+                }else{
+                    person.Selected = false;                   
+                }
+                supervisorList.Add(person);            
+        }
+        return supervisorList;        
+    }       
 }

@@ -19,92 +19,30 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
+        <script>
+            $(function () {
+                $("#UpdateResource").click(alert("Update successfully"));
+            });
+        </script>
     </head>
     <body>
         <form method="post" action="#">
+            @AntiForgery.GetHtml()
             <input type="text" name="UserId" placeholder="Enter ID or email address">
             <input type="submit" value="Filter" name="Filter">
         </form>
 
         @if(IsPost){
+            AntiForgery.Validate();
+                       
             //In Case 1: Filter button is pressed
             if(Request.Form["Filter"] == "Filter"){
-                //Init variables
-                int result = 0;
                 var userId = Request.Form["UserId"];
-                Int32.TryParse(userId,out result); //Convert UserId to Integer.  
-
-                //Get User Information
-                var getMemberInfoQuery = "SELECT * FROM UserProfile WHERE UserId=@0 OR Email=@1";
-                var member = db.QuerySingle(getMemberInfoQuery,result,userId); 
-    
-                if(member ==null){
-                    @Html.Label("Cannot find your member. Please enter correct UserId or Email Address")
-                }
-                else{
-                            
-                    //Get User Role
-                    var getMemberRoleQuery = "SELECT RoleName FROM webpages_Roles AS Roles, webpages_UsersInRoles AS UsersInRoles " +
-                                             "WHERE UsersInRoles.UserId=@0 AND Roles.RoleId=UsersInRoles.RoleId";
-                    var memberRole = db.QueryValue(getMemberRoleQuery,member.UserId);
-
-                    //Get User's supervisor
-                    var getUserSuperVisorQuery = "SELECT Email FROM UserProfile WHERE UserId=@0";
-                    var userSupervisorEmail = db.QueryValue(getUserSuperVisorQuery,member.SupervisorId);
-
-                    //Get User's project name
-                    var getUserProjectName = "SELECT ProjectName FROM Projects WHERE ProjectId=@0";
-                    var userProjectName = db.QueryValue(getUserProjectName,member.ProjectId);
-                
-                    //Display User Information
-                    
-                    <fieldset>
-                        <legend>User Information</legend>
-                        <form method="post" action="">
-                            <ul>
-                                <li>
-                                    @Html.Label("ID:")
-                                    @Html.Label(@member.UserId.ToString())
-                                    @Html.TextBox("CurrentUserId",@member.UserId.ToString(),new {type = "hidden"})
-                                </li>
-                                <li>                       
-                                    <label>Email:</label>
-                                    <label>@member.Email</label>
-                                    @Html.TextBox("UserEmail",@member.Email,new {type="hidden"}) 
-                                </li>
-                                <li>
-                                    <label>Name:</label>
-                                    <label>@member.FirstName @member.LastName</label>
-                                </li>
-                                <li>
-                                    <label>Project:</label>
-                                    <label>@userProjectName</label>
-                                </li>
-                                <li>
-                                    <label for="role">Role: </label>
-                                    @foreach(var role in Roles.GetAllRoles()){
-                                        if(role == memberRole){
-                                            @Html.RadioButton("role",role,true) @role;
-                                            @Html.TextBox("currentMemberRole",role,new {type = "hidden"})
-                                                                                                                                
-                                        }else{
-                                            @Html.RadioButton("role",role,false) @role;
-                                        }
-                                    }
-                                                      
-                                </li>
-                                <li>
-                                    <label for="supervisor">Supervisor:</label>
-                                    @Html.DropDownList("supervisor",@userSupervisorEmail==null?"--- Select Supervisor ----":@userSupervisorEmail,@Functions.getSupervisorResources()) 
-                                </li>
-                            </ul>
-                            <input type="image" value="Update" name="UpdateResource">
-                        </form>                
-                    </fieldset>                
-                }
-                }
-            //In Case 2: 'Update' button is pressed
+                @Helpers.ResourceDetail(userId)
+            }
+             //In Case 2: 'Update' button is pressed
             if(Request.Form["UpdateResource"] == "Update"){
+                var userId = Request.Form["CurrentUserId"];
                 var currentMemberRoleName = Request.Form["currentMemberRole"];                
                 var newRole = Request.Form["role"];                
                 var newSupervisor = Request.Form["supervisor"].AsInt();
@@ -117,11 +55,9 @@
 
                 //Update Supervisor
                 var updateSupervisorQuery = "UPDATE UserProfile SET SupervisorId=@0 WHERE UserId=@1";
-                db.Execute(updateSupervisorQuery,newSupervisor,userId);
-               
-
-                <div>Update Successfully</div>
-            }                                                    
-        }
+                db.Execute(updateSupervisorQuery,newSupervisor,userId);                                
+                @Helpers.ResourceDetail(userId)
+            }                                                  
+        } 
     </body>
 </html>
