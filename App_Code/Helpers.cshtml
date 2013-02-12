@@ -1,6 +1,6 @@
 ﻿@helper ResourceDetail(String userId){
     
-    //Init variables
+    //Initiate variables
     var db = Database.Open("StarterSite");
     int result = 0;                
     Int32.TryParse(userId,out result); //Convert UserId to Integer to get UserId
@@ -17,7 +17,7 @@
     //Get User Role
     var getMemberRoleQuery = "SELECT RoleName FROM webpages_Roles AS Roles, webpages_UsersInRoles AS UsersInRoles " +
                              "WHERE UsersInRoles.UserId=@0 AND Roles.RoleId=UsersInRoles.RoleId";
-    var memberRole = db.QueryValue(getMemberRoleQuery,userId);
+    var memberRole = db.QueryValue(getMemberRoleQuery,member.UserId);
 
     //Get User's supervisor
     var getUserSuperVisorQuery = "SELECT Email FROM UserProfile WHERE UserId=@0";
@@ -31,7 +31,7 @@
         <legend>User Information</legend>
          @Html.ValidationSummary("Please correct the errors and try again.",excludeFieldErrors: true, htmlAttributes: null)
 
-        <form method="post" action="">
+        <form method="post" action="/Admin/ManageResources">
             @AntiForgery.GetHtml()
             <ul>
                 <li>
@@ -46,7 +46,7 @@
                 </li>
                 <li>
                     @Html.Label("Name:")
-                    @Html.Label(@member.FirstName + @member.LastName)
+                    @Html.Label(@member.FirstName + " " + @member.LastName)
                 </li>
                 <li>
                     @Html.Label("Project:")
@@ -71,7 +71,10 @@
                     @Html.ValidationMessage("supervisor")
                 </li>
             </ul>
-            <input type="image" value="Update" name="UpdateResource" id="UpdateResource">
+            <input type="submit" value="Update" name="UpdateResource" id="UpdateResource">
+            @if(User.IsInRole("ADMIN")){
+                <input type="submit" value="Delete Resource" name="DeleteResource" id="DeleteResource">
+            }
         </form>                
     </fieldset> 
     }  

@@ -5,6 +5,14 @@
     Layout = "~/_Layout.cshtml";
     Page.Title = "Log in";
 
+    //Redirect Page
+    if(User.IsInRole("LEADER")){
+        Response.Redirect("/Leader/ManageMembers");
+    }
+    if(User.IsInRole("ADMIN")){
+        Response.Redirect("/Admin/ManageResources");
+    }
+
     // Initialize general page variables
     var email = "";
     var password = "";
@@ -45,7 +53,7 @@
 
             // Attempt to log in using provided credentials
             if (WebSecurity.Login(email, password, rememberMe)) {
-                Response.Redirect("~/Leader/ManageMembers");                
+                Response.Redirect("~/");
                 return;
             } else {
                 ModelState.AddFormError("The user name or password provided is incorrect.");

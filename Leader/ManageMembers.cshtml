@@ -1,7 +1,7 @@
 ﻿@{
     Page.Title= "Manage Your Members";
     var db = Database.Open("StarterSite");
-    var query = "SELECT UserId, Firstname, Lastname, Project FROM UserProfile";
+    var query = "SELECT UserId, Firstname, Lastname FROM UserProfile";
     var memberList = db.Query(query);
     var grid = new WebGrid(memberList);
     if(IsPost){
@@ -32,10 +32,7 @@
                 ),                
                 grid.Column(
                     columnName: "Lastname"
-                ),
-                grid.Column(
-                    columnName: "Project"
-                ),
+                ),                
                 grid.Column(
                     columnName: "UserId",
                     header: string.Empty,

@@ -5,6 +5,11 @@
     Layout = "~/_Layout.cshtml";
     Page.Title = "Create a new account.";
 
+    //Logout if the role is not admin
+    if(!User.IsInRole("ADMIN")){
+        Response.Redirect("/Account/Logout");
+    }
+
     // Initialize general page variables
     var email = "";
     var password = "";
@@ -27,6 +32,8 @@
             maxLength: Int32.MaxValue,
             minLength: 6,
             errorMessage: "Password must be at least 6 characters"));
+    Validation.RequireField("firstName","You must specify the first name.");
+    Validation.RequireField("lastName","You must specify the last name.");
 
     // If this is a POST request, validate and process data
     if (IsPost) {
@@ -39,8 +46,7 @@
         firstName = Request.Form["firstName"];
         lastName= Request.Form["lastName"]; 
         roleName= Request.Form["role"];
-        Int32.TryParse(Request.Form["supervisor"],out supervisorId);       
-        
+        supervisorId = Request.Form["supervisor"].AsInt();
 
         // Validate the user's captcha answer
         // if (!ReCaptcha.Validate("PRIVATE_KEY")) {
@@ -135,13 +141,13 @@
                 @Html.ValidationMessage("confirmPassword")
             </li>
             <li class="roles">
-               @* <label for="roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Choose Roles</label>*@               
+               <label for="role">Role:</label>          
                 @foreach(var role in Roles.GetAllRoles()){
                     @Html.RadioButton("role",role,true)@role;
                 }
             </li>
             <li class="Supervisor">
-               @* <label for="Roles" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Supervisor</label> *@                       
+               <label for="Roles">Supervisor:</label>
                 @Html.DropDownList("supervisor","---- Select Supervisor ----",@Functions.getSupervisorResources())
             </li>       
         </ol>
