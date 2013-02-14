@@ -140,11 +140,8 @@
                 @* Write any password validation errors to the page *@
                 @Html.ValidationMessage("confirmPassword")
             </li>
-            <li class="roles">
-               <label for="role">Role:</label>          
-                @foreach(var role in Roles.GetAllRoles()){
-                    @Html.RadioButton("role",role,true)@role;
-                }
+            <li class="roles">                
+                @Helpers.RolesList()
             </li>
             <li class="Supervisor">
                <label for="Roles">Supervisor:</label>

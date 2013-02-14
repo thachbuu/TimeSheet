@@ -1,19 +1,10 @@
 ﻿@{
     Page.Title = "Update Resources";
-    Layout = "~/_Layout.cshtml";
-
-    //If role is not Admin, redirect to default page.
-    if(!Roles.IsUserInRole("ADMIN")){
-        Response.Redirect("~/");
-    }
-
+    
     //Connect to database
     var db = Database.Open("StarterSite");
 
     //Initiate variables
-    var feedbackMsg="";
-
-    
 }
 
 <!DOCTYPE html>
@@ -29,13 +20,11 @@
         </script>
     </head>
     <body>
-        <form method="post" action="">
+        <form method="post">
             @AntiForgery.GetHtml()
             <input type="text" name="CurrentUserId" placeholder="Enter ID or email address">
             <input type="submit" value="Filter" name="Filter">
-        </form>
-
-        <div class="feedbackMessage">@feedbackMsg</div>
+        </form>      
 
         @if(IsPost){
             AntiForgery.Validate();
@@ -54,11 +43,13 @@
 
              //In Case 2: 'Update' button is pressed
             if(Request.Form["UpdateResource"] == "Update"){               
-      
-                //Remove old role
-                Roles.RemoveUserFromRole(userEmail,currentMemberRole);
-                //Add new role
-                Roles.AddUserToRole(userEmail,newRole);
+                
+                if(currentMemberRole != newRole){    
+                    //Remove old role
+                    Roles.RemoveUserFromRole(userEmail,currentMemberRole);
+                    //Add new role
+                    Roles.AddUserToRole(userEmail,newRole);
+                }
 
                 //Update Supervisor
                 var updateSupervisorQuery = "UPDATE UserProfile SET SupervisorId=@0 WHERE UserId=@1";
@@ -70,9 +61,7 @@
             if(Request.Form["DeleteResource"] == "Delete Resource"){              
 
                 //Remove Project Manager from Projects and assign back to MASTER                
-                var masterUserId = db.QueryValue("SELECT UserProfile.UserId FROM UserProfile,webpages_UsersInRoles AS UsersInRoles,webpages_Roles AS Roles "+  
-                                                 "WHERE  UserProfile.UserId = UsersInRoles.UserId AND UsersInRoles.RoleId = Roles.RoleId AND Roles.RoleName = 'MASTER'");              
-                                                                      
+                var masterUserId = Functions.getMasterUserId();                                                                      
                 var removeProjectManagerId = "UPDATE Projects SET ProjectManager = @0 WHERE ProjectManager=@1";
                 db.Execute(removeProjectManagerId,masterUserId,userId);
 
@@ -82,9 +71,11 @@
 
                 //Remove Role from UserInRole
                 Roles.RemoveUserFromRole(userEmail,currentMemberRole);
+
+                //Remove Member from Membership table
+                db.Execute("DELETE FROM webpages_Membership WHERE UserId=@0",userId);
                 
                 //Delete User
-                MembershipUser user = Membership.GetUser(userEmail);
                 Membership.DeleteUser(userEmail,true);
             }                                                  
         } 

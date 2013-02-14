@@ -55,14 +55,11 @@
                 <li>
                     @Html.Label("Role","role")
                     @foreach(var role in Roles.GetAllRoles()){
-                        if(role == memberRole){
-                            @Html.RadioButton("role",role,true) @role;
-                            @Html.TextBox("currentMemberRole",role,new {type = "hidden"})
-                                                                                                                                
-                        }else{
-                            @Html.RadioButton("role",role,false) @role;
+                        if(role != "MASTER"){
+                        @Html.RadioButton("role",role,role==memberRole?true:false)@role;
                         }
-                    }                                                      
+                    }
+                    @Html.TextBox("currentMemberRole",memberRole,new {type = "hidden"})                                                      
                     @Html.ValidationMessage("role")
                 </li>
                 <li>
@@ -79,4 +76,17 @@
     </fieldset> 
     }  
 }
+
+@helper RolesList(){
+     <label for="role">Role:</label>          
+     foreach(var role in Roles.GetAllRoles()){
+       if(role=="MASTER"){
+           continue;
+       }      
+       @Html.RadioButton("role",role,true)@role
+                                                                               
+     }        
+}
+    
+
 
