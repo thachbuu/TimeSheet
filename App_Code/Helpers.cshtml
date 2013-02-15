@@ -31,7 +31,7 @@
         <legend>User Information</legend>
          @Html.ValidationSummary("Please correct the errors and try again.",excludeFieldErrors: true, htmlAttributes: null)
 
-        <form method="post" action="/Admin/ManageResources">
+        <form method="post">
             @AntiForgery.GetHtml()
             <ul>
                 <li>

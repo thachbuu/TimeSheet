@@ -1,7 +1,7 @@
 ﻿@if(Roles.IsUserInRole("LEADER")){
     <div>
         <span class="sub-header">
-            <a href="~/Leader/ManageMembers"><img src="~/Images/memberIcon.png" alt="Member Logo" class="buttonNavigation"></a> 
+            <a href="~/Leader/ManageMembers"><img src="~/Images/userconfig.png" alt="Member Logo" class="buttonNavigation"></a> 
         </span>
 
         <span class="sub-header"><a href="~/Leader/ManageProjects">
@@ -17,15 +17,15 @@
 @if(User.IsInRole("ADMIN")){
     <div>
         <span class="sub-header">
-            <a href="~/Admin/ManageResources"><img src="TBD" alt="Resources Logo" class="buttonNavigation"></a> 
+            <a href="~/Admin/UpdateResources"><img src="~/Images/userconfig.png" alt="Resources Logo" class="buttonNavigation"></a> 
         </span>
 
         <span class="sub-header"><a href="~/Account/Register">
-            <img src="TBD" alt="Project Logo" class="buttonNavigation"></a>
+            <img src="~/Images/addresource.png" alt="Project Logo" class="buttonNavigation"></a>
         </span>
 
-        <span class="sub-header"><a href="~/Leader/ManageProjects">
-            <img src="TBD" alt="TBD" class="buttonNavigation"></a>
+        <span class="sub-header"><a href="~/Admin/AddProjects">
+            <img src="~/Images/projectPlan.png" alt="TBD" class="buttonNavigation"></a>
         </span>
     </div>    
 }

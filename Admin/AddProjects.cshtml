@@ -27,7 +27,9 @@
         }
     }
 
-    if(IsPost){        
+    if(IsPost){
+        AntiForgery.Validate();  
+              
         if(Validation.IsValid()){
             var insertProject = "INSERT INTO Projects(ProjectName,ProjectManager,Description,StartedDate,EndDate) VALUES(@0,@1,@2,@3,@4)";
             db.Execute(insertProject,projectName,projectManager,projectInfo,startedDate,endDate);
@@ -44,6 +46,7 @@
 </script>
 
 <form method="post">
+    @AntiForgery.GetHtml()
     @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
 
     <fieldset>

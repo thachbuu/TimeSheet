@@ -7,10 +7,10 @@
 
     //Redirect Page
     if(User.IsInRole("LEADER")){
-        Response.Redirect("/Leader/ManageMembers");
+        Response.Redirect("~/Leader/ManageMembers");
     }
     if(User.IsInRole("ADMIN")){
-        Response.Redirect("/Admin/ManageResources");
+        Response.Redirect("~/Admin/AddProjects");
     }
 
     // Initialize general page variables
