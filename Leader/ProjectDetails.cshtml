@@ -20,54 +20,38 @@
     var data = db.QuerySingle(query,projectId);
 }
 
-<!DOCTYPE html>
+ 
+<script>
+    $(function () {
+        $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
+        $("#datepickerEndDate").datepicker({ showAnim: "fold" });
+        $("#submit").click(function () {
+            $("input[name=projectDescription]").attr('value',$("#projectDescription").val());
+        });               
+    });               
+</script>   
+  
+<form method="post" action="">
+    <div id="projectName">Project: @data.ProjectName</div>
 
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />     
+    <div class="projectHeader">Project Description</div>
+    <div id="description"><textarea id="projectDescription">@data.Description</textarea></div>            
+    <div>
+        <div class="projectHeader">StartedDate</div>
+        <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">            
+    </div>
 
-        @* Delete after test again because it is taken to Layout page
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
-        <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
-        <script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
-        <link rel="stylesheet" href="/resources/demos/style.css" /> *@
+    <div>
+        <div class="projectHeader">EndDate</div>
+        <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
+    </div>
 
-        <script>
-            $(function () {
-                $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
-                $("#datepickerEndDate").datepicker({ showAnim: "fold" });
-                $("#submit").click(function () {
-                    $("input[name=projectDescription]").attr('value',$("#projectDescription").val());
-                });               
-            });               
-        </script>
-    </head>
-    <body>
-        <form method="post" action="">
-            <div id="projectName">Project: @data.ProjectName</div>
+    <div id="member-in-project">            
+        @RenderPage("~/Leader/GetMembers.cshtml")
+    </div>
 
-            <div class="projectHeader">Project Description</div>
-            <div id="description"><textarea id="projectDescription">@data.Description</textarea></div>            
-            <div>
-                <div class="projectHeader">StartedDate</div>
-                <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">            
-            </div>
-
-            <div>
-                <div class="projectHeader">EndDate</div>
-                <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
-            </div>
-
-            <div id="member-in-project">            
-                @RenderPage("~/Leader/GetMembers.cshtml")
-            </div>
-
-            <input type="hidden" name="projectDescription" value="">
-            <input type="hidden" name="projectId" value="@projectId">
-            <input id="submit" type="submit" value="Update">
-            <div class="feedback">@feedbackMsg</div>
-        <a href="~/Leader/GetMembers.cshtml">GetMembers</a>
-        </form>
-        
-    </body>
-</html>
+    <input type="hidden" name="projectDescription" value="">
+    <input type="hidden" name="projectId" value="@projectId">
+    <input id="submit" type="submit" value="Save and Exit">
+    <div class="feedback">@feedbackMsg</div>       
+</form>

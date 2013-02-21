@@ -29,7 +29,7 @@
         @if(IsPost){
             AntiForgery.Validate();
 
-            //Initiate variables             
+            //Initialize variables             
              var userId = Request.Form["CurrentUserId"];
              var currentMemberRole = Request.Form["currentMemberRole"];                
              var newRole = Request.Form["role"];                

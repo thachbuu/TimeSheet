@@ -1,70 +1,87 @@
 ﻿@{
     Layout = "";
+
+    //Initialize variables
     var db = Database.Open("StarterSite");
-    var projectId = Request["ProjectId"];  
-    
-    var members_in_project = "SELECT FirstName,UserId FROM UserProfile WHERE ProjectId=@0";
-    var userData = new WebGrid(db.Query(members_in_project,projectId));
+    var projectId = Request["ProjectId"].AsInt();
+    var supervisorId = WebSecurity.CurrentUserId;
+    var members_in_project = "SELECT * FROM UserProfile, Project_User " + 
+                             "WHERE Project_User.ProjectId=@0 AND UserProfile.UserId = Project_User.UserId AND Project_User.Status = 'True' AND Project_User.UserId !=@1";
+    var userData = new WebGrid(db.Query(members_in_project,projectId,supervisorId));
 
-    var members_in_pool = "SELECT FirstName,UserId,ProjectId FROM UserProfile WHERE ProjectId IS NULL";    
-    var userInPoolData = new WebGrid(db.Query(members_in_pool));
+    var members_in_pool = "SELECT DISTINCT(UserProfile.UserId), FirstName FROM UserProfile, Project_User " +
+                          "WHERE SupervisorId=@0 " +
+                          "AND (UserProfile.UserId NOT IN (SELECT UserId FROM Project_User WHERE ProjectId=@1) " +
+                          "OR  (Project_User.ProjectId =@1 AND UserProfile.UserId = Project_User.UserId AND Project_User.Status = 'False'))";
+                             
+    var userInPoolData = new WebGrid(db.Query(members_in_pool,supervisorId,projectId));
            
-    if(IsPost){
-        projectId = Request["ProjectId"];
+    if(IsPost){        
+        var action = Request["Action"];
+        var userId = Request["UserId"];
+        
+        @*If button "Remove" is pressed.*@
+            if(action == "Remove"){
+                //Status: 0 -- User is removed from project
+                //Status: 1 -- User is joining in this project
+                string removeMember = "UPDATE Project_User SET Status=@0 WHERE UserId=@1 AND ProjectId=@2";       
+                db.Execute(removeMember,0,userId,projectId);              
+            }
+            
 
-        string userId = Request["UserId"];        
-        string removeMember = "UPDATE UserProfile SET ProjectId=NULL WHERE UserId=@0";
-        db.Execute(removeMember,userId);
-
-        string addUserId = Request["AddUserId"];
-        string addUserQuery = "UPDATE UserProfile SET ProjectId=@0 WHERE UserId=@1";
-        db.Execute(addUserQuery,projectId,addUserId);
-
-        userInPoolData = new WebGrid(db.Query(members_in_pool));
-        userData = new WebGrid(db.Query(members_in_project,projectId));
+        @*If button "Add" is pressed.*@
+            if(action == "Add" ){                
+                var checkUserInProject = db.QuerySingle("SELECT UserId FROM Project_User WHERE UserId=@0 AND ProjectId=@1",userId,projectId);
+                if(userId != ""){
+                   if(checkUserInProject != null){
+                        db.Execute("UPDATE Project_User SET Status=@0 WHERE UserId=@1 AND ProjectId = @2",1,userId,projectId);                      
+                   }
+                   else{
+                        db.Execute("INSERT Project_User(Status,UserId,ProjectId) VALUES (@0,@1,@2)",1,userId,projectId);                       
+                   }
+                }
+            }
+            userInPoolData = new WebGrid(db.Query(members_in_pool,supervisorId,projectId));
+            userData = new WebGrid(db.Query(members_in_project,projectId,supervisorId));
     }
 }
-<html lang="en">
-    <head>
-        <script>
-            $(function () {
-                $("button[id*=rm]").click(function () {
-                    $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
-                    alert("Remove successfully");
-                });
-                $("button[id*=add]").click(function () {
-                     $.post("/Leader/GetMembers.cshtml", { AddUserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value') }, function (data) { $("#member-in-project").html(data); });
-                    alert("Remove successfully");                    
-                });               
-            });               
-        </script>
-    </head>
-<body>
-        <input type="hidden" value="@projectId" id="currentProjectId">
 
-        @userData.GetHtml(
-            tableStyle: "grid",
-            alternatingRowStyle: "alternate",
-            headerStyle: "gridheader",
-            footerStyle: "gridfooter",
-            caption: "MEMBERS IN PROJECT",
-            //displayHeader: false,           
-            columns: userData.Columns(
-                userData.Column(columnName: "FirstName"),
-                userData.Column(format: @<button name="UserId" style="float: right;" value="@item.UserId" id="rm-@item.UserId">Remove</button>)
-           ))
 
-        @userInPoolData.GetHtml(
-            tableStyle: "grid",
-            alternatingRowStyle: "alternate",
-            headerStyle: "gridheader",
-            footerStyle: "gridfooter",            
-            displayHeader: false,
-            columns: userData.Columns(
-                userData.Column(columnName: "FirstName"),
-                userData.Column(format: @<button name="AddUserId" style="float: right;"value="@item.UserId" id="add-@item.UserId">Add</button>)                    
-            )
-         )
-</body>
-</html>
+<script>
+    $(function () {
+        $("button[id*=rm]").click(function () {
+            $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value'), Action : 'Remove'}, function (data) { $("#member-in-project").html(data); });
+            alert("Remove successfully");
+        });
+        $("button[id*=add]").click(function () {
+                $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value'), Action : 'Add'}, function (data) { $("#member-in-project").html(data); });
+            alert("Add successfully");                    
+        });               
+    });               
+</script>
+
+<input type="hidden" value="@projectId" id="currentProjectId">
+@userData.GetHtml(
+    tableStyle: "grid",
+    alternatingRowStyle: "alternate",
+    headerStyle: "gridheader",
+    footerStyle: "gridfooter",
+    caption: "MEMBERS LIST",
+    //displayHeader: false,           
+    columns: userData.Columns(
+        userData.Column(columnName: "FirstName"),
+        userData.Column(format: @<button name="UserId" style="float: right;" value="@item.UserId" id="rm-@item.UserId">Remove</button>)
+ ))
+
+@userInPoolData.GetHtml(
+    tableStyle: "grid",
+    alternatingRowStyle: "alternate",
+    headerStyle: "gridheader",
+    footerStyle: "gridfooter",            
+    displayHeader: false,
+    columns: userData.Columns(
+        userData.Column(columnName: "FirstName"),
+        userData.Column(format: @<button name="AddUserId" style="float: right;"value="@item.UserId" id="add-@item.UserId">Add</button>)                    
+    )
+)
 

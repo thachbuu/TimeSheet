@@ -1,9 +1,9 @@
 ﻿@{
      Page.Title = "Manage Your Projects";
      var db = Database.Open("StarterSite");
-     int pjManagerId = 2;
-     var query = "SELECT * FROM Projects WHERE ProjectManager=@0";
-     var data = db.Query(query,pjManagerId);
+     int userID = WebSecurity.CurrentUserId;
+     var query = "SELECT * FROM Projects,Project_User WHERE Project_User.UserId=@0 AND Projects.ProjectId = Project_User.ProjectId";
+     var data = db.Query(query,userID);
      var grid = new WebGrid(data);
      if(IsPost){
          <div>@Request["ProjectId"]</div>
@@ -44,7 +44,7 @@
                 ),
                 grid.Column(
                     header: string.Empty,
-                    format: @<input type="radio" name="ProjectId" value="@item.ProjectId"></input>                    
+                    format: @<input type="radio" name="ProjectId" value="@item.ProjectId" checked="checked"></input>                    
                 )
             )
             )
