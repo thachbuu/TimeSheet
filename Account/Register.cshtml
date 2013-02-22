@@ -108,7 +108,7 @@
     @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null) 
 
     <fieldset>
-        <legend>Registration Form</legend>
+        <legend>Member Information</legend>
         <ol>
             <li class="firstName">
                 <label for="firstName" @if(!ModelState.IsValidField("firstName")){<text>class="error-label"</text>}>First Name</label>
@@ -144,10 +144,10 @@
                 @Helpers.RolesList()
             </li>
             <li class="Supervisor">
-               <label for="Roles">Supervisor:</label>
-                @Html.DropDownList("supervisor","---- Select Supervisor ----",@Functions.getSupervisorResources())
+               <label for="supervisor">Project Manager</label>
+                @Html.DropDownList("supervisor",@Functions.getResources(role: "PM"))
             </li>       
         </ol>
-        <input type="submit" value="Register" />
+        <input type="submit" value="Create" />
     </fieldset>
 </form>

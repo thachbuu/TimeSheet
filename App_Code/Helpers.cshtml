@@ -1,4 +1,14 @@
-﻿@helper ResourceDetail(String userId){
+﻿@helper RolesList(String name="role",String currentRole=null){
+     <label for="@name">Role:</label>          
+     foreach(var role in Roles.GetAllRoles()){
+       if(role=="MASTER"){
+           continue;
+       }      
+       @Html.RadioButton(name,role,role==currentRole?true:currentRole==null?true:false)@role                                                                               
+     }        
+}
+
+@helper ResourceDetail(String userId){
     
     //Initiate variables
     var db = Database.Open("StarterSite");
@@ -52,19 +62,14 @@
                     @Html.Label("Project:")
                     @Html.Label(@userProjectName==null?"None":@userProjectName)                    
                 </li>
-                <li>
-                    @Html.Label("Role","role")
-                    @foreach(var role in Roles.GetAllRoles()){
-                        if(role != "MASTER"){
-                        @Html.RadioButton("role",role,role==memberRole?true:false)@role;
-                        }
-                    }
+                <li>                    
+                    @Helpers.RolesList("role",memberRole)                                      
                     @Html.TextBox("currentMemberRole",memberRole,new {type = "hidden"})                                                      
                     @Html.ValidationMessage("role")
                 </li>
                 <li>
-                    @Html.Label("Supervisor","supervisor")                                      
-                    @Html.DropDownList("supervisor",@Functions.getSupervisorResources(@userSupervisorEmail)) 
+                    @Html.Label("Project Manager","supervisor")                                      
+                    @Html.DropDownList("supervisor",@Functions.getResources(@userSupervisorEmail,role: "PM")) 
                     @Html.ValidationMessage("supervisor")
                 </li>
             </ul>
@@ -77,16 +82,7 @@
     }  
 }
 
-@helper RolesList(){
-     <label for="role">Role:</label>          
-     foreach(var role in Roles.GetAllRoles()){
-       if(role=="MASTER"){
-           continue;
-       }      
-       @Html.RadioButton("role",role,true)@role
-                                                                               
-     }        
-}
+
     
 
 

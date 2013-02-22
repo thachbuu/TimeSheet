@@ -7,21 +7,23 @@
         return masterUserId;
     }   
 
-    public static List<SelectListItem> getSupervisorResources(String currentSupervisorEmail=null,Boolean includeDefaultValue=true){
+    public static List<SelectListItem> getResources(String currentSupervisorEmail=null,Boolean includeDefaultValue=true,String role="LEADER"){
         /**
-            This function will create a list of Supervisor emails but not include the ignoredEmail.
+            This function will create a list of LEADER emails but not include the ignoredEmail.
         **/
 
         var db = Database.Open("StarterSite");
         var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
                           "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
-                          "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName='LEADER'";
+                          "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName=@0";
         
-        var supervisorData = db.Query(supervisorQuery);    
-        var supervisorList = new List<SelectListItem>();
+        var supervisorData = db.Query(supervisorQuery,role);    
+        var resourceList = new List<SelectListItem>();
 
-        var defaultItem = new SelectListItem(){Text = "---- Select Owner ----", Value = getMasterUserId().ToString(), Selected = (currentSupervisorEmail != null?true:false)};
-        if(includeDefaultValue){supervisorList.Add(defaultItem);}
+        var defaultItem = new SelectListItem(){Text = "---- Select One ----", Value = getMasterUserId().ToString(), Selected = (currentSupervisorEmail != null?true:false)};
+        if(includeDefaultValue){
+            resourceList.Add(defaultItem);
+        }
     
         foreach(var item in supervisorData ){                        
                 var person = new SelectListItem();
@@ -32,8 +34,8 @@
                 }else{
                     person.Selected = false;                   
                 }
-                supervisorList.Add(person);            
+                resourceList.Add(person);            
         }
-        return supervisorList;        
-    }       
+        return resourceList;        
+    }
 }
