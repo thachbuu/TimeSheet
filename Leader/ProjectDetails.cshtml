@@ -2,16 +2,33 @@
     Page.Title = "Project Details";
     var db = Database.Open("StarterSite");
     var projectId = Request["ProjectId"];
+    DateTime startedDate = Request.Form["datepickerStartedDate"].AsDateTime();
+    DateTime endDate     = Request.Form["datepickerEndDate"].AsDateTime();
     var feedbackMsg="";
+
+    //Validation  
+    Validation.RequireField("datepickerStartedDate", "Please choose the started date");
+    Validation.RequireField("datepickerEndDate","Please choose the end date");
+         
+    if(startedDate.CompareTo(endDate) > 0){
+        ModelState.AddError("datepickerStartedDate","The started date must be smaller than end date");
+    }
     
     if(IsPost){
-        var projectDescription = Request["projectDescription"] ;
-        var datepickerStartedDate = Request["datepickerStartedDate"];
-        var datepickerEndDate = Request["datepickerEndDate"];
+        var action = Request["action"];        
+        if(action == "Save"){
+            var projectDescription = Request["projectDescription"] ;
+            var datepickerStartedDate = Request["datepickerStartedDate"];
+            var datepickerEndDate = Request["datepickerEndDate"];
 
-        if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
-            var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
-            db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
+            if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
+                var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
+                db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
+                Response.Redirect("~/Leader/ManageProjects");
+            }            
+        }
+        
+        if(action =="Cancel"){
             Response.Redirect("~/Leader/ManageProjects");
         }
     }
@@ -31,20 +48,31 @@
     });               
 </script>   
   
-<form method="post" action="">
-    <div id="projectName">Project: @data.ProjectName</div>
+<form method="post">
+    <h2>@data.ProjectName</h2>
+    <ul>
+        <li>
+            <label for="projectDescription">Project Description</label>
+            <br>
+            <textarea id="projectDescription" name="">@data.Description</textarea>
+            @Html.ValidationMessage("projectDescription")
+           
+        </li>
 
-    <div class="projectHeader">Project Description</div>
-    <div id="description"><textarea id="projectDescription">@data.Description</textarea></div>            
-    <div>
-        <div class="projectHeader">StartedDate</div>
-        <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">            
-    </div>
-
-    <div>
-        <div class="projectHeader">EndDate</div>
-        <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
-    </div>
+        <li>
+            <label for="datepickerStartedDate">Started Date</label>
+            <br>
+            <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">  
+            @Html.ValidationMessage("datepickerStartedDate")
+        </li>
+        
+        <li>
+            <label for="datepickerEndDate">End Date</label>
+            <br>
+            <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
+            @Html.ValidationMessage("datepickerEndDate")
+        </li>         
+    </ul>
 
     <div id="member-in-project">            
         @RenderPage("~/Leader/GetMembers.cshtml")
@@ -52,6 +80,7 @@
 
     <input type="hidden" name="projectDescription" value="">
     <input type="hidden" name="projectId" value="@projectId">
-    <input id="submit" type="submit" value="Save and Exit">
-    <div class="feedback">@feedbackMsg</div>       
+    <input name="action" id="submit" type="submit" value="Save">
+    <input name="action" id="submit" type="submit" value="Cancel">
+    <div class="feedback">@feedbackMsg</div>    
 </form>

@@ -41,16 +41,19 @@
                    }
                 }
             }
-            userInPoolData = new WebGrid(db.Query(members_in_pool,supervisorId,projectId));
-            userData = new WebGrid(db.Query(members_in_project,projectId,supervisorId));
+        userInPoolData = new WebGrid(db.Query(members_in_pool,supervisorId,projectId));
+        userData = new WebGrid(db.Query(members_in_project,projectId,supervisorId));
     }
 }
+
 
 <script>
     $(function () {
         $("button[id*=rm]").click(function () {
+          // $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value'), Action : 'Remove'}, function (data) { $("#member-in-project").html(data); });
+                               
             $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value'), Action : 'Remove'}, function (data) { $("#member-in-project").html(data); });
-            alert("Remove successfully");
+            alert("Remove successfully");  
         });
         $("button[id*=add]").click(function () {
                 $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'),  ProjectId: $("input[id=currentProjectId]").attr('value'), Action : 'Add'}, function (data) { $("#member-in-project").html(data); });
@@ -58,6 +61,7 @@
         });               
     });               
 </script>
+
 
 <input type="hidden" value="@projectId" id="currentProjectId">
 @userData.GetHtml(
