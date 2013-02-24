@@ -16,8 +16,8 @@
     
     if(IsPost){
         var action = Request["action"];        
-        if(action == "Save"){
-            var projectDescription = Request["projectDescription"] ;
+        if(action == "Save"){            
+            var projectDescription = Request.Unvalidated("projectDescription") ;
             var datepickerStartedDate = Request["datepickerStartedDate"];
             var datepickerEndDate = Request["datepickerEndDate"];
 
@@ -39,35 +39,37 @@
 
  
 <script>
-    $(function () {
+    $(function () {        
         $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
         $("#datepickerEndDate").datepicker({ showAnim: "fold" });
         $("#submit").click(function () {
-            $("input[name=projectDescription]").attr('value',$("#projectDescription").val());
-        });               
-    });               
+            $("input[name=projectDescription]").attr('value', $("#projectDescription").val());
+        });
+        $("#projectDescription").jqte();       
+     });               
 </script>   
   
 <form method="post">
     <h2>@data.ProjectName</h2>
     <ul>
         <li>
-            <label for="projectDescription">Project Description</label>
+            <label for="projectDescription">PROJECT DESCRIPTION</label>
             <br>
-            <textarea id="projectDescription" name="">@data.Description</textarea>
-            @Html.ValidationMessage("projectDescription")
-           
+            <div style="width: 600px">
+                <textarea id="projectDescription">@data.Description</textarea>
+            </div>
+            @Html.ValidationMessage("projectDescription")           
         </li>
 
         <li>
-            <label for="datepickerStartedDate">Started Date</label>
+            <label for="datepickerStartedDate">STARTED DATE</label>
             <br>
             <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">  
             @Html.ValidationMessage("datepickerStartedDate")
         </li>
         
         <li>
-            <label for="datepickerEndDate">End Date</label>
+            <label for="datepickerEndDate">END DATE</label>
             <br>
             <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
             @Html.ValidationMessage("datepickerEndDate")

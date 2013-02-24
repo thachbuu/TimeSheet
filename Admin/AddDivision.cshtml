@@ -1,0 +1,82 @@
+﻿@{
+    //Initialize variables
+    var db = Database.Open("StarterSite");
+    var divisionName = "";
+    var divisionAlias = "";
+    var divisionDes = "";
+
+    //Validation for fields
+    Validation.RequireField("admin_divisionName","Missing company name");
+    Validation.RequireField("admin_divisionAlias","Missing company identifier");
+    Validation.RequireField("admin_divisionDes","Missing company description");
+    Validation.Add("admin_divisionName",
+        Validator.StringLength(
+            maxLength: 100,
+            minLength: 2,
+            errorMessage: "Division name must have at least 2 characters")
+    );
+    Validation.Add("admin_divisionAlias",
+        Validator.StringLength(
+            maxLength: 100,
+            minLength: 2,
+            errorMessage: "Division alias must have from 2 to 10 characters")
+    );
+    Validation.Add("admin_divisionDes",
+        Validator.StringLength(
+            maxLength: 1000,
+            minLength: 5,
+            errorMessage: "Company Description must have at least 5 characters")
+    );
+    
+
+    
+    if(IsPost){
+        divisionName = Request.Form["admin_divisionName"];
+        divisionAlias = Request.Form["admin_divisionAlias"];
+        divisionDes = Request.Form["admin_divisionDes"];
+        if(Validation.IsValid()){
+            var division = db.QuerySingle("SELECT DivisionAlias FROM Division WHERE DivisionAlias=@0",divisionAlias);
+            if(division != null){
+                var addCompanyQuery= "INSERT INTO Division(DivisionName,DivisionAlias,DivisionDescription) VALUES (@0,@1,@2)";
+                db.Execute(addCompanyQuery,divisionName,divisionAlias,divisionDes);
+            }
+            else{                               
+                ModelState.AddFormError("This devision id has been used");                
+            }
+            
+        }
+    }
+}
+
+<script>
+    $(function () {
+        $("#admin_divisionDes").jqte();
+    });
+</script>
+
+<form method="post">
+     @Html.ValidationSummary("Company is not created successfully. Please correct the errors below", excludeFieldErrors: true, htmlAttributes: null)
+    <ul>
+        <li>
+            @Html.Label("Name","admin_divisionName",null)
+            @Html.TextBox("admin_divisionName",divisionName)
+            @Html.ValidationMessage("admin_divisionName")
+        </li>
+
+        <li>
+            @Html.Label("ID","admin_divisionAlias",null)
+            @Html.TextBox("admin_divisionAlias",divisionAlias)
+            @Html.ValidationMessage("admin_divisionAlias")
+        </li>
+
+        <li style="width: 600px">
+            @Html.Label("Description","admin_divisionDes",null)
+            @Html.TextArea("admin_divisionDes",divisionDes)
+            @Html.ValidationMessage("admin_divisionDes")
+        </li>
+    </ul>
+
+    
+    <input type="submit" value="Add">
+    <input type="submit" value="Cancel">
+</form>

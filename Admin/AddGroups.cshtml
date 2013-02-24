@@ -1,0 +1,85 @@
+﻿@{
+    //Initialize variables
+    var db = Database.Open("StarterSite");
+    var groupName = "";
+    var groupAlias = "";
+    var groupDes = "";
+
+    //Validation for fields
+    Validation.RequireField("admin_groupName","Missing group name");
+    Validation.RequireField("admin_groupAlias","Missing group identifier");
+    Validation.RequireField("admin_groupDes","Missing group description");
+    Validation.Add("admin_groupName",
+        Validator.StringLength(
+            maxLength: 100,
+            minLength: 2,
+            errorMessage: "Enter the group name between 2 to 100 characters length")
+    );
+    Validation.Add("admin_groupAlias",
+        Validator.StringLength(
+            maxLength: 100,
+            minLength: 2,
+            errorMessage: "Enter the group id between 2 to 10 characters length")
+    );
+    Validation.Add("admin_groupDes",
+        Validator.StringLength(
+            maxLength: 1000,
+            minLength: 5,
+            errorMessage: "Enter the group description at least 5 characters")
+    );
+    
+    if(IsPost){
+        groupName = Request.Form["admin_groupName"];
+        groupAlias = Request.Form["admin_groupAlias"];
+        groupDes = Request.Form["admin_groupDes"];
+
+        if(Request.Form["action"] == "Cancel"){
+            if(Validation.IsValid()){
+                var company = db.QuerySingle("SELECT GroupAlias FROM Group WHERE GroupAlias=@0",groupAlias);
+                if(company == null){
+                    var addCompanyQuery= "INSERT INTO Company(GroupName,GroupAlias,GroupDescription) VALUES (@0,@1,@2)";
+                    db.Execute(addCompanyQuery,groupName,groupAlias,groupDes);
+                }
+                else{
+                    ModelState.AddFormError("This group id has been used");                
+                }            
+            }
+        }
+        else{
+            Response.Redirect("~/Admin/Organization");
+        }
+    }
+}
+
+<script>
+    $(function () {
+        $("#admin_groupDes").jqte();
+    });
+</script>
+
+<form method="post">
+     @Html.ValidationSummary("Company is not created successfully. Please correct the errors below", excludeFieldErrors: true, htmlAttributes: null)
+    <ul>
+        <li>
+            @Html.Label("Name","admin_groupName",null)
+            @Html.TextBox("admin_groupName",groupName)
+            @Html.ValidationMessage("admin_groupName")
+        </li>
+
+        <li>
+            @Html.Label("ID","admin_groupAlias",null)
+            @Html.TextBox("admin_groupAlias",groupAlias)
+            @Html.ValidationMessage("admin_groupAlias")
+        </li>
+
+        <li style="width: 600px">
+            @Html.Label("Description","admin_groupDes",null)
+            @Html.TextArea("admin_groupDes",groupDes)
+            @Html.ValidationMessage("admin_groupDes")
+        </li>
+    </ul>
+
+    
+    <input type="submit" value="Add" name="action">
+    <input type="submit" value="Cancel" name="action">
+</form>

@@ -9,39 +9,26 @@
     }
 }
 
-<!DOCTYPE html>
-
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-        <title></title>
-    </head>
-    <body>   
-        <form method="post">
-            @grid.GetHtml(
-            tableStyle: "grid",
-            alternatingRowStyle: "alternate",
-            headerStyle: "gridheader",
-            footerStyle: "gridfooter",           
-            columns: grid.Columns(
-                grid.Column(
-                    columnName: "Firstname"
-                ),                
-                grid.Column(
-                    columnName: "Lastname"
-                ),                
-                grid.Column(
-                    columnName: "UserId",
-                    header: string.Empty,
-                    canSort: false,
-                    format: @<input type="radio" value="@item.UserId" name="UserId"></input>
-                )
-                )
-            )
-            <input type="submit" value="Delete">
-        </form>
-    </body>
-</html>
+<form method="post">
+    @grid.GetHtml(
+    tableStyle: "grid",
+    alternatingRowStyle: "alternate",
+    headerStyle: "gridheader",
+    footerStyle: "gridfooter",           
+    columns: grid.Columns(
+        grid.Column(
+            columnName: "Firstname"
+        ),                
+        grid.Column(
+            columnName: "Lastname"
+        ),                
+        grid.Column(
+            columnName: "UserId",
+            header: string.Empty,
+            canSort: false,
+            format: @<input type="radio" value="@item.UserId" name="UserId"></input>
+        )
+        )
+    )
+    <input type="submit" value="Delete">
+</form>

@@ -41,6 +41,7 @@
     $(function () {
         $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
         $("#datepickerEndDate").datepicker({ showAnim: "fold" });
+        $("#projectInfo").jqte();
     });
 
 </script>
@@ -51,36 +52,40 @@
 
     <fieldset>
         <legend>Project Information</legend>
-        <ol>
+        <ul>
             <li>
-                @Html.Label("Project Name","projectName",null)
+                @Html.Label("PROJECT NAME","projectName",null)               
+                <br>
                 @Html.TextBox("projectName",projectName,Validation.For("projectName"))
                 @Html.ValidationMessage("projectName")
             </li>
 
             <li>
-                @Html.Label("Description","projectInfo",null)
-                @Html.TextBox("projectInfo",projectInfo,Validation.For("projectInfo"))
-                @Html.ValidationMessage("projectInfo")
-            </li>
-
-            <li>
-                @Html.Label("Start Date","datepickerStartedDate",null)             
+                @Html.Label("STARTED DATE","datepickerStartedDate",null)             
+                <br>
                 @Html.TextBox("datepickerStartedDate",startedDate.Equals(DateTime.MinValue)?"":startedDate.ToShortDateString(),Validation.For("datepickerStartedDate"))
                 @Html.ValidationMessage("datepickerStartedDate")
             </li>
 
             <li>
-                @Html.Label("End Date","datepickerEndDate",null)              
+                @Html.Label("END DATE","datepickerEndDate",null)              
+                <br>
                 @Html.TextBox("datepickerEndDate",endDate.Equals(DateTime.MinValue)?"":endDate.ToShortDateString(),Validation.For("datepickerEndDate"))
                 @Html.ValidationMessage("datepickerEndDate")
             </li>
 
             <li>
-                @Html.Label("Project Manager","projectManager",null)
+                @Html.Label("PROJECT MANAGER","projectManager",null)
+                <br>
                 @Html.ListBox("projectManager",Functions.getResources())
             </li>
-        </ol>
+
+            <li style="width: 600px">
+                @Html.Label("DESCRIPTION","projectInfo",null)
+                @Html.TextArea("projectInfo",projectInfo,Validation.For("projectInfo"))
+                @Html.ValidationMessage("projectInfo")
+            </li>
+        </ul>
         <input type="submit" value="Add">
     </fieldset>
 </form>
