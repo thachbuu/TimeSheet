@@ -1,0 +1,27 @@
+﻿@using System.Text;
+@using System.Collections;
+
+@functions {
+    public class ProjectObject{
+      public int ProjectId { get; set; }
+      public string ProjectName { get; set; }
+      public string Status { get; set; }      
+    }
+     public static List<ProjectObject>  getProjectName(int userId){
+                var projectList = new List<ProjectObject>();
+                var db = Database.Open("StarterSite");
+                var taskProjectUserQuery = "Select Distinct(p.ProjectName),p.ProjectId,p.Status From Project_User pu,Projects p where pu.UserId=@0 and p.ProjectId=pu.ProjectId";                   
+                var projectData = db.Query(taskProjectUserQuery,userId);
+                foreach(var item in projectData ){                                          
+                    var project = new ProjectObject();
+                    project.ProjectId = item.ProjectId;
+                    project.ProjectName = item.ProjectName;
+                    project.Status = item.Status;
+                    projectList.Add(project);      
+                }   
+                return projectList;                                                                                
+     } 
+   
+
+     
+}

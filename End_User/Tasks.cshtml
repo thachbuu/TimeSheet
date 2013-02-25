@@ -1,0 +1,175 @@
+﻿@{
+    var projectList = new List<Project.ProjectObject>();
+     var db = Database.Open("StarterSite");
+   if(Session["Email"] == null){
+        WebSecurity.RequireAuthenticatedUser();
+        WebSecurity.Logout();
+        Response.Redirect("~");
+    }
+    else{
+        var userQuery = "SELECT * " + 
+                           "FROM  UserProfile WHERE  Email=@0";
+        var userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
+        projectList = Project.getProjectName(userId);
+    }
+
+    Page.Title = "Tasks Management";    
+    //get data from TestType table
+    var selectTestType = "SELECT * FROM TestType";
+    var selectedDataTestType = db.Query(selectTestType);
+
+     //get data from Categories table
+    var selectCategories = "SELECT * FROM Categories";
+    var selectedDataCategories = db.Query(selectCategories);
+
+     //get data from Projects table
+    var selectProjects = "SELECT ProjectId, ProjectName FROM Projects";
+    var selectedDataProjects = db.Query(selectProjects);
+
+}
+
+<script>
+    //author http://devblog.embertelen.hu/jquery-ui-datepicker-hasznalata-egy-het-kijelolesere/
+    Date.prototype.getWeek = function () {
+
+        var onejan = new Date(this.getFullYear(), 0, 1);
+        //  alert("a=" + onejan);
+        return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
+    }
+
+    Date.prototype.getWeekMonday = function () {
+        var res = new Date();
+        (this.getDay() == 0) ? res.setTime(this.getTime() - (6 * 86400000)) : res.setTime(this.getTime() + 86400000 - (this.getDay() * 86400000));
+        return res;
+    }
+
+
+
+    $(function () {
+        //alert("datepicker"+$("#datepicker").datepicker('getDate').getWeek());
+
+        // init loading WeekOfYear,TestTypeId,ProjectId
+        if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
+            var date = new Date($("#datepicker").val());
+            var weekOfYear = date.getWeek();
+            $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
+            $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
+
+        }
+        else {
+            $.post("Effort.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
+            $.post("Statistic.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
+
+        }
+        // status change of Datepicker, testType, project
+        $("#datepicker, #testType,#projectId").change(function () {
+            //alert("o day");
+            if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
+                var date = new Date($("#datepicker").val());
+                $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
+                $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
+
+            }
+            else {
+                $.post("Effort.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
+                $.post("Statistic.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
+
+            }
+
+        });
+        // save data to database
+        $("#button1").click(function () {
+            if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
+                var date = new Date($("#datepicker").val());
+                var weekofyear = date.getWeek();
+
+            }
+            else {
+                alert("You must choose date before saving!!!");
+            }
+
+        });
+        $("#datepicker").datepicker({ changeMonth: true, changeYear: true, showAnim: "fold", showWeek: true });
+
+
+    });
+</script>
+
+
+
+<form id="form" method="post">
+    @AntiForgery.GetHtml()
+    @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
+    <fieldset>
+
+ <!--Combobox to search  -->
+
+       <div id="content">
+       <div id="box">
+            <table width="100%">
+			        <thead>
+				        <tr align="right">
+                             <th width="100px"> </th>
+                            <th width="10px"> 
+				               <select name="testType" id="testType">
+                                   @foreach(var row in selectedDataTestType)
+                                    {
+                                        <option id="testType1" value="@row.Id">@row.Name</option>
+                                    }
+				                </select>
+                            </th>
+                            <th width="10px"> 
+                                <label for="role">Week : </label>  
+                                 <input id="datepicker" name="datepicker">  
+                            </th>
+                            <th width="10px"> 
+                                <label for="role">Project : </label>
+				                <select name="projectId" id="projectId">
+                                    @if(projectList.Count()>0 ){
+                                        foreach(var item in projectList){
+                                             <option value="@item.ProjectId">@item.ProjectName</option>
+                                        }
+                                         
+                                    }
+                                    else{
+                                        <option value="-1">--Nothing--</option>
+                                    }
+				                    
+				                </select>
+                            </th>
+				        </tr>
+                  </thead>
+                 </table>
+        </div>
+        </div>
+
+
+ <!--Effort on Task (hour)  -->
+        <div id="content">
+            <div id="box">
+		        <h3>Effort on Tasks (hour)</h3>	        
+                    <div id="messTask">
+                          @RenderPage("Effort.cshtml")
+                    </div>
+                         
+			       
+	        </div>
+        </div>
+<!--Statistic  -->
+        <div id="content">
+            <div id="box">
+		        <h3>Statistics</h3>	       
+                     <div id="messStatistic">
+                          @RenderPage("Statistic.cshtml")
+                     </div>
+                    
+	        </div>
+        </div>
+<!--Button save and submit  -->
+        <div align="right">
+                <input id="button1" type="button"  value="Save" name="button1"/>
+				<input id="button2" type="submit" value="Submit" name="button2"/>
+			</div>
+
+    </fieldset>
+</form>

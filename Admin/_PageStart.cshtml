@@ -1,0 +1,11 @@
+﻿@{
+    Layout ="~/_Layout.cshtml";
+    
+    //If role is not Admin, redirect to default page.
+    if(!Roles.IsUserInRole("ADMIN")){
+       <div>You're in here</div>
+        Response.Redirect("~/Account/Logout");
+    }
+
+    
+}

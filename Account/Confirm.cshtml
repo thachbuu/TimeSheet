@@ -8,21 +8,19 @@
     WebSecurity.Logout();
     if (!confirmationToken.IsEmpty()) {
         if (WebSecurity.ConfirmAccount(confirmationToken)) {
-            message = "Registration Confirmed! Click on the log in tab to log in to the site.";
+            message = "Registration Confirmed! Click <a href='Login'>here</a> to log in to the site.";
         } else {
             message = "Could not confirm your registration info.";
         }
     }
 }
 
-<hgroup class="title">
-    <h1>@Page.Title.</h1>
-    <h2>Use the form below to confirm your account.</h2>
-</hgroup>
-
 @if (!message.IsEmpty()) {
-    <p>@message</p>
+    @Html.Raw(message);   
 } else {
+<hgroup class="title">  
+    <h2>Use the form below to confirm your account.</h2>    
+</hgroup>
     <form method="post">
         <fieldset>
             <legend>Confirmation Code</legend>

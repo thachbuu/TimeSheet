@@ -1,0 +1,94 @@
+﻿@helper ResourceDetail(String userId){
+    
+    //Initiate variables
+    var db = Database.Open("StarterSite");
+    int result = 0;                
+    Int32.TryParse(userId,out result); //Convert UserId to Integer to get UserId
+
+    //Get User Information
+    var getMemberInfoQuery = "SELECT * FROM UserProfile WHERE UserId=@0 OR Email=@1";
+    var member = db.QuerySingle(getMemberInfoQuery,result,userId); 
+    
+    if(member ==null){
+        @Html.Label("Cannot find your member. Please enter correct UserId or Email Address")
+    }
+    else{
+
+    //Get User Role
+    var getMemberRoleQuery = "SELECT RoleName FROM webpages_Roles AS Roles, webpages_UsersInRoles AS UsersInRoles " +
+                             "WHERE UsersInRoles.UserId=@0 AND Roles.RoleId=UsersInRoles.RoleId";
+    var memberRole = db.QueryValue(getMemberRoleQuery,member.UserId);
+
+    //Get User's supervisor
+    var getUserSuperVisorQuery = "SELECT Email FROM UserProfile WHERE UserId=@0";
+    var userSupervisorEmail = db.QueryValue(getUserSuperVisorQuery,member.SupervisorId);
+
+    //Get User's project name
+    var getUserProjectName = "SELECT ProjectName FROM Projects WHERE ProjectId=@0";
+    var userProjectName = db.QueryValue(getUserProjectName,member.ProjectId);
+
+    <fieldset>
+        <legend>User Information</legend>
+         @Html.ValidationSummary("Please correct the errors and try again.",excludeFieldErrors: true, htmlAttributes: null)
+
+        <form method="post">
+            @AntiForgery.GetHtml()
+            <ul>
+                <li>
+                    @Html.Label("ID:")
+                    @Html.Label(@member.UserId.ToString())
+                    @Html.TextBox("CurrentUserId",@member.UserId.ToString(),new {type = "hidden"})                    
+                </li>
+                <li>                       
+                    @Html.Label("Email:")
+                    @Html.Label(@member.Email)
+                    @Html.TextBox("UserEmail",@member.Email,new {type="hidden"}) 
+                </li>
+                <li>
+                    @Html.Label("Name:")
+                    @Html.Label(@member.FirstName + " " + @member.LastName)
+                </li>
+                <li>
+                    @Html.Label("Project:")
+                    @Html.Label(@userProjectName==null?"None":@userProjectName)                    
+                </li>
+                <li>
+                    @Html.Label("Role","role")
+                    @foreach(var role in Roles.GetAllRoles()){
+                        if(role != "MASTER"){
+                        @Html.RadioButton("role",role,role==memberRole?true:false)@role;
+                        }
+                    }
+                    @Html.TextBox("currentMemberRole",memberRole,new {type = "hidden"})                                                      
+                    @Html.ValidationMessage("role")
+                </li>
+                <li>
+                    @Html.Label("Supervisor","supervisor")                                      
+                    @Html.DropDownList("supervisor",@Functions.getSupervisorResources(@userSupervisorEmail)) 
+                    @Html.ValidationMessage("supervisor")
+                </li>
+            </ul>
+            <input type="submit" value="Update" name="UpdateResource" id="UpdateResource">
+            @if(User.IsInRole("ADMIN")){
+                <input type="submit" value="Delete Resource" name="DeleteResource" id="DeleteResource">
+            }
+        </form>                
+    </fieldset> 
+    }  
+}
+
+@helper RolesList(){
+     <label for="role">Role:</label>          
+     foreach(var role in Roles.GetAllRoles()){
+       if(role=="MASTER"){
+           continue;
+       }      
+       @Html.RadioButton("role",role,true)@role
+                                                                               
+     }        
+}
+
+
+    
+
+

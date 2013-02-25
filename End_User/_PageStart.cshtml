@@ -1,0 +1,9 @@
+﻿@{
+    Layout ="~/_Layout.cshtml";
+    Server.ScriptTimeout = 36000;
+    if(!Roles.IsUserInRole("MEMBER")){
+        <div>You're in here</div>
+        Response.Redirect("~/Account/Logout");
+    }
+    
+}

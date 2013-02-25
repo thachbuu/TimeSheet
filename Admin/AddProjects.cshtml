@@ -1,0 +1,86 @@
+﻿@{
+    Page.Title = "Add New Project";
+    var db = Database.Open("StarterSite");
+    
+    //Get information from form
+    var projectName = Request.Form["projectName"];
+    var projectInfo = Request.Form["projectInfo"];   
+    var startedDate = Request.Form["datepickerStartedDate"].AsDateTime();
+    var endDate     = Request.Form["datepickerEndDate"].AsDateTime();
+    var projectManager = Request.Form["projectManager"];
+
+    //Setup validation for fields
+    Validation.RequireField("projectName","Please enter project name.");
+    Validation.RequireField("projectInfo","Please enter short description.");
+    Validation.RequireField("datepickerStartedDate", "Please choose the started date");
+    Validation.RequireField("datepickerEndDate","Please choose the end date");
+         
+    if(startedDate.CompareTo(endDate) > 0){
+        ModelState.AddError("datepickerStartedDate","The started date must be smaller than end date");
+    }else{
+        if(startedDate != DateTime.MinValue && startedDate.CompareTo(DateTime.Now.Date) < 0){
+            ModelState.AddError("datepickerStartedDate","The started date must NOT be smaller than " + DateTime.Now.Date.ToShortDateString());
+        }
+
+        if(endDate != DateTime.MinValue && endDate.CompareTo(DateTime.Now.Date) < 0){
+            ModelState.AddError("datepickerEndDate","The end date must NOT be smaller than " + DateTime.Now.Date.ToShortDateString());
+        }
+    }
+
+    if(IsPost){
+        AntiForgery.Validate();  
+              
+        if(Validation.IsValid()){
+            var insertProject = "INSERT INTO Projects(ProjectName,ProjectManager,Description,StartedDate,EndDate) VALUES(@0,@1,@2,@3,@4)";
+            db.Execute(insertProject,projectName,projectManager,projectInfo,startedDate,endDate);
+        }       
+    } 
+}
+
+<script>
+    $(function () {
+        $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
+        $("#datepickerEndDate").datepicker({ showAnim: "fold" });
+    });
+
+</script>
+
+<form method="post">
+    @AntiForgery.GetHtml()
+    @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
+
+    <fieldset>
+        <legend>Project Information</legend>
+        <ol>
+            <li>
+                @Html.Label("Project Name","projectName",null)
+                @Html.TextBox("projectName",projectName,Validation.For("projectName"))
+                @Html.ValidationMessage("projectName")
+            </li>
+
+            <li>
+                @Html.Label("Description","projectInfo",null)
+                @Html.TextBox("projectInfo",projectInfo,Validation.For("projectInfo"))
+                @Html.ValidationMessage("projectInfo")
+            </li>
+
+            <li>
+                @Html.Label("Start Date","datepickerStartedDate",null)             
+                @Html.TextBox("datepickerStartedDate",startedDate.Equals(DateTime.MinValue)?"":startedDate.ToShortDateString(),Validation.For("datepickerStartedDate"))
+                @Html.ValidationMessage("datepickerStartedDate")
+            </li>
+
+            <li>
+                @Html.Label("End Date","datepickerEndDate",null)              
+                @Html.TextBox("datepickerEndDate",endDate.Equals(DateTime.MinValue)?"":endDate.ToShortDateString(),Validation.For("datepickerEndDate"))
+                @Html.ValidationMessage("datepickerEndDate")
+            </li>
+
+            <li>
+                @Html.Label("Project Manager","projectManager",null)
+                @Html.ListBox("projectManager",Functions.getSupervisorResources())
+            </li>
+        </ol>
+        <input type="submit" value="Add">
+    </fieldset>
+</form>

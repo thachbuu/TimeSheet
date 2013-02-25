@@ -1,0 +1,83 @@
+﻿@{
+    Page.Title = "Update Resources";
+    
+    //Connect to database
+    var db = Database.Open("StarterSite");
+
+    //Initiate variables
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <script>
+            $(function () {
+                $("#UpdateResource").click(function(){alert("Update successfully")});
+            });
+        </script>
+    </head>
+    <body>
+        <form method="post">
+            @AntiForgery.GetHtml()
+            <input type="text" name="CurrentUserId" placeholder="Enter ID or email address">
+            <input type="submit" value="Filter" name="Filter">
+        </form>      
+
+        @if(IsPost){
+            AntiForgery.Validate();
+
+            //Initiate variables             
+             var userId = Request.Form["CurrentUserId"];
+             var currentMemberRole = Request.Form["currentMemberRole"];                
+             var newRole = Request.Form["role"];                
+             var newSupervisor = Request.Form["supervisor"].AsInt();
+             var userEmail = Request.Form["UserEmail"];
+                       
+            //In Case 1: Filter button is pressed
+            if(Request.Form["Filter"] == "Filter"){               
+                @Helpers.ResourceDetail(userId)
+            }
+
+             //In Case 2: 'Update' button is pressed
+            if(Request.Form["UpdateResource"] == "Update"){               
+                
+                if(currentMemberRole != newRole){    
+                    //Remove old role
+                    Roles.RemoveUserFromRole(userEmail,currentMemberRole);
+                    //Add new role
+                    Roles.AddUserToRole(userEmail,newRole);
+                }
+
+                //Update Supervisor
+                var updateSupervisorQuery = "UPDATE UserProfile SET SupervisorId=@0 WHERE UserId=@1";
+                db.Execute(updateSupervisorQuery,newSupervisor,userId);                                
+                @Helpers.ResourceDetail(userId)
+            }
+            
+            //In Case 3: 'Delete' button is pressed
+            if(Request.Form["DeleteResource"] == "Delete Resource"){              
+
+                //Remove Project Manager from Projects and assign back to MASTER                
+                var masterUserId = Functions.getMasterUserId();                                                                      
+                var removeProjectManagerId = "UPDATE Projects SET ProjectManager = @0 WHERE ProjectManager=@1";
+                db.Execute(removeProjectManagerId,masterUserId,userId);
+
+                //Remove SupervisorId from UserProfile
+                var removeSupervisorId = "UPDATE UserProfile SET SupervisorId = 0 WHERE SupervisorId=@0";
+                db.Execute(removeSupervisorId,userId);
+
+                //Remove Role from UserInRole
+                Roles.RemoveUserFromRole(userEmail,currentMemberRole);
+
+                //Remove Member from Membership table
+                db.Execute("DELETE FROM webpages_Membership WHERE UserId=@0",userId);
+                
+                //Delete User
+                Membership.DeleteUser(userEmail,true);
+            }                                                  
+        } 
+    </body>
+</html>
