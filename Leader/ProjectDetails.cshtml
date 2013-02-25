@@ -4,32 +4,40 @@
     var projectId = Request["ProjectId"];
     DateTime startedDate = Request.Form["datepickerStartedDate"].AsDateTime();
     DateTime endDate     = Request.Form["datepickerEndDate"].AsDateTime();
-    var feedbackMsg="";
 
     //Validation  
     Validation.RequireField("datepickerStartedDate", "Please choose the started date");
     Validation.RequireField("datepickerEndDate","Please choose the end date");
-         
-    if(startedDate.CompareTo(endDate) > 0){
-        ModelState.AddError("datepickerStartedDate","The started date must be smaller than end date");
-    }
+    Validation.RequireField("projectDescription","Please enter project description");
+    Validation.Add("projectDescription",Validator.StringLength(1000,10,"Project Description must at least 10 characters"));
+
     
     if(IsPost){
-        var action = Request["action"];        
-        if(action == "Save"){            
-            var projectDescription = Request.Unvalidated("projectDescription") ;
-            var datepickerStartedDate = Request["datepickerStartedDate"];
-            var datepickerEndDate = Request["datepickerEndDate"];
+        if(Validation.IsValid()){
+            if(startedDate.CompareTo(endDate) > 0){
+                ModelState.AddError("datepickerStartedDate","The started date must be smaller than end date");                
+            }
+            else{
+                var action = Request["action"];
 
-            if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
-                var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
-                db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
-                Response.Redirect("~/Leader/ManageProjects");
-            }            
-        }
-        
-        if(action =="Cancel"){
-            Response.Redirect("~/Leader/ManageProjects");
+                // Save button is pressed        
+                if(action == "Save"){            
+                    var projectDescription = Request.Unvalidated("projectDescription") ;
+                    var datepickerStartedDate = Request["datepickerStartedDate"];
+                    var datepickerEndDate = Request["datepickerEndDate"];
+
+                    if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
+                        var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
+                        db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
+                        Response.Redirect("~/Leader/ManageProjects");
+                    }            
+                }
+
+                // Cancel button is pressed
+                if(action =="Cancel"){
+                    Response.Redirect("~/Leader/ManageProjects?SelectedProjectId=" + projectId);
+                }
+            }
         }
     }
 
@@ -41,48 +49,42 @@
 <script>
     $(function () {        
         $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
-        $("#datepickerEndDate").datepicker({ showAnim: "fold" });
-        $("#submit").click(function () {
-            $("input[name=projectDescription]").attr('value', $("#projectDescription").val());
-        });
+        $("#datepickerEndDate").datepicker({ showAnim: "fold" });        
         $("#projectDescription").jqte();       
      });               
 </script>   
   
 <form method="post">
+     @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null) 
     <h2>@data.ProjectName</h2>
     <ul>
-        <li>
-            <label for="projectDescription">PROJECT DESCRIPTION</label>
-            <br>
-            <div style="width: 600px">
-                <textarea id="projectDescription">@data.Description</textarea>
-            </div>
-            @Html.ValidationMessage("projectDescription")           
-        </li>
-
         <li>
             <label for="datepickerStartedDate">STARTED DATE</label>
             <br>
             <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">  
             @Html.ValidationMessage("datepickerStartedDate")
-        </li>
-        
+        </li>        
         <li>
             <label for="datepickerEndDate">END DATE</label>
             <br>
             <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
             @Html.ValidationMessage("datepickerEndDate")
+        </li>
+        <li>
+            <label for="projectDescription">PROJECT DESCRIPTION</label>
+            @Html.ValidationMessage("projectDescription") 
+            <br>
+            <div style="width: 900px">
+                <textarea id="projectDescription" name="projectDescription">@data.Description</textarea>
+            </div>
+                      
+        </li>
+        <li>
+            @RenderPage("GetMembers.cshtml")
         </li>         
     </ul>
 
-    <div id="member-in-project">            
-        @RenderPage("~/Leader/GetMembers.cshtml")
-    </div>
-
-    <input type="hidden" name="projectDescription" value="">
     <input type="hidden" name="projectId" value="@projectId">
     <input name="action" id="submit" type="submit" value="Save">
-    <input name="action" id="submit" type="submit" value="Cancel">
-    <div class="feedback">@feedbackMsg</div>    
+    <input name="action" id="submit" type="submit" value="Cancel">       
 </form>

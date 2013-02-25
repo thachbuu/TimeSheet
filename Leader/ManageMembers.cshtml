@@ -1,34 +1,47 @@
 ﻿@{
     Page.Title= "Manage Your Members";
     var db = Database.Open("StarterSite");
-    var query = "SELECT UserId, Firstname, Lastname FROM UserProfile";
-    var memberList = db.Query(query);
-    var grid = new WebGrid(memberList);
+    WebGrid grid = null;
+    var currentUserEmail  = WebSecurity.CurrentUserName;
+    var currentUserId = WebSecurity.CurrentUserId;
+   
+    if(User.IsInRole("PM")){
+        var memberList = db.Query("SELECT UserId, Firstname, Lastname FROM UserProfile WHERE ProjectManagerId=@0",currentUserId);        
+        grid = new WebGrid(memberList);        
+    }
+    if(User.IsInRole("LEADER")){
+        var memberList = db.Query("SELECT UserId, Firstname, Lastname FROM UserProfile WHERE LeaderId=@0",currentUserId);
+        grid = new WebGrid(memberList);        
+    }
     if(IsPost){
         <div>@Request["UserId"]</div>
     }
 }
 
 <form method="post">
-    @grid.GetHtml(
-    tableStyle: "grid",
-    alternatingRowStyle: "alternate",
-    headerStyle: "gridheader",
-    footerStyle: "gridfooter",           
-    columns: grid.Columns(
-        grid.Column(
-            columnName: "Firstname"
-        ),                
-        grid.Column(
-            columnName: "Lastname"
-        ),                
-        grid.Column(
-            columnName: "UserId",
-            header: string.Empty,
-            canSort: false,
-            format: @<input type="radio" value="@item.UserId" name="UserId"></input>
+    @if(grid.TotalRowCount ==0){
+        <div>You don't have any members</div>
+    }
+    else{
+        @grid.GetHtml(
+        tableStyle: "grid",    
+        headerStyle: "gridheader",
+        footerStyle: "gridfooter",           
+        columns: grid.Columns(
+            grid.Column(
+                columnName: "Firstname"
+            ),                
+            grid.Column(
+                columnName: "Lastname"
+            ),                
+            grid.Column(
+                columnName: "UserId",
+                header: string.Empty,
+                canSort: false,
+                format: @<input type="radio" value="@item.UserId" name="UserId"></input>
+            )
+            )
         )
-        )
-    )
+    }
     <input type="submit" value="Delete">
 </form>
