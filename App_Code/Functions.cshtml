@@ -11,12 +11,10 @@
         /**
             This function will create a list of LEADER emails but not include the ignoredEmail.
         **/
-
         var db = Database.Open("StarterSite");
         var supervisorQuery = "SELECT Email,UserProfile.UserId " + 
                           "FROM   UserProfile, webpages_UsersInRoles AS UsersInRoles, webpages_Roles AS Roles " +  
                           "WHERE  UserProfile.UserId=UsersInRoles.UserId AND UsersInRoles.RoleId=Roles.RoleId And Roles.RoleName=@0";
-        
         var supervisorData = db.Query(supervisorQuery,role);    
         var resourceList = new List<SelectListItem>();
 
@@ -24,7 +22,6 @@
         if(includeDefaultValue){
             resourceList.Add(defaultItem);
         }
-    
         foreach(var item in supervisorData ){                        
                 var person = new SelectListItem();
                 person.Text = item.Email;
@@ -38,4 +35,23 @@
         }
         return resourceList;        
     }
+
+    public static List<SelectListItem>  getTask(int testTypeId){
+        var db = Database.Open("StarterSite");
+        var taskQuery = "SELECT * " + 
+                          "FROM  Tasks " +  
+                          "WHERE  TypeId=testTypeId and CategoryId=1 ";
+        
+        var taskData = db.Query(taskQuery);    
+        var taskList = new List<SelectListItem>();
+
+        foreach(var item in taskData ){                        
+                var task = new SelectListItem();
+                task.Text = item.Name;
+               // task.Value = item.UserId.ToString();        
+               
+                taskList.Add(task);            
+        }
+        return taskList;  
+     }        
 }

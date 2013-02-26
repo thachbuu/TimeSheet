@@ -45,7 +45,6 @@
     var data = db.QuerySingle(query,projectId);
 }
 
- 
 <script>
     $(function () {        
         $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
@@ -77,7 +76,6 @@
             <div style="width: 900px">
                 <textarea id="projectDescription" name="projectDescription">@data.Description</textarea>
             </div>
-                      
         </li>
         <li>
             @RenderPage("GetMembers.cshtml")

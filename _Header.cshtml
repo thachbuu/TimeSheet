@@ -35,3 +35,28 @@
         </span>
     </div>    
 }
+
+@if(User.IsInRole("ADMIN")){
+    <div>
+        <span class="sub-header">
+            <a href="~/Admin/UpdateResources"><img src="~/Images/userconfig.png" alt="Resources Logo" class="buttonNavigation"></a> 
+        </span>
+
+        <span class="sub-header"><a href="~/Account/Register">
+            <img src="~/Images/addresource.png" alt="Project Logo" class="buttonNavigation"></a>
+        </span>
+
+        <span class="sub-header"><a href="~/Admin/AddProjects">
+            <img src="~/Images/projectPlan.png" alt="TBD" class="buttonNavigation"></a>
+        </span>
+    </div>    
+}
+
+@if(User.IsInRole("END_USER")){
+    <div>
+    
+        <span class="sub-header"><a href="~/Admin/AddProjects">
+            <img src="~/Images/projectPlan.png" alt="TBD" class="buttonNavigation"></a>
+        </span>
+    </div>    
+}

@@ -12,6 +12,10 @@
     if(User.IsInRole("ADMIN")){
         Response.Redirect("~/Admin/AddProjects");
     }
+    if(User.IsInRole("MEMBER")){
+       // Session.Add("Email",Request.Form["email"]);       
+        Response.Redirect("~/End_User/Tasks");
+    }
 
     // Initialize general page variables
     var email = "";
@@ -27,11 +31,7 @@
     // Setup validation
     Validation.RequireField("email", "You must specify an email address.");
     Validation.RequireField("password", "You must specify a password.");
-    Validation.Add("password",
-        Validator.StringLength(
-            maxLength: Int32.MaxValue,
-            minLength: 6,
-            errorMessage: "Password must be at least 6 characters"));
+    Validation.Add("password",Validator.StringLength( maxLength: Int32.MaxValue, minLength: 6, errorMessage: "Password must be at least 6 characters"));
 
     // If this is a POST request, validate and process data
     if (IsPost) {
@@ -53,7 +53,8 @@
 
             // Attempt to log in using provided credentials
             if (WebSecurity.Login(email, password, rememberMe)) {
-                Response.Redirect("~/");
+                 Session["Email"]=Request.Form["email"];
+                 Response.Redirect("~/");
                 return;
             } else {
                 ModelState.AddFormError("The user name or password provided is incorrect.");

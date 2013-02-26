@@ -1,0 +1,72 @@
+﻿@using System.Text;
+@using System.Collections;
+
+@functions {
+    public class TimeManagementList {
+      public int TaskId { get; set; }
+      public double Mon { get; set; }
+      public double Wed { get; set; }
+      public double Tue { get; set; }
+      public double Thu { get; set; }
+      public double Fri { get; set; }
+      public double Sat { get; set; }
+      public double Sun { get; set; }
+      public int Project_UserId { get; set; }
+      public int WeekOfYear { get; set; }
+      public bool Disable { get; set; }
+      public string Comment { get; set; }
+
+    }
+     public static int  getProjectUserId(int userId,int projectId){
+         try{
+             
+        
+         
+        var db = Database.Open("StarterSite");
+       var taskProjectUserQuery = "SELECT * " + 
+                           "FROM  Project_User WHERE  UserId=@0 and ProjectId=@1";
+                          
+         var userprojectData = db.QuerySingle(taskProjectUserQuery,userId,projectId);
+        
+         return userprojectData.Id;
+         }
+         catch(Exception e){
+             return 0;
+         }
+                                                                               
+     } 
+    public static List<TimeManagementList>  getTimeManagementList(int weekOfYear,int project_UserId){
+        var db = Database.Open("StarterSite");
+        var timeManagementList = new List<TimeManagementList>();
+       if(project_UserId ==0){
+           return timeManagementList;
+       }
+       var taskDatesQuery = "SELECT * " + 
+                           "FROM  TimeManagement WHERE  WeekOfYear=@0 and Project_UserId=@1";
+       var timeManagementData = db.Query(taskDatesQuery,weekOfYear,project_UserId);
+        
+       foreach(var item in timeManagementData ){                        
+                var timeManagement = new TimeManagementList();
+                timeManagement.TaskId = item.TaskId;
+                timeManagement.Mon = item.Mon;
+                timeManagement.Tue = item.Tue;
+                timeManagement.Wed = item.Wed;
+                timeManagement.Thu = item.Thu;
+                timeManagement.Fri = item.Fri;
+                timeManagement.Sat = item.Sat;
+                timeManagement.Sun = item.Sun;
+                timeManagement.WeekOfYear = item.WeekOfYear;
+                timeManagement.Disable = item.Disable;
+                timeManagement.Comment = item.Comment;
+                timeManagement.Project_UserId = item.Project_UserId;
+
+               // task.Value = item.UserId.ToString();        
+               
+                timeManagementList.Add(timeManagement);            
+        }
+        return timeManagementList;  
+                                                                               
+     } 
+
+     
+}
