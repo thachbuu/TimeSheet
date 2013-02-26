@@ -29,7 +29,7 @@
                     if(projectDescription!=null && projectDescription !="" && datepickerStartedDate !="" && datepickerEndDate!=""){
                         var updateProjectQuery = "UPDATE Projects SET Description=@0, StartedDate=@1, EndDate=@2 WHERE ProjectId=@3";
                         db.Execute(updateProjectQuery,projectDescription,datepickerStartedDate,datepickerEndDate,projectId);
-                        Response.Redirect("~/Leader/ManageProjects");
+                        Response.Redirect("~/Leader/ManageProjects?SelectedProjectId=" + projectId);
                     }            
                 }
 

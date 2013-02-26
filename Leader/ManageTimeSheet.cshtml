@@ -1,15 +1,24 @@
 ﻿@{
-    
+    var db = Database.Open("StarterSite");
+    var memberList = db.Query("SELECT DISTINCT FirstName,UserId FROM UserProfile WHERE LeaderId=@0 OR ProjectManagerId=@0",WebSecurity.CurrentUserId);
+    var data = new WebGrid(memberList);
 }
+<script>
+    $(function () {
+        $("li[id*=mem]").click(function () {
+            alert("da toi day" + $(this).text());
+        });
+    });
+</script>
+<div style="float: left; background-color: #00ff21; width: 200px">
+    <h3>MEMBER LIST</h3>
+    <ul>
+        @foreach(var member in memberList){
+            <li id="mem_@member.UserId">@member.FirstName</li>
+        }
+    </ul>
+</div>
 
-<!DOCTYPE html>
-
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title></title>
-    </head>
-    <body>
-        
-    </body>
-</html>
+<div style="float: right;background-color: #ff6a00; width: 800px">
+    Time Sheet Details based on UserId
+</div>

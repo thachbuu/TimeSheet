@@ -90,9 +90,9 @@ else{
                                 
         //displayHeader: false,           
         columns: userData.Columns(
-            userData.Column(columnName: "FirstName"),
-            userData.Column(columnName: "LastName"),
-            userData.Column(columnName: "UserCompanyId"),
+            userData.Column(columnName: "FirstName", header: "First Name"),
+            userData.Column(columnName: "LastName",  header: "Last Name"),
+            userData.Column(columnName: "UserCompanyId", header: "Company ID"),
             userData.Column(columnName: "Email"),                                                           
             userData.Column(format: @<button name="AddRemoveUser" value="@item.UserId" style="float: right; width: 100px">@if(item.Status == true){<text>Remove</text>}else{<text>Add</text>}</button>)
         ))

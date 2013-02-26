@@ -4,7 +4,7 @@
     
     //Get information from form
     var projectName = Request.Form["projectName"];
-    var projectInfo = Request.Form["projectInfo"];   
+    var projectInfo = Request.Unvalidated.Form["projectInfo"];   
     var startedDate = Request.Form["datepickerStartedDate"].AsDateTime();
     var endDate     = Request.Form["datepickerEndDate"].AsDateTime();
     var projectManager = Request.Form["projectManager"];

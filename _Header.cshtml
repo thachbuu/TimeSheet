@@ -4,7 +4,7 @@
     });
 
 </script>
-@if(Roles.IsUserInRole("LEADER")){
+@if(Roles.IsUserInRole("LEADER") || User.IsInRole("PM")){
     <div>
         <span class="sub-header">
             <a href="~/Leader/ManageMembers"><img src="~/Images/userconfig.png" alt="Member Logo" class="buttonNavigation"></a> 
@@ -14,13 +14,13 @@
             <img src="~/Images/projectIcon.png" alt="Project Logo" class="buttonNavigation"></a>
         </span>
 
-        <span class="sub-header"><a href="~/Leader/ManageProjects">
+        <span class="sub-header"><a href="~/Leader/ManageTimeSheet">
             <img src="~/Images/timeSheet_tr.png" alt="TimeSheet Logo" class="buttonNavigation"></a>
         </span>
     </div>     
 }
 
-@if(User.IsInRole("ADMIN")){
+@if(User.IsInRole("ADMIN") || User.IsInRole("MASTER")){
    <div>
         <span class="sub-header">
             <a href="~/Admin/UpdateResources"><img src="~/Images/userconfig.png" alt="Resources Logo" class="buttonNavigation"></a> 
@@ -36,23 +36,7 @@
     </div>    
 }
 
-@if(User.IsInRole("ADMIN")){
-    <div>
-        <span class="sub-header">
-            <a href="~/Admin/UpdateResources"><img src="~/Images/userconfig.png" alt="Resources Logo" class="buttonNavigation"></a> 
-        </span>
-
-        <span class="sub-header"><a href="~/Account/Register">
-            <img src="~/Images/addresource.png" alt="Project Logo" class="buttonNavigation"></a>
-        </span>
-
-        <span class="sub-header"><a href="~/Admin/AddProjects">
-            <img src="~/Images/projectPlan.png" alt="TBD" class="buttonNavigation"></a>
-        </span>
-    </div>    
-}
-
-@if(User.IsInRole("END_USER")){
+@if(User.IsInRole("MEMBER")){
     <div>
     
         <span class="sub-header"><a href="~/Admin/AddProjects">
