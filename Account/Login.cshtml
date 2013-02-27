@@ -6,7 +6,7 @@
     Page.Title = "Log in";
 
     //Redirect Page
-    if(User.IsInRole("LEADER")){
+    if(User.IsInRole("LEADER") || User.IsInRole("PM")){
         Response.Redirect("~/Leader/ManageMembers");
     }
     if(User.IsInRole("ADMIN")){

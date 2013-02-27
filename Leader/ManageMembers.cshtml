@@ -13,14 +13,11 @@
         var memberList = db.Query("SELECT UserId, Firstname, Lastname FROM UserProfile WHERE LeaderId=@0",currentUserId);
         grid = new WebGrid(memberList);        
     }
-    if(IsPost){
-        <div>@Request["UserId"]</div>
-    }
 }
 
-<form method="post">
+<form method="post" action="/Leader/MemberProfile">
     @if(grid.TotalRowCount ==0){
-        <div>You don't have any members</div>
+        <div>You don't have any members.</div>
     }
     else{
         @grid.GetHtml(
@@ -43,5 +40,5 @@
             )
         )
     }
-    <input type="submit" value="Delete">
+    <input type="submit" id="viewMemberDetails" value="View" >
 </form>

@@ -1,0 +1,54 @@
+﻿@{
+    var userId = Request["UserId"].AsInt();
+    var db = Database.Open("StarterSite");
+    var data = db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
+    var workingProject = db.Query("SELECT ProjectName FROM Projects, Project_User " +
+                                  "WHERE Project_User.UserId = @0 AND Project_User.ProjectId = Projects.ProjectId AND Project_User.Status='TRUE'",userId);
+
+  
+    
+}
+
+
+
+@if(userId == 0 ){
+    <p>Sorry! Cannot find your member. Please select again.</p>
+}
+else{
+<ol>
+    <li>
+        <h2>ACCOUNT INFROMATION</h2>
+        <ul>
+            <li>Name: @data.FirstName @data.LastName</li>
+            <li>Comany ID: @data.UserCompanyId</li>
+            <li>Working Projects
+                @if(workingProject.Count() == 0){
+                    <p>None</p>
+                }
+                else{
+                    foreach(var prj in workingProject){
+                        <p>@prj.ProjectName</p>
+                    }
+                }
+            </li>
+        </ul>
+    </li>
+    <li>
+        <h2>OTHER INFORMATION</h2>
+        <ul>
+            <li>
+                <h3>PRODUCTIVITY</h3>
+                <p>TO BE DEFINED LATER</p>
+            </li>
+            <li>
+                <h3>QUALITY</h3>
+                <p> TO BE DEFINED LATER</p>
+            </li>
+            <li>
+                <h3>OTHER REPORTS</h3>
+                <p> TO BE DEFINED LATER</p>
+            </li>
+        </ul>
+    </li>
+</ol>
+}

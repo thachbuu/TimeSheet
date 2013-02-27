@@ -1,18 +1,18 @@
 ﻿@{
+    Layout="";
     var projectList = new List<Project.ProjectObject>();
-     var db = Database.Open("StarterSite");
-   if(Session["Email"] == null){
-        WebSecurity.RequireAuthenticatedUser();
-        WebSecurity.Logout();
-        Response.Redirect("~");
+    var db = Database.Open("StarterSite");
+    var userId = Request["MemberUserId"].AsInt();
+    if(userId == null){
+        userId = WebSecurity.CurrentUserId;
     }
-    else{
-        var userQuery = "SELECT * " + 
-                           "FROM  UserProfile WHERE  Email=@0";
-        var userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
-        projectList = Project.getProjectName(userId);
-    }
+    projectList = Project.getProjectName(userId);
+ }
 
+<p>
+    YOU ARE VIEWING THE USERID @userId
+</p>  
+    @*
     Page.Title = "Tasks Management";    
     //get data from TestType table
     var selectTestType = "SELECT * FROM TestType";
@@ -173,3 +173,5 @@
 
     </fieldset>
 </form>
+
+*@

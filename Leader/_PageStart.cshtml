@@ -1,10 +1,12 @@
 ﻿@{
     Layout ="~/_Layout.cshtml";
     
-    if(!Roles.IsUserInRole("LEADER")){
+    @*
+    if(!Roles.IsUserInRole("LEADER") || !User.IsInRole("PM")){
         <div>You're in here</div>
         Response.Redirect("~/Account/Logout");
     }
+*@
 
     
 }
