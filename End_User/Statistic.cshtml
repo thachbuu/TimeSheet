@@ -21,15 +21,12 @@
          userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
         // <div>UserId:@userId</div>
     }
-
-  //  int project_userId=0;
     int projectUserId=0;
        //  <div>ProjectIDAA:@Request["ProjectId"]</div>
     if(userId != 0 && Request["ProjectId"] != null && Request["ProjectId"] != ""){
        // <div>Thach: @Request["ProjectId"].AsInt()</div>
-          projectUserId = TimeManagement.getProjectUserId(userId,Request["ProjectId"].AsInt());     
+          projectUserId = Project_User.getProjectUserId(userId,Request["ProjectId"].AsInt());     
     }
-   // <div>pUID:@projectUserId</div>
     if( weekOfYear != "0" && weekOfYear!=null){
         timeManagementList = TimeManagement.getTimeManagementList(int.Parse(weekOfYear),projectUserId);
     } 
@@ -37,10 +34,8 @@
                           "FROM  Tasks " +  
                           "WHERE  TypeId=@0 and CategoryId=@1 ";
     var taskData = db.Query(taskQuery,testTypeId,2);
-
-
 }
- <table width="100%">
+<table width="100%">
 	<thead>
 		<tr>
 			<th width="100px"><a href="#">Statistics</a></th>					
@@ -52,9 +47,10 @@
 			<th width="20px" bgcolor="#ccccc0">Sat</th>
             <th width="20px" bgcolor="#ccccc0">Sun</th>
 		</tr> 
-        @foreach(var item in taskData ){                        
+        @foreach(var item in taskData ){     
+          Global_Variables.COUNT++;                    
          <tr>
-              <th width="100px" align="left">@item.Name</th>
+              <th width="140px" align="left">@Global_Variables.COUNT.@item.Name</th>
            
                   @if(timeManagementList.Count() > 0 && timeManagementList!=null){
                        int flag_equalTask=0;
@@ -63,37 +59,44 @@
                              if(itemValue.TaskId == item.Id){
                                 flag_equalTask++;
                                  for(int j=1;j<8;j++){
-                                      if(j!=7 && j!=6){
+                                     if(j!=7 && j!=6){
                                         @Html.Raw("<th width='20px'>")      
-                                      }
-                                      else{
+                                     }
+                                     else{
                                              @Html.Raw("<th width='20px' bgcolor='#cccccc'>")
-                                      } 
+                                     } 
                                          
-                                        if(j==1){
-                                             @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Mon,new { @style = "width: 20px; align:right" }) 
-                                          }
-                                         if(j==2){
-                                             @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Tue,new { @style = "width: 20px; align:right" }) 
-                                         }
-                                         if(j==3){
-                                            @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Wed,new { @style = "width: 20px; align:right" }) 
-                                         }
-                                         if(j==4){
-                                            @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Thu,new { @style = "width: 20px; align:right" }) 
-                                         }
-                                         if(j==5){
-                                            @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Fri,new { @style = "width: 20px; align:right" }) 
-                                         }
-                                         if(j==6){
-                                            @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Sat,new { @style = "width: 20px; align:right" }) 
-                                         }
-                                         if(j==7){
-                                            @Html.TextBox("txt_"+item.Id+"_"+j,@itemValue.Sun,new { @style = "width: 20px; align:right" }) 
-                                         }
-                                          var idImg = "img_"+item.Id+"_"+j; 
-                                          <img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="input-box1" onclick="OpenPopUp()" />  
-                                      @Html.Raw(" </th>  ")
+                                    if(j==1){
+                                        var value =itemValue.Mon.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    if(j==2){
+                                        var value =itemValue.Tue.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    if(j==3){
+                                        var value =itemValue.Wed.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    if(j==4){
+                                        var value =itemValue.Thu.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    if(j==5){
+                                        var value =itemValue.Fri.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    if(j==6){
+                                        var value =itemValue.Sat.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    if(j==7){
+                                        var value =itemValue.Sun.ToString();if(value == "-1"){value = "";}
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                    }
+                                    var idImg = "img_"+item.Id+"_"+j; 
+                                    <img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="input-box1" onclick="OpenPopUp()" />  
+                                    @Html.Raw(" </th>  ")
 
                                  }
                                  break;
