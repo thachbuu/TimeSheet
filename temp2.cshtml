@@ -1,0 +1,42 @@
+﻿@{
+    var sourceDB = Database.Open("LamHo");
+    var desDB = Database.Open("StarterSite");
+
+    //COPY TABLE BETWEEN DATABES 
+    var taskLH  = sourceDB.Query("SELECT COLUMN_NAME,IS_NULLABLE,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TimeManagement';");
+    String tableInfo = "";
+    
+    foreach(var item in taskLH){
+        //tableInfo += item.Column_Name + " " + item.Data_Type + " " + item.IS_NULLABLE=='NO'?"NOT NULL":"";
+        string isNULL = item.IS_NULLABLE=="NO"?"NOT NULL":"";
+        if(item.Column_Name == "Id"){
+            tableInfo += item.Column_Name + " " + item.DATA_TYPE + " " +  isNULL + " PRIMARY KEY IDENTITY" +",";
+        }
+        else{
+            tableInfo += item.Column_Name + " " + item.DATA_TYPE + " " +  isNULL + ",";
+        }
+        
+    }
+    char[] trimC = {','};
+    tableInfo =  tableInfo.TrimEnd(trimC);
+
+    var finishCreatingtable = "CREATE TABLE TimeManagement("+ tableInfo+ ")";
+  //  <p>@finishCreatingtable</p>
+ //   desDB.Execute(finishCreatingtable);
+
+    //COPY ROWS BETWEEN 2 TABLES IN 2 DATABASES
+    var tableName = "TimeManagement";
+    var sourceResult = sourceDB.Query("SELECT TaskId,Mon,Tue,Wed,Thu,Fri,Sat,Sun,DateTime,Project_UserId,WeekOfYear FROM " + tableName) ;
+
+    foreach(var item in sourceResult){
+        desDB.Execute("INSERT INTO TimeManagement(TaskId,Mon,Tue,Wed,Thu,Fri,Sat,Sun,DateTime,Project_UserId,WeekOfYear) VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10)",
+                        item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10]);
+    }
+
+    
+    
+}
+
+<div>
+    @RenderPage("temp.cshtml");
+</div>

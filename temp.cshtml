@@ -1,15 +1,32 @@
 ﻿@{
     Layout="_Layout.cshtml";
+       if(IsPost){
+         var jsontxt = Request["jsonText"];
+         var jsonObject = Json.Decode(jsontxt);
+         <p>@jsonObject.task1.monday</p>
+       }
+
 }
 <script>
     $(function () {
-        alert("welcome");
-        $(window).unload(function () { alert("Bye now!"); });
-    });
+        var jsonText = '{  "task1": {    "monday": "1",    "tuesday": "2"  }}';
 
+        $("#change").click(function () {
+            $.post("/temp.cshtml", { tempVariable: "abc", jsonText:jsonText }, function (data) { $("#display").html(data) });
+        });
+    });
 </script>
+
+<div id="display">
+
+</div>
 
 <div>
     Temp page
+    <button value="Click here" id="change" >click here</button>
+    <form method="post">
+        <input type="submit" value="submit">
+    </form>
+    
 
 </div>
