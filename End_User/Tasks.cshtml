@@ -81,8 +81,7 @@
         $("#button1").click(function () {
             if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
                 var date = new Date($("#datepicker").val());
-                // var weekofyear = date.getWeek();
-                alert("week="+date.getWeek());
+                alert("week=" + date.getWeek());
                 $("#processid").html('');
                 $.post("Process.cshtml", { WeekOfYear: date.getWeek(), Txt_1_1: $("#txt_1_1").val() }, function (data) { $("#processid").html(data); });
                 var id1 = "#txt_1_1";
@@ -91,17 +90,6 @@
                 var endLoop = 0;
                 if ($("#testType").val() == 1) { startLoop = 1; endLoop = 26; } else { startLoop = 26; endLoop = 44; }
 
-                var strPost = "<Task>";
-                for (var i = startLoop; i < endLoop; i++) {
-                    strPost += "<Task" + i + ">";
-                    for (var j = 1; j < 8; j++) {
-                        var id = "#txt_" + i + "_" + j;
-                        strPost += "<Value" + j + ">" + $(id).val() + "</Value" + j + "> ";
-                    }
-                    strPost += "</Task" + i + ">";
-                }
-                strPost += "</Task>";
-                // var jsonText = '{  "task1": {    "monday": "1",    "tuesday": "2"  }}';
                 var jsonText = '{ ';
                 var paras = "WeekOfYear=" + date.getWeek();
                 for (var i = startLoop; i < endLoop; i++) {
@@ -128,12 +116,70 @@
             else {
                 alert("You must choose date before saving!!!");
             }
-
         });
+
+        //submit form
+        $("#form").submit(function () {
+            alert("aa=" + $("#datepicker").val());
+            if ($("#datepicker").val() == '' || $("#datepicker").val() == null) {
+                return false;
+            }
+            else {
+                $('#dialog_box').dialog({
+                    title: 'Warning!',
+                    width: 500,
+                    height: 200,
+                    modal: true,
+                    resizable: false,
+                    draggable: false,
+                    buttons: [{
+                        text: 'Yes, send it!',
+                        click: function () {
+                            //post
+                            var jSon = getStringJson();
+                            alert(jSon);
+                            return false;
+                        }
+                    },
+                          {
+                              text: 'No, check again!',
+                              click: function () {
+                                  $(this).dialog('close');
+                              }
+                          }]
+                });
+            }
+            return false;
+        });
+
+
         $("#datepicker").datepicker({ changeMonth: true, changeYear: true, showAnim: "fold", showWeek: true });
-
-
     });
+    function getStringJson() {
+        var startLoop = 0;
+        var endLoop = 0;
+        if ($("#testType").val() == 1) { startLoop = 1; endLoop = 26; } else { startLoop = 26; endLoop = 44; }
+
+        var jsonText = '{ ';
+        for (var i = startLoop; i < endLoop; i++) {
+            jsonText += '"task' + i + '": {';
+            jsonText += '"TaskId":"' + i + '", ';
+            for (var j = 1; j < 8; j++) {
+                var id = "#txt_" + i + "_" + j;
+                if (j == 1) { jsonText += '"Mon":"' + $(id).val() + '", '; }
+                if (j == 2) { jsonText += '"Tue":"' + $(id).val() + '", '; }
+                if (j == 3) { jsonText += '"Wed":"' + $(id).val() + '", '; }
+                if (j == 4) { jsonText += '"Thu":"' + $(id).val() + '", '; }
+                if (j == 5) { jsonText += '"Fri":"' + $(id).val() + '", '; }
+                if (j == 6) { jsonText += '"Sat":"' + $(id).val() + '", '; }
+                if (j == 7) { jsonText += '"Sun":"' + $(id).val() + '"  '; }
+            }
+            if (i != (endLoop - 1)) { jsonText += '},'; }
+            else { jsonText += '}'; }
+        }
+        jsonText += '}';
+        return jsonText;
+    }
 </script>
 
 @*<div id="tempage">
@@ -216,5 +262,9 @@
                 <input id="button1" type="button"  value="Save" name="button1"/>
 				<input id="button2" type="submit" value="Submit" name="button2"/>
 		</div>
+        <div id="dialog_box" style="display: none;">
+            </br>
+              Are you sure to submit your timesheet?
+        </div>
     </fieldset>
 </form>

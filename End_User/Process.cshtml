@@ -77,8 +77,8 @@
          if(DateTime.Now.Hour >11){timeZone="(PM)";}  
          var strSuccess="Save your data successfully at " + time + timeZone;
          var strUnsuccess="Save your data unsuccessfully at " + time + timeZone;
-         if(flagSave == true) {   <div> @strSuccess</div>; }
-         else{<div> @strUnsuccess </div>;}
+         if(flagSave == true) {   <div  style="font-size:13px; color:#009933; "> <strong>@strSuccess</strong></div>; }
+         else{<div style="font-size:13px; color:#009933;"><strong>@strUnsuccess</strong></div>;}
        
     }
 }
