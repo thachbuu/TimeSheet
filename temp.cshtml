@@ -8,8 +8,22 @@
         userId = 28;
     }
 }
+<script>
 
 
+    $(function () {
+        alert("da toi ay");
+        $("input[id*=txt_]").click(function () {
+            alert("trong day");
+        });
+    });
+</script>
+
+<strong>AAA</strong>
+
+@Html.TextBox("txt_1","a")
+
+@*
 @if(userId == 0){
     <p>Please select at least a member. Because UserId = @userId</p>
 }
@@ -48,11 +62,8 @@ else{
    </div> 
 }
 
-<script>
-$( "#tabs" ).tabs();
-</script>
- 
-@*
+
+
 <div id="tabs">
   <ul>
     <li><a href="#fragment-1"><span>One</span></a></li>

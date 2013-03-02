@@ -2,9 +2,14 @@
     Layout = "";
     var db = Database.Open("StarterSite");
     var userId = Request["MemberUserId"].AsInt();
-    var workingProject = db.Query("SELECT Id,ProjectName FROM Project_User,Projects WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId",@userId);
+    var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName FROM Project_User,Projects,TimeManagement " +
+                                  "WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId AND TimeManagement.Approved='False' AND TimeManagement.Project_UserId = Project_User.Id",@userId);
     if(IsPost){
         userId = Request["MemberUserId"].AsInt();
+        if(Request["action"]=="Accept"){
+            db.Query("UPDATE TimeManagement SET Approved='True' WHERE Project_UserId=@0",Request["timeSheetForProjectUser"].AsInt());           
+            <p>YOU APPROVED SUCCESSFULLY</p>
+        }
     }
 }
 <script>
@@ -27,16 +32,16 @@ else{
     else{    
     <div id="tabs">
          <ul>
-             @foreach(var item in workingProject){
+             @foreach(var item in unapprovedProject){
                 <li><a href="#tab_@item.Id"><span>@item.ProjectName</span></a></li>
              }
         </ul>
-        @foreach(var item in workingProject){
+        @foreach(var item in unapprovedProject){
             <div id="tab_@item.Id">
                 @{
                     //GET CATEGORIES 
                     var categoriesList = db.Query("SELECT Id FROM Categories");
-                    <form>
+                    <form method="post">
                         @foreach(var category in categoriesList){
                             //GET TIMESHEET FOR ABOVE CATEGORIES IN WORKING PROJECT 
                             var timesheet = db.Query("SELECT Tasks.Name,Mon,Wed,Tue,Thu,Fri,Sat,Sun,Categories.Name AS CategoryName FROM TimeManagement,Tasks,Categories " +
@@ -59,9 +64,9 @@ else{
                             }
                         }
                         
-                        <input type="hidden" id="timeSheetForProjectUser" value="@item.id">
-                        <input type="submit" value="Accept" style="width: 100px">
-                        <input type="submit" value="Do Not Accept" style="width: 100px">
+                        <input type="hidden" name="timeSheetForProjectUser" value="@item.id">
+                        <input type="submit" name="action" value="Accept" style="width: 100px">
+                        <input type="submit" name="action" value="Do Not Accept" style="width: 100px">
                     </form>
                 }
             </div>
