@@ -15,7 +15,7 @@
     if(Session["Email"] == null){
         WebSecurity.RequireAuthenticatedUser();
         WebSecurity.Logout();
-        Response.Redirect("~");
+        Response.Redirect("~/Account/Logout.cshtml");
     }
     else{
          userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
@@ -36,6 +36,34 @@
     var taskData = db.Query(taskQuery,testTypeId,1);
     Global_Variables.COUNT = 0;
 }
+
+<script>
+    $(function () {
+        $("input[id*=txt_]").keypress(function (e) {
+            var keypressed = null;
+
+            if (window.event)
+                keypressed = window.event.keyCode; //IE
+            else
+                keypressed = e.which; //NON-IE, Standard
+
+            if (keypressed == 0 || keypressed == 8 || keypressed == 46 || keypressed == 9) //Phím Delete và Phím Back
+                return true;
+		
+            if (keypressed >= 65 && keypressed <= 90) // A->Z
+		        return false;
+	        if (keypressed >= 97 && keypressed <= 122) // a->z
+		        return false;	
+            //CharCode của 0 là 48 (Theo bảng mã ASCII)
+            //CharCode của 9 là 57 (Theo bảng mã ASCII)
+            if (keypressed < 48 || keypressed > 57)
+                return false;
+            return true;
+        });
+
+    });
+
+</script>
 <table width="100%">
 	<thead>
 		<tr>
@@ -71,7 +99,8 @@
                                     } 
                                     if(j==1){
                                         var value =itemValue.Mon.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" })
+                                       
                                     }
                                     if(j==2){
                                         var value =itemValue.Tue.ToString();if(value == "-1"){value = "";}
