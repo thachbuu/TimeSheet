@@ -1,0 +1,24 @@
+﻿@using System.Text;
+@using System.Collections;
+
+@functions {
+  
+     public static int  getProjectUserId(int userId,int projectId){
+         try{
+         
+            var db = Database.Open("StarterSite");
+            var taskProjectUserQuery = "SELECT * " + 
+                               "FROM  Project_User WHERE  UserId=@0 and ProjectId=@1";                    
+             var userprojectData = db.QuerySingle(taskProjectUserQuery,userId,projectId);
+        
+             return userprojectData.Id;
+         }
+         catch(Exception e){
+             return 0;
+         }
+                                                                               
+     } 
+   
+
+     
+}

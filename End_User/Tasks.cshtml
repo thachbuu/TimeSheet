@@ -2,17 +2,19 @@
     Layout="";
     var projectList = new List<Project.ProjectObject>();
     var db = Database.Open("StarterSite");
-    var userId = Request["MemberUserId"].AsInt();
-    if(userId == null){
-        userId = WebSecurity.CurrentUserId;
-    }
-    projectList = Project.getProjectName(userId);
- }
-
-<p>
-    YOU ARE VIEWING THE USERID @userId
-</p>  
+    //  userid = WebSecurity.CurrentUserId;
     
+   if(Session["Email"] == null){
+        WebSecurity.RequireAuthenticatedUser();
+        WebSecurity.Logout();
+        Response.Redirect("~");
+    }
+    else{
+        var userQuery = "SELECT * " + 
+                           "FROM  UserProfile WHERE  Email=@0";
+        var userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
+        projectList = Project.getProjectName(userId);
+    }
     Page.Title = "Tasks Management";    
     //get data from TestType table
     var selectTestType = "SELECT * FROM TestType";
@@ -25,7 +27,6 @@
      //get data from Projects table
     var selectProjects = "SELECT ProjectId, ProjectName FROM Projects";
     var selectedDataProjects = db.Query(selectProjects);
-
 }
 
 <script>
@@ -43,8 +44,6 @@
         return res;
     }
 
-
-
     $(function () {
         //alert("datepicker"+$("#datepicker").datepicker('getDate').getWeek());
 
@@ -54,12 +53,12 @@
             var weekOfYear = date.getWeek();
             $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
             $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
-
+            $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
         }
         else {
             $.post("Effort.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
             $.post("Statistic.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
-
+            $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
         }
         // status change of Datepicker, testType, project
         $("#datepicker, #testType,#projectId").change(function () {
@@ -68,12 +67,12 @@
                 var date = new Date($("#datepicker").val());
                 $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
                 $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
-
+                $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
             }
             else {
                 $.post("Effort.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
                 $.post("Statistic.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
-
+                $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
             }
 
         });
@@ -81,7 +80,48 @@
         $("#button1").click(function () {
             if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
                 var date = new Date($("#datepicker").val());
-                var weekofyear = date.getWeek();
+                // var weekofyear = date.getWeek();
+                alert("week="+date.getWeek());
+                $("#processid").html('');
+                $.post("Process.cshtml", { WeekOfYear: date.getWeek(), Txt_1_1: $("#txt_1_1").val() }, function (data) { $("#processid").html(data); });
+                var id1 = "#txt_1_1";
+                alert("id tam = " + $(id1).val());
+                var startLoop = 0;
+                var endLoop = 0;
+                if ($("#testType").val() == 1) { startLoop = 1; endLoop = 26; } else { startLoop = 26; endLoop = 44; }
+
+                var strPost = "<Task>";
+                for (var i = startLoop; i < endLoop; i++) {
+                    strPost += "<Task" + i + ">";
+                    for (var j = 1; j < 8; j++) {
+                        var id = "#txt_" + i + "_" + j;
+                        strPost += "<Value" + j + ">" + $(id).val() + "</Value" + j + "> ";
+                    }
+                    strPost += "</Task" + i + ">";
+                }
+                strPost += "</Task>";
+                // var jsonText = '{  "task1": {    "monday": "1",    "tuesday": "2"  }}';
+                var jsonText = '{ ';
+                var paras = "WeekOfYear=" + date.getWeek();
+                for (var i = startLoop; i < endLoop; i++) {
+                    jsonText += '"task' + i + '": {';
+                    jsonText += '"TaskId":"' + i + '", ';
+                    for (var j = 1; j < 8; j++) {
+                        var id = "#txt_" + i + "_" + j;
+                        if (j == 1) { jsonText += '"Mon":"' + $(id).val() + '", '; }
+                        if (j == 2) { jsonText += '"Tue":"' + $(id).val() + '", '; }
+                        if (j == 3) { jsonText += '"Wed":"' + $(id).val() + '", '; }
+                        if (j == 4) { jsonText += '"Thu":"' + $(id).val() + '", '; }
+                        if (j == 5) { jsonText += '"Fri":"' + $(id).val() + '", '; }
+                        if (j == 6) { jsonText += '"Sat":"' + $(id).val() + '", '; }
+                        if (j == 7) { jsonText += '"Sun":"' + $(id).val() + '"  '; }
+                    }
+                    if (i != (endLoop - 1)) { jsonText += '},'; }
+                    else { jsonText += '}'; }
+                }
+                jsonText += '}';
+                $.post("Process.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: +$("#testType").val(), ProjectId: $("#projectId").val(), Json: jsonText
+                }, function (data) { $("#processid").html(data); });
 
             }
             else {
@@ -95,6 +135,11 @@
     });
 </script>
 
+@*<div id="tempage">
+    <h1>TEMP PAGE</h1>
+   @RenderPage("~/temp.cshtml") 
+</div>*@
+
 
 
 <form id="form" method="post">
@@ -103,10 +148,10 @@
     <fieldset>
 
  <!--Combobox to search  -->
-
+        @*<div id="processid">@RenderPage("Process.cshtml")</div>*@
        <div id="content">
-       <div id="box">
-            <table width="100%">
+            <div id="box">
+                <table width="100%">
 			        <thead>
 				        <tr align="right">
                              <th width="100px"> </th>
@@ -140,7 +185,7 @@
 				        </tr>
                   </thead>
                  </table>
-        </div>
+             </div>
         </div>
 
 
@@ -161,16 +206,15 @@
 		        <h3>Statistics</h3>	       
                      <div id="messStatistic">
                           @RenderPage("Statistic.cshtml")
-                     </div>
-                    
+                     </div> 
 	        </div>
         </div>
 <!--Button save and submit  -->
         <div align="right">
+            <div id="processid">@RenderPage("Process.cshtml")</div>@**@
                 <input id="button1" type="button"  value="Save" name="button1"/>
 				<input id="button2" type="submit" value="Submit" name="button2"/>
-			</div>
-
+		</div>
     </fieldset>
 </form>
 

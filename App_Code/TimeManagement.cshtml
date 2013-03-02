@@ -14,38 +14,26 @@
       public int Project_UserId { get; set; }
       public int WeekOfYear { get; set; }
       public bool Disable { get; set; }
-      public string Comment { get; set; }
+      public string CommentForMon { get; set; }
+      public string CommentForTue { get; set; }
+      public string CommentForWed { get; set; }
+      public string CommentForThu { get; set; }
+      public string CommentForFri { get; set; }
+      public string CommentForSat { get; set; }
+      public string CommentForSun { get; set; }
 
     }
-     public static int  getProjectUserId(int userId,int projectId){
-         try{
-             
-        
-         
-        var db = Database.Open("StarterSite");
-       var taskProjectUserQuery = "SELECT * " + 
-                           "FROM  Project_User WHERE  UserId=@0 and ProjectId=@1";
-                          
-         var userprojectData = db.QuerySingle(taskProjectUserQuery,userId,projectId);
-        
-         return userprojectData.Id;
-         }
-         catch(Exception e){
-             return 0;
-         }
-                                                                               
-     } 
+    
     public static List<TimeManagementList>  getTimeManagementList(int weekOfYear,int project_UserId){
         var db = Database.Open("StarterSite");
         var timeManagementList = new List<TimeManagementList>();
-       if(project_UserId ==0){
-           return timeManagementList;
-       }
-       var taskDatesQuery = "SELECT * " + 
+        if(project_UserId ==0){
+            return timeManagementList;
+        }
+        var taskDatesQuery = "SELECT * " + 
                            "FROM  TimeManagement WHERE  WeekOfYear=@0 and Project_UserId=@1";
-       var timeManagementData = db.Query(taskDatesQuery,weekOfYear,project_UserId);
-        
-       foreach(var item in timeManagementData ){                        
+        var timeManagementData = db.Query(taskDatesQuery,weekOfYear,project_UserId);
+        foreach(var item in timeManagementData ){                        
                 var timeManagement = new TimeManagementList();
                 timeManagement.TaskId = item.TaskId;
                 timeManagement.Mon = item.Mon;
@@ -55,18 +43,82 @@
                 timeManagement.Fri = item.Fri;
                 timeManagement.Sat = item.Sat;
                 timeManagement.Sun = item.Sun;
+
+                timeManagement.CommentForMon = item.CommentForMon;
+                timeManagement.CommentForTue = item.CommentForTue;
+                timeManagement.CommentForWed = item.CommentForWed;
+                timeManagement.CommentForThu = item.CommentForThu;
+                timeManagement.CommentForFri = item.CommentForFri;
+                timeManagement.CommentForSat = item.CommentForSat;
+                timeManagement.CommentForSun = item.CommentForSun;
+
                 timeManagement.WeekOfYear = item.WeekOfYear;
                 timeManagement.Disable = item.Disable;
-                timeManagement.Comment = item.Comment;
-                timeManagement.Project_UserId = item.Project_UserId;
-
-               // task.Value = item.UserId.ToString();        
-               
+                timeManagement.Project_UserId = item.Project_UserId;        
                 timeManagementList.Add(timeManagement);            
         }
         return timeManagementList;  
                                                                                
+     }
+     //check if we update or add into database
+     public static bool  isUpdateOrAdd(int taskId,int weekOfYear,int project_UserId){
+        var db = Database.Open("StarterSite");
+        var taskDatesQuery = "SELECT * " + 
+                           "FROM  TimeManagement WHERE  WeekOfYear=@0 and Project_UserId=@1 and TaskId=@2";
+       // var timeManagementData = db.QuerySingle(taskDatesQuery,weekOfYear,project_UserId,taskId);
+        var timeManagementData = db.Query(taskDatesQuery,weekOfYear,project_UserId,taskId);
+        if(timeManagementData.Count() == 1) {
+            return true;
+        }
+        return false;  
+                                                                               
+     }
+     // add new time management
+     public static bool  addNewTimeManagement(TimeManagementList lst){
+        try{
+               var db = Database.Open("StarterSite");
+               var insertTimeManagement = " INSERT INTO TimeManagement(TaskId,Mon,Tue,Wed,Thu,Fri,Sat,Sun,Datetime,Project_UserId,WeekOfYear,CommentForMon,CommentForTue,CommentForWed,CommentForThu,CommentForFri,CommentForSat,CommentForSun,Disable) VALUES(@0,@1,@2,@3,@4,@5,@6,@7,@8,@9,@10,@11,@12,@13,@14,@15,@16,@17,@18)";
+               var rs=db.Execute(insertTimeManagement,lst.TaskId,lst.Mon,lst.Tue,lst.Wed,lst.Thu,lst.Fri,lst.Sat,lst.Sun,DateTime.Now,lst.Project_UserId,lst.WeekOfYear,
+                   lst.CommentForMon,lst.CommentForTue,lst.CommentForWed,lst.CommentForThu,lst.CommentForFri,lst.CommentForSat,lst.CommentForSun,false);
+               if(rs<1) return false;
+               return true;
+        }
+        catch(Exception ex){
+            return false;
+        }
+       
+                                                                               
      } 
-
-     
+     public static bool  addNewMoreTimeManagement(List<TimeManagementList> lst){
+       bool flag = true;
+       foreach(var item in lst ){                        
+             bool rs=TimeManagement.addNewTimeManagement(item);
+             if(rs == false){flag = false;}
+        }
+        return flag;                                                                             
+     } 
+     //update time management
+     public static bool  updateTimeManagement(TimeManagementList lst){
+         try{
+               var db = Database.Open("StarterSite");
+               var updateTM = "UPDATE  TimeManagement SET  Mon=@0,Tue=@1, Wed=@2, Thu=@3, Fri=@4, Sat=@5, Sun=@6, CommentForMon=@7, "
+               +" CommentForTue=@8, CommentForWed=@9, CommentForThu=@10, CommentForFri=@11, CommentForSat=@12, CommentForSun=@13 WHERE  Project_UserId=@14 and WeekOfYear = @15 and TaskId=@16 ";
+       
+               var rs=db.Execute(updateTM,lst.Mon,lst.Tue,lst.Wed,lst.Thu,lst.Fri,lst.Sat,lst.Sun,
+                   lst.CommentForMon,lst.CommentForTue,lst.CommentForWed,lst.CommentForThu,lst.CommentForFri,lst.CommentForSat,lst.CommentForSun,lst.Project_UserId,lst.WeekOfYear,lst.TaskId);
+               if(rs<1) return false;
+               return true;     
+             }
+             catch(Exception ex){
+                return false;
+             }                                                                       
+     }
+     public static bool  updateMoreTimeManagement(List<TimeManagementList> lst){
+       bool flag = true;
+       foreach(var item in lst ){                        
+             bool rs=TimeManagement.updateTimeManagement(item);
+             if(rs == false){flag = false;}
+        }
+        return flag;                                                                             
+     } 
 }

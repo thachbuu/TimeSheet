@@ -1,0 +1,85 @@
+﻿@{
+    Layout = "";
+    var testTypeId = Request["TestTypeId"].AsInt();
+    var weekOfYear = Request["WeekOfYear"];
+    var requestProjectId = Request["ProjectId"];
+    var timeManagementList = new List<TimeManagement.TimeManagementList>();
+    var timeMList = new List<TimeManagement.TimeManagementList>();
+    //var strXML = Request["StrXML"];
+    //<div>testTypeId=@Request["TestTypeId"]</div>
+   // <div>weekOfYear=@Request["WeekOfYear"] </div>
+   // <div>projectid=@Request["ProjectId"] </div>
+   // <div>requestProjectId=@Request["ProjectId"]</div>
+
+    if(IsPost && weekOfYear != "0" && weekOfYear!=null && Request["ProjectId"] != null && Request["ProjectId"] != ""){
+        var db = Database.Open("StarterSite");
+        //get UserId and ProjectId to get UserProjectId
+        var userQuery = "SELECT * " + 
+                               "FROM  UserProfile WHERE  Email=@0";
+        int userId=0;
+        if(Session["Email"] == null){
+            WebSecurity.RequireAuthenticatedUser();
+            WebSecurity.Logout();
+            Response.Redirect("~");
+        }
+        else{
+             userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
+        }
+        int projectUserId=0;
+           //  <div>ProjectIDAA:@Request["ProjectId"]</div>
+        if(userId != 0 && Request["ProjectId"] != null && Request["ProjectId"] != ""){
+              projectUserId = Project_User.getProjectUserId(userId,Request["ProjectId"].AsInt());     
+        }
+        
+
+        var jsontxt = Request["Json"];
+        var jsonObject = Json.Decode(jsontxt);
+        
+        foreach(var items in jsonObject){
+             var timeManagement = new TimeManagement.TimeManagementList();
+             timeManagement.Project_UserId = Request["ProjectId"].AsInt();
+             timeManagement.Disable = false;
+             timeManagement.WeekOfYear = weekOfYear.AsInt();   
+             foreach(var i in items.Value){
+                if(i.Key == "TaskId") { string value= i.Value;timeManagement.TaskId = int.Parse(value);}
+                if(i.Key == "Mon") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Mon = double.Parse(value);timeManagement.CommentForMon = "no";}
+                if(i.Key == "Tue") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Tue = double.Parse(value);timeManagement.CommentForTue = "no";}
+                if(i.Key == "Wed") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Wed = double.Parse(value);timeManagement.CommentForWed = "no";}
+                if(i.Key == "Thu") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Thu = double.Parse(value);timeManagement.CommentForThu = "no";}
+                if(i.Key == "Fri") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Fri = double.Parse(value);timeManagement.CommentForSun = "no";}
+                if(i.Key == "Sat") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Sat = double.Parse(value);timeManagement.CommentForSat = "no";}
+                if(i.Key == "Sun") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Sun = double.Parse(value);timeManagement.CommentForSun = "no";}
+             }
+             timeMList.Add(timeManagement);
+         }
+         bool isUpdate = true;
+         bool flagSave = true;
+         if( weekOfYear != "0" && weekOfYear!=null){
+            isUpdate = TimeManagement.isUpdateOrAdd(timeMList[0].TaskId,int.Parse(weekOfYear),projectUserId);
+         }
+          // <div>Count add/update=@timeManagementList.Count()</div>
+         
+         if(isUpdate== true){ // saved 
+             //  <div>go into update</div>
+             bool rsUpdate=TimeManagement.updateMoreTimeManagement(timeMList);
+             if(rsUpdate != true) {flagSave = false;}
+              // else {<div>Can't save your data at @DateTime.Now.Hour:@DateTime.Now.Minute:@DateTime.Now.Second </div>;} 
+         }
+         else{//not yet saved
+             <div>go into add new </div>
+            bool rsAdd=TimeManagement.addNewMoreTimeManagement(timeMList); 
+            if(rsAdd != true) {flagSave = false;}
+           // else {<div>Can't save your data at @DateTime.Now.Hour:@DateTime.Now.Minute:@DateTime.Now.Second </div>;}
+         } 
+         var time= DateTime.Now.Hour+ ":" +DateTime.Now.Minute+":"+DateTime.Now.Second;
+        
+         var timeZone = "(AM)"; 
+         if(DateTime.Now.Hour >11){timeZone="(PM)";}  
+         var strSuccess="Save your data successfully at " + time + timeZone;
+         var strUnsuccess="Save your data unsuccessfully at " + time + timeZone;
+         if(flagSave == true) {   <div> @strSuccess</div>; }
+         else{<div> @strUnsuccess </div>;}
+       
+    }
+}
+     
