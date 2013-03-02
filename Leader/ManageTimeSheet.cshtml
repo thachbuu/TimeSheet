@@ -2,24 +2,32 @@
     var db = Database.Open("StarterSite");
     var memberList = db.Query("SELECT DISTINCT FirstName,UserId FROM UserProfile WHERE LeaderId=@0 OR ProjectManagerId=@0",WebSecurity.CurrentUserId);
     var data = new WebGrid(memberList);
+
+    
+    
+
+
 }
 <script>
     $(function () {
-        $("li[id*=mem]").click(function () {
-            $.post("/End_User/Tasks.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
+        $("li[id*=mem]").click(function () {           
+            $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
+         //    alert($(this).val());
         });
-     });
+    });
 </script>
-<div style="float: left; background-color: #00ff21; width: 200px">
-    <h3>MEMBER LIST</h3>
+<div style="float: left; background-color: #00ff90; width: 150px">
+    <h2>MEMBER LIST</h2>
     <ul>
         @foreach(var member in memberList){
-            <li id="mem_@member.UserId" value="@member.UserId">@member.FirstName</li>
-           
+            <li id="mem_@member.UserId" value="@member.UserId">
+                @member.FirstName
+                <span>(@Functions.getTotalUnapprovedTimeSheet(member.UserId))</span>
+            </li>
         }
     </ul>
 </div>
 
-<div style="float: right;background-color: #ff6a00; width: 800px" id="displayTasks">
-    @RenderPage("/End_User/Tasks.cshtml")
+<div style="float: right ;width: 850px" id="displayTasks">
+    @RenderPage("~/Leader/UserTimeSheet.cshtml")
 </div>

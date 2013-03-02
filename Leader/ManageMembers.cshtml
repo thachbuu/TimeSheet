@@ -4,7 +4,6 @@
     WebGrid grid = null;
     var currentUserEmail  = WebSecurity.CurrentUserName;
     var currentUserId = WebSecurity.CurrentUserId;
-   
     if(User.IsInRole("PM")){
         var memberList = db.Query("SELECT UserId, Firstname, Lastname FROM UserProfile WHERE ProjectManagerId=@0",currentUserId);        
         grid = new WebGrid(memberList);        

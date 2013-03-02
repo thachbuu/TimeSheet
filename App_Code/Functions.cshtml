@@ -54,6 +54,30 @@
         }
         return taskList;  
      } 
+
+     public static int getTotalUnapprovedTimeSheet(int userId){
+         var db = Database.Open("StarterSite");
+         /*
+            GET TIMESHEET WHICH APPROVED = FALSE FOR PROJECTS WHICH USER IS WORKING ON.
+         */
+         //GET UNAPPROVED TIMESHEET
+         var workingProject = "SELECT Id FROM Project_User WHERE UserId=@0 AND Project_User.Status='True'";
+         var unapprovedTS = "SELECT DISTINCT(Project_UserId) FROM TimeManagement WHERE Project_UserId=@0 AND Approved='False'";
+
+         //Get amount of working project
+         var wkPrj = db.Query(workingProject,userId);
+
+         int counter = 0;
+        foreach(var project in wkPrj){
+
+            //get the timesheet of project which approved = false
+            var unTS = db.Query(unapprovedTS,project.Id);
+            if(unTS.Count>0){
+                counter++;
+            }
+        }
+        return counter;
+     }
      
     /*
        QUERIES SECTION

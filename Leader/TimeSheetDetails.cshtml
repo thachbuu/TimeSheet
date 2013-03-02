@@ -1,0 +1,24 @@
+﻿@{
+    var db = Database.Open("StarterSite");
+    var projectUserId = Request["ProjectUserId"].AsInt();
+    var timesheet = db.Query("SELECT * FROM TimeManagement WHERE Project_UserId=@0",projectUserId);
+
+}
+
+<p>TimeSheetDetails</p>
+@if(timesheet == null){
+    <p>timesheet is null</p>
+}
+else{
+    <p>timesheet is not null</p>
+  
+}
+  <div>
+      <p>o day</p>
+         @foreach(var ts in timesheet){
+        <p>o day</p>
+        <p>@ts.Id</p>
+        }
+    </div>
+   
+
