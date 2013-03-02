@@ -11,44 +11,61 @@
     $("#tabs").tabs();
 </script>
 
+<style>
+    .taskField{
+        width: 350px;
+    }
+</style>
+
 @if(userId == 0){
     <p>Please select at least a member. Because UserId = @userId</p>
 }
 else{
- <div id="tabs">
-    <ul>
-         @foreach(var item in workingProject){
-            <li><a href="#tab_@item.Id"><span>@item.ProjectName</span></a></li>
-         }
-    </ul>
-    @foreach(var item in workingProject){
-        var timesheet = db.Query("SELECT Tasks.Name,Mon,Wed,Tue,Thu,Fri,Sat,Sun FROM TimeManagement,Tasks WHERE Project_UserId=@0 AND TimeManagement.TaskId = Tasks.Id",item.Id);
-        if(timesheet.Count >0 ){
-            var newGrid = new WebGrid(timesheet,canSort:false,rowsPerPage:50);            
-             <div id="tab_@item.Id">
-                 <form>
-                     <h2>@item.ProjectName</h2>
-                     @newGrid.GetHtml(
-                        columns: newGrid.Columns(
-                            newGrid.Column("Name","Task Name",null),
-                            newGrid.Column("Mon"),
-                            newGrid.Column("Tue"),
-                            newGrid.Column("Wed"),
-                            newGrid.Column("Thu"),
-                            newGrid.Column("Fri"),
-                            newGrid.Column("Sat"),
-                            newGrid.Column("Sun")
-                        )                       
-                     )
-                     <input type="hidden" id="timeSheetForProjectUser" value="@item.id">
-                     <input type="submit" value="Accept" style="width: 100px">
-                     <input type="submit" value="Do Not Accept" style="width: 100px">
-                 </form>
-              </div>             
-        }
+    if(userId !=0 && Functions.getTotalUnapprovedTimeSheet(userId) <=0){
+        <p>All @db.QueryValue("SELECT FirstName FROM UserProfile WHERE UserId=@0",userId)'s time sheet reports are approved</p>
     }
-   </div> 
+    else{    
+    <div id="tabs">
+         <ul>
+             @foreach(var item in workingProject){
+                <li><a href="#tab_@item.Id"><span>@item.ProjectName</span></a></li>
+             }
+        </ul>
+        @foreach(var item in workingProject){
+            <div id="tab_@item.Id">
+                @{
+                    //GET CATEGORIES 
+                    var categoriesList = db.Query("SELECT Id FROM Categories");
+                    <form>
+                        @foreach(var category in categoriesList){
+                            //GET TIMESHEET FOR ABOVE CATEGORIES IN WORKING PROJECT 
+                            var timesheet = db.Query("SELECT Tasks.Name,Mon,Wed,Tue,Thu,Fri,Sat,Sun,Categories.Name AS CategoryName FROM TimeManagement,Tasks,Categories " +
+                                                    "WHERE Project_UserId=@0 AND TimeManagement.TaskId = Tasks.Id AND Categories.Id = Tasks.CategoryId AND Categories.Id=@1",item.Id,category.Id);
+                            if(timesheet.Count >0 ){
+                               <h4>@timesheet[0].CategoryName</h4>
+                                var newGrid = new WebGrid(timesheet,canSort:false,rowsPerPage:50);                                   
+                                @newGrid.GetHtml(
+                                    columns: newGrid.Columns(
+                                        newGrid.Column("Name","Task Name",null,"taskField"),
+                                        newGrid.Column("Mon"),
+                                        newGrid.Column("Tue"),
+                                        newGrid.Column("Wed"),
+                                        newGrid.Column("Thu"),
+                                        newGrid.Column("Fri"),
+                                        newGrid.Column("Sat"),
+                                        newGrid.Column("Sun")
+                                    )                       
+                                ); 
+                            }
+                        }
+                        
+                        <input type="hidden" id="timeSheetForProjectUser" value="@item.id">
+                        <input type="submit" value="Accept" style="width: 100px">
+                        <input type="submit" value="Do Not Accept" style="width: 100px">
+                    </form>
+                }
+            </div>
+        }
+    </div>
+    }
 }
-<table>
-    <tr style="width: "></tr>
-</table>
