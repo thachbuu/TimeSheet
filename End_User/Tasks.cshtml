@@ -7,7 +7,7 @@
    if(Session["Email"] == null){
         WebSecurity.RequireAuthenticatedUser();
         WebSecurity.Logout();
-        Response.Redirect("~");
+        Response.Redirect("~/Logout.cshtml");
     }
     else{
         var userQuery = "SELECT * " + 
@@ -108,7 +108,7 @@
                     else { jsonText += '}'; }
                 }
                 jsonText += '}';
-                $.post("Process.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: +$("#testType").val(), ProjectId: $("#projectId").val(), Json: jsonText
+                $.post("Process.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val(), Json: jsonText
                 }, function (data) { $("#processid").html(data); });
 
             }

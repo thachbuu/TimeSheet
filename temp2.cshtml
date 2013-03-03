@@ -1,7 +1,17 @@
 ﻿@{
-    var sourceDB = Database.Open("LamHo");
+    var sourceDB = Database.Open("LamH");
     var desDB = Database.Open("StarterSite");
 
+    var taskList = sourceDB.Query("SELECT * FROM Tasks");
+
+    foreach(var i in taskList){
+        <p>@i.Id - @i.Name - @i.TypeId - @i.CategoryId</p>
+    
+        desDB.Query("INSERT INTO Tasks(Id,Name,TypeId,CategoryId) VALUES(@0, @1, @2, @3)",i.Id,i.Name,i.TypeId,i.CategoryId);
+       // <p>done</p>
+    }
+
+    @*
     //COPY TABLE BETWEEN DATABES 
     var taskLH  = sourceDB.Query("SELECT COLUMN_NAME,IS_NULLABLE,DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TimeManagement';");
     String tableInfo = "";
@@ -33,10 +43,7 @@
                         item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],item[10]);
     }
 
-    
+    *@
     
 }
 
-<div>
-    @RenderPage("temp.cshtml");
-</div>

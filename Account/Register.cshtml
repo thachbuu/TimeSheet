@@ -17,7 +17,7 @@
     var firstName="";
     var lastName="";
     string roleName="";
-    int supervisorId;
+    int projectManagerId;
 
     // Open database
     var db = Database.Open("StarterSite");   
@@ -46,7 +46,7 @@
         firstName = Request.Form["firstName"];
         lastName= Request.Form["lastName"]; 
         roleName= Request.Form["role"];
-        supervisorId = Request.Form["supervisor"].AsInt();
+        projectManagerId = Request.Form["supervisor"].AsInt();
 
         // Validate the user's captcha answer
         // if (!ReCaptcha.Validate("PRIVATE_KEY")) {
@@ -61,7 +61,7 @@
             if (user == null) { 
 
                 // Insert email into the UserProfile table
-                db.Execute("INSERT INTO UserProfile (Email,FirstName,LastName,SupervisorId) VALUES (@0,@1,@2,@3)", email,firstName,lastName,supervisorId);                  
+                db.Execute("INSERT INTO UserProfile (Email,FirstName,LastName,ProjectManagerId) VALUES (@0,@1,@2,@3)", email,firstName,lastName,projectManagerId);                  
                 Roles.AddUserToRole(email,roleName);
                    
 

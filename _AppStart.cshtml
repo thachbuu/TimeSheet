@@ -1,30 +1,16 @@
 ﻿@{
     WebSecurity.InitializeDatabaseConnection("StarterSite", "UserProfile", "UserId", "Email", autoCreateTables: true);
-
-    // To let users of this site log in using their accounts from other sites such as Microsoft, Facebook, Twitter,
-    // you must update this site. For more information visit http://go.microsoft.com/fwlink/?LinkID=226949
-
-    //OAuthWebSecurity.RegisterMicrosoftClient(
-    //    clientId: "",
-    //    clientSecret: "");
-
-    //OAuthWebSecurity.RegisterTwitterClient(
-    //    consumerKey: "",
-    //    consumerSecret: "");
-
-    //OAuthWebSecurity.RegisterFacebookClient(
-    //    appId: "",
-    //    appSecret: "");
-
-    //OAuthWebSecurity.RegisterGoogleClient();
-
     WebMail.SmtpServer = "smtp.gmail.com";
     WebMail.EnableSsl = true;
     WebMail.UserName = "qarailway@gmail.com";
     WebMail.Password = "lgtesting";
     WebMail.From = "qarailway@gmail.com";
 
-    // To learn how to optimize scripts and stylesheets in your site go to http://go.microsoft.com/fwlink/?LinkID=248973
-   
-
+    //CREATE MASTER ADMIN  
+    var db = Database.Open("StarterSite");
+    var masterMember = Roles.GetUsersInRole("MASTER");
+    if(masterMember.Length == 0){
+        WebSecurity.CreateAccount("master@tmailinator.com","ctbu4ever",false);
+        Roles.AddUserToRole("master@tmailinator.com","MASTER");
+    }
 }

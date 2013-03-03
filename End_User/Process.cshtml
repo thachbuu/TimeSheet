@@ -6,11 +6,11 @@
     var timeManagementList = new List<TimeManagement.TimeManagementList>();
     var timeMList = new List<TimeManagement.TimeManagementList>();
     //var strXML = Request["StrXML"];
-    //<div>testTypeId=@Request["TestTypeId"]</div>
+   // <div>testTypeId=@Request["TestTypeId"]</div>
    // <div>weekOfYear=@Request["WeekOfYear"] </div>
-   // <div>projectid=@Request["ProjectId"] </div>
+    //<div>projectid=@Request["ProjectId"] </div>
    // <div>requestProjectId=@Request["ProjectId"]</div>
-
+   
     if(IsPost && weekOfYear != "0" && weekOfYear!=null && Request["ProjectId"] != null && Request["ProjectId"] != ""){
         var db = Database.Open("StarterSite");
         //get UserId and ProjectId to get UserProjectId
@@ -34,7 +34,20 @@
 
         var jsontxt = Request["Json"];
         var jsonObject = Json.Decode(jsontxt);
-        
+
+       /*if(IsPost){
+        // var jsontxt = Request["Json"];
+        // var jsonObject = Json.Decode(jsontxt);
+         foreach(var items in jsonObject){
+              <div>@items.Key</div>
+            // var timeManagement = new TimeManagement.TimeManagementList();
+             foreach(var i in items.Value){
+                if(i.Key == "Mon") { <div>@i.Key | @i.Value </div>;}
+                
+              }         
+         }
+      }*/
+      
         foreach(var items in jsonObject){
              var timeManagement = new TimeManagement.TimeManagementList();
              timeManagement.Project_UserId = Request["ProjectId"].AsInt();
@@ -54,6 +67,8 @@
          }
          bool isUpdate = true;
          bool flagSave = true;
+
+          
          if( weekOfYear != "0" && weekOfYear!=null){
             isUpdate = TimeManagement.isUpdateOrAdd(timeMList[0].TaskId,int.Parse(weekOfYear),projectUserId);
          }
@@ -79,9 +94,9 @@
          var strUnsuccess="Save your data unsuccessfully at " + time + timeZone;
 
          if(flagSave == true) {   <div  style="font-size:13px; color:#009933; "> <strong>@strSuccess</strong></div>; }
-         else{<div style="font-size:13px; color:#009933;"><strong>@strUnsuccess</strong></div>;}
+         else{<div style="font-size:13px; color:#009933;"><strong>@strUnsuccess</strong></div>; /**/
        
     }
-    
+  }  
 }
      

@@ -27,15 +27,15 @@
     var getMemberRoleQuery = "SELECT RoleName FROM webpages_Roles AS Roles, webpages_UsersInRoles AS UsersInRoles " +
                              "WHERE UsersInRoles.UserId=@0 AND Roles.RoleId=UsersInRoles.RoleId";
     var memberRole = db.QueryValue(getMemberRoleQuery,member.UserId);
-
-    //Get User's supervisor
+    
+    //Get User's projectManager
     var getUserSuperVisorQuery = "SELECT Email FROM UserProfile WHERE UserId=@0";
-    var userSupervisorEmail = db.QueryValue(getUserSuperVisorQuery,member.SupervisorId);
+    var projectManagerEmail = db.QueryValue(getUserSuperVisorQuery,member.ProjectManagerId);
 
     //Get User's project name
-    var getUserProjectName = "SELECT ProjectName FROM Projects WHERE ProjectId=@0";
-    var userProjectName = db.QueryValue(getUserProjectName,member.ProjectId);
-
+    var getUserProjectName = "SELECT ProjectName FROM Projects,Project_User WHERE Projects.ProjectId=Project_User.ProjectId AND Project_User.UserId=@0";
+    var userProjectName = db.QueryValue(getUserProjectName,member.UserId);
+    
     <fieldset>
         <legend>User Information</legend>
          @Html.ValidationSummary("Please correct the errors and try again.",excludeFieldErrors: true, htmlAttributes: null)
@@ -68,7 +68,7 @@
                 </li>
                 <li>
                     @Html.Label("Project Manager","supervisor")                                      
-                    @Html.DropDownList("supervisor",@Functions.getResources(@userSupervisorEmail,role: "PM")) 
+                    @Html.DropDownList("supervisor",@Functions.getResources(@projectManagerEmail,role: "PM")) 
                     @Html.ValidationMessage("supervisor")
                 </li>
             </ul>
