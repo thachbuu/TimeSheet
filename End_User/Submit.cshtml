@@ -1,0 +1,98 @@
+﻿@{
+    Layout="";
+    var timeMList = new List<TimeManagement.TimeManagementList>();
+    var db = Database.Open("StarterSite");
+    <div>testTypeId=@Request["testType"]</div>
+    <div>project=@Request["projectId"]</div>
+    <div>testTypeId=@Request["testType"]</div>
+    <div>weekOfYear=@Request["valueDatePicker"]</div>
+   // <div>ValueNONNULL= @Request["txt_1_1"]</div> 
+  //  var str= Request["datepicker"].Split('/');
+ //   DateTime dateToSubmit = new DateTime(TimeManagement.getInt(str[2]),TimeManagement.getInt(str[0]),TimeManagement.getInt(str[1]));
+  //  <div>date convert=@dateToSubmit</div>
+  //  int weekOfYear = TimeManagement.WeeksInYear(dateToSubmit);
+    var weekOfYear = Request["valueDatePicker"].AsInt();
+    <div>week=@weekOfYear</div>
+/*
+Init to add/update values into database
+*/
+     var userQuery = "SELECT * " + 
+                           "FROM  UserProfile WHERE  Email=@0";
+    int userId=0;
+    if(Session["Email"] == null){
+        WebSecurity.RequireAuthenticatedUser();
+        WebSecurity.Logout();
+        Response.Redirect("~/Account/Logout.cshtml");
+    }
+    else{
+         userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
+        // <div>UserId:@userId</div>
+    }
+    int projectUserId=0;
+        // <div>ProjectIDAA:@Request["ProjectId"]</div>
+    if(userId != 0 && Request["projectId"] != null && Request["projectId"] != ""){
+       // <div>Thach: @Request["ProjectId"].AsInt()</div>
+          projectUserId = Project_User.getProjectUserId(userId,Request["projectId"].AsInt());     
+    }
+    if( weekOfYear != 0 && weekOfYear!=null){
+        timeMList = TimeManagement.getTimeManagementList(weekOfYear,projectUserId);
+    }  
+    <div>projectUserId=@projectUserId</div>
+    <div>add/update=@timeMList.Count()</div>
+    
+    var startLoop = 0;
+    var endLoop = 0;
+    if (Request["testType"] == "1") { startLoop = 1; endLoop = 26; } else { startLoop = 26; endLoop = 44;}
+
+
+    for (var i = startLoop; i < endLoop; i++) {
+         var childTM = new TimeManagement.TimeManagementList();
+         childTM.TaskId = i;
+         childTM.Project_UserId = projectUserId;
+         childTM.Disable = true;
+         childTM.WeekOfYear = weekOfYear; 
+         for (var j = 1; j < 8; j++) {
+             var strValue = Request["txt_"+i+"_"+j];
+           // <div>ValueNONNULL@("task_"+i+"_"+j) = @Request["task_1_1"]</div>
+             if(strValue == "" || strValue == null){ strValue="-1";}
+             double dValue = double.Parse(strValue);
+             if(j==1){ childTM.Mon = dValue;childTM.CommentForMon = "";}
+             if(j==2){ childTM.Tue = dValue;childTM.CommentForTue = "";}
+             if(j==3){ childTM.Wed = dValue;childTM.CommentForWed = "";}
+             if(j==4){ childTM.Thu = dValue;childTM.CommentForThu = "";}
+             if(j==5){ childTM.Fri = dValue;childTM.CommentForFri = "";}
+             if(j==6){ childTM.Sat = dValue;childTM.CommentForSat = "";}
+             if(j==7){ childTM.Sun = dValue;childTM.CommentForSun = "";}
+
+         }
+         timeMList.Add(childTM);
+       //  int rsUpdate=TimeManagement.updateTimeManagement1(childTM,false);
+         // <div>go into update= @rsUpdate | taskId= @childTM.TaskId</div>
+    }
+    bool isUpdate = true;
+    bool flagSave = true;
+    if( weekOfYear != 0 && weekOfYear!=null){
+        isUpdate = TimeManagement.isUpdateOrAdd(timeMList[0].TaskId,weekOfYear,projectUserId);
+    }
+         <div>Global_Variables=@Global_Variables.SUBMIT_SUCCESS</div>
+    if(isUpdate == true){ // saved 
+       //  <div>go into update1= @flagSave</div>
+      //  Global_Variables.SUBMIT_SUCCESS=1;
+        bool rsUpdate=TimeManagement.updateMoreTimeManagement(timeMList,Global_Variables.DISABLE_TRUE);
+        if(rsUpdate != true) {flagSave = false;}
+       // <div>go into update2= @flagSave</div>
+        // else {<div>Can't save your data at @DateTime.Now.Hour:@DateTime.Now.Minute:@DateTime.Now.Second </div>;} 
+    }
+    else{//not yet saved
+      //  <div>go into add new </div>
+      //  Global_Variables.SUBMIT_SUCCESS=2;
+         bool rsAdd=TimeManagement.addNewMoreTimeManagement(timeMList,Global_Variables.DISABLE_TRUE); 
+        if(rsAdd != true) {flagSave = false;}
+       // else {<div>Can't save your data at @DateTime.Now.Hour:@DateTime.Now.Minute:@DateTime.Now.Second </div>;}
+    }
+    if(flagSave == true) {Global_Variables.SUBMIT_SUCCESS=1;}
+    else{Global_Variables.SUBMIT_SUCCESS=2;}/**/
+
+    Response.Redirect("Tasks.cshtml");
+}
+

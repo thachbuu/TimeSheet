@@ -7,7 +7,7 @@
    if(Session["Email"] == null){
         WebSecurity.RequireAuthenticatedUser();
         WebSecurity.Logout();
-        Response.Redirect("~/Logout.cshtml");
+        Response.Redirect("~/Account/Logout.cshtml");
     }
     else{
         var userQuery = "SELECT * " + 
@@ -34,7 +34,8 @@
     Date.prototype.getWeek = function () {
 
         var onejan = new Date(this.getFullYear(), 0, 1);
-        //  alert("a=" + onejan);
+        // var onejan = new Date(this.getFullYear(), 1, 0);
+        // alert("full Year="+this.getFullYear()+"|getweek=" + onejan +"|date="+ onejan.getDay());
         return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
     }
 
@@ -65,6 +66,7 @@
             //alert("o day");
             if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
                 var date = new Date($("#datepicker").val());
+                //$("#valueDatePicker").attr('value',date.getWeek());
                 $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
                 $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
                 $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
@@ -80,6 +82,7 @@
         $("#button1").click(function () {
             if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
                 var date = new Date($("#datepicker").val());
+               
                 alert("week=" + date.getWeek());
                 $("#processid").html('');
                 $.post("Process.cshtml", { WeekOfYear: date.getWeek(), Txt_1_1: $("#txt_1_1").val() }, function (data) { $("#processid").html(data); });
@@ -119,36 +122,25 @@
 
         //submit form
         $("#form").submit(function () {
-            alert("aa=" + $("#datepicker").val());
-            if ($("#datepicker").val() == '' || $("#datepicker").val() == null) {
+            // alert("aa=" + $("#datepicker").val());
+            var date = new Date($("#datepicker").val());
+            alert("week=" + date.getWeek());
+            if ($("#datepicker").val() == "" || $("#datepicker").val() == null) {
+              
+                alert("WARNING!! Please set date before submit !");
+                $.post("Null.cshtml",function (data) { $("#messSubmitLoad").html(data); });
                 return false;
             }
             else {
-                $('#dialog_box').dialog({
-                    title: 'Warning!',
-                    width: 500,
-                    height: 200,
-                    modal: true,
-                    resizable: false,
-                    draggable: false,
-                    buttons: [{
-                        text: 'Yes, send it!',
-                        click: function () {
-                            //post
-                            var jSon = getStringJson();
-                            alert(jSon);
-                            return false;
-                        }
-                    },
-                          {
-                              text: 'No, check again!',
-                              click: function () {
-                                  $(this).dialog('close');
-                              }
-                          }]
-                });
+                 $("#valueDatePicker").attr('value',date.getWeek());
+                var answer = confirm('Are you sure to submit your timesheet?');
+                if (answer) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            return false;
         });
 
 
@@ -188,7 +180,8 @@
 
 
 
-<form id="form" method="post">
+<form id="form" method="post" action="Submit.cshtml">
+    <input type="hidden" value="" id="valueDatePicker" name="valueDatePicker">
     @AntiForgery.GetHtml()
     @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
     <fieldset>
@@ -200,7 +193,7 @@
                 <table width="100%">
 			        <thead>
 				        <tr align="right">
-                             <th width="100px"> </th>
+                             <th width="80px"> </th>
                             <th width="10px"> 
 				               <select name="testType" id="testType">
                                    @foreach(var row in selectedDataTestType)
@@ -213,14 +206,13 @@
                                 <label for="role">Week : </label>  
                                  <input id="datepicker" name="datepicker">  
                             </th>
-                            <th width="10px"> 
+                            <th width="30px"> 
                                 <label for="role">Project : </label>
 				                <select name="projectId" id="projectId">
                                     @if(projectList.Count()>0 ){
                                         foreach(var item in projectList){
                                              <option value="@item.ProjectId">@item.ProjectName</option>
-                                        }
-                                         
+                                        }    
                                     }
                                     else{
                                         <option value="-1">--Nothing--</option>
@@ -242,8 +234,6 @@
                     <div id="messTask">
                           @RenderPage("Effort.cshtml")
                     </div>
-                         
-			       
 	        </div>
         </div>
 <!--Statistic  -->
@@ -257,14 +247,32 @@
         </div>
 <!--Button save and submit  -->
         <div align="right">
-            <div id="processid">@RenderPage("Process.cshtml")</div>@**@
+           
+            
+            <div id="messSubmitLoad" name="messSubmitLoad">
+                <div id="processid">@RenderPage("Process.cshtml")</div>
+               @if(Global_Variables.SUBMIT_SUCCESS != -1){
+                  //  <div>Global_Variables=@Global_Variables.SUBMIT_SUCCESS</div>
+                     var time= DateTime.Now.Hour+ ":" +DateTime.Now.Minute+":"+DateTime.Now.Second;
+                     var timeZone = "(AM)"; 
+                     if(DateTime.Now.Hour >11){timeZone="(PM)";}  
+                     var strSuccess="Submit your data successfully at " + time + timeZone;
+                     var strUnsuccess="Submit your data unsuccessfully at " + time + timeZone;
+                     if(Global_Variables.SUBMIT_SUCCESS == 1){
+                         <div  style="font-size:13px; color:#009933; "> <strong>@strSuccess</strong></div>;
+                         Global_Variables.SUBMIT_SUCCESS = -1;
+                     } 
+                     if(Global_Variables.SUBMIT_SUCCESS == 2){
+                         <div style="font-size:13px; color:#009933;"><strong>@strUnsuccess</strong></div>;
+                         Global_Variables.SUBMIT_SUCCESS = -1;
+                     }
+                     
+                }
+            </div>@**@
                 <input id="button1" type="button"  value="Save" name="button1"/>
 				<input id="button2" type="submit" value="Submit" name="button2"/>
 		</div>
-        <div id="dialog_box" style="display: none;">
-            </br>
-              Are you sure to submit your timesheet?
-        </div>
+      
     </fieldset>
 </form>
 

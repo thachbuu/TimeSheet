@@ -15,7 +15,7 @@
     if(Session["Email"] == null){
         WebSecurity.RequireAuthenticatedUser();
         WebSecurity.Logout();
-        Response.Redirect("~");
+        Response.Redirect("~/Account/Logout.cshtml");
     }
     else{
          userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
