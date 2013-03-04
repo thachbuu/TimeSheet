@@ -10,6 +10,7 @@
     var db = Database.Open("StarterSite");
     var masterMember = Roles.GetUsersInRole("MASTER");
     if(masterMember.Length == 0){
+        db.Execute("INSERT INTO UserProfile(Email) VALUES('master@tmailinator.com')");
         WebSecurity.CreateAccount("master@tmailinator.com","ctbu4ever",false);
         Roles.AddUserToRole("master@tmailinator.com","MASTER");
     }

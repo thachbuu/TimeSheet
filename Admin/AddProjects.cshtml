@@ -19,11 +19,11 @@
         ModelState.AddError("datepickerStartedDate","The started date must be smaller than end date");
     }else{
         if(startedDate != DateTime.MinValue && startedDate.CompareTo(DateTime.Now.Date) < 0){
-            ModelState.AddError("datepickerStartedDate","The started date must NOT be smaller than " + DateTime.Now.Date.ToShortDateString());
+            ModelState.AddError("datepickerStartedDate","The started date must NOT be smaller than " + "TODAY(" + DateTime.Now.Date.ToShortDateString()+ ")");
         }
 
         if(endDate != DateTime.MinValue && endDate.CompareTo(DateTime.Now.Date) < 0){
-            ModelState.AddError("datepickerEndDate","The end date must NOT be smaller than " + DateTime.Now.Date.ToShortDateString());
+            ModelState.AddError("datepickerEndDate","The end date must NOT be smaller than " + "TODAY("+ DateTime.Now.Date.ToShortDateString() +")");
         }
     }
 
@@ -49,43 +49,40 @@
 <form method="post">
     @AntiForgery.GetHtml()
     @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
+    <ul>
+        <li>
+            @Html.Label("PROJECT NAME","projectName",null)               
+            <br>
+            @Html.TextBox("projectName",projectName,Validation.For("projectName"))
+            @Html.ValidationMessage("projectName")
+        </li>
 
-    <fieldset>
-        <legend>Project Information</legend>
-        <ul>
-            <li>
-                @Html.Label("PROJECT NAME","projectName",null)               
-                <br>
-                @Html.TextBox("projectName",projectName,Validation.For("projectName"))
-                @Html.ValidationMessage("projectName")
-            </li>
+        <li>
+            @Html.Label("STARTED DATE","datepickerStartedDate",null)             
+            <br>
+            @Html.TextBox("datepickerStartedDate",startedDate.Equals(DateTime.MinValue)?"":startedDate.ToShortDateString(),Validation.For("datepickerStartedDate"))
+            @Html.ValidationMessage("datepickerStartedDate")
+        </li>
 
-            <li>
-                @Html.Label("STARTED DATE","datepickerStartedDate",null)             
-                <br>
-                @Html.TextBox("datepickerStartedDate",startedDate.Equals(DateTime.MinValue)?"":startedDate.ToShortDateString(),Validation.For("datepickerStartedDate"))
-                @Html.ValidationMessage("datepickerStartedDate")
-            </li>
+        <li>
+            @Html.Label("END DATE","datepickerEndDate",null)              
+            <br>
+            @Html.TextBox("datepickerEndDate",endDate.Equals(DateTime.MinValue)?"":endDate.ToShortDateString(),Validation.For("datepickerEndDate"))
+            @Html.ValidationMessage("datepickerEndDate")
+        </li>
 
-            <li>
-                @Html.Label("END DATE","datepickerEndDate",null)              
-                <br>
-                @Html.TextBox("datepickerEndDate",endDate.Equals(DateTime.MinValue)?"":endDate.ToShortDateString(),Validation.For("datepickerEndDate"))
-                @Html.ValidationMessage("datepickerEndDate")
-            </li>
+        <li>
+            @Html.Label("PROJECT MANAGER","projectManager",null)
+            <br>
+            @Html.ListBox("projectManager",Functions.getResources(null,true,"PM"))
+        </li>
 
-            <li>
-                @Html.Label("PROJECT MANAGER","projectManager",null)
-                <br>
-                @Html.ListBox("projectManager",Functions.getResources())
-            </li>
-
-            <li style="width: 600px">
-                @Html.Label("DESCRIPTION","projectInfo",null)
-                @Html.TextArea("projectInfo",projectInfo,Validation.For("projectInfo"))
-                @Html.ValidationMessage("projectInfo")
-            </li>
-        </ul>
-        <input type="submit" value="Add">
-    </fieldset>
+        <li style="width: 600px">
+            @Html.Label("DESCRIPTION","projectInfo",null)
+            @Html.ValidationMessage("projectInfo")
+            @Html.TextArea("projectInfo",projectInfo,Validation.For("projectInfo"))            
+        </li>
+    </ul>
+    <input type="submit" value="Add" class="submitBtn">
+    <input type="button" value="Cancel" class="submitBtn">
 </form>

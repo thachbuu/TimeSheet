@@ -12,7 +12,17 @@
 
 
 @if(userId == 0 ){
-    <p>Sorry! Cannot find your member. Please select again.</p>
+    <h1 style="margin-left: 50px">Sorry, system cannot find your member</h1>
+    <p style="margin-left: 50px; font-size: medium"><strong>Some common reasons:</strong>
+        <br>
+        - You forgot to choose the member in list
+        <br>
+        - The member was removed from system
+        <br>
+        - You don't have right to view this user's profile anymore
+        <br>
+        - Click <a href="/Leader/ManageMembers.cshtml">here</a> to go back       
+    </p>
 }
 else{
 <ol>

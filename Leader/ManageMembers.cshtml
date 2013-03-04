@@ -1,43 +1,129 @@
 ﻿@{
     Page.Title= "Manage Your Members";
+
+    //Initalize variable;
     var db = Database.Open("StarterSite");
     WebGrid grid = null;
     var currentUserEmail  = WebSecurity.CurrentUserName;
     var currentUserId = WebSecurity.CurrentUserId;
+
+    if(IsPost){
+        if(Request["Action"]=="Add"){
+            db.Execute("UPDATE UserProfile SET LeaderId=@0 WHERE UserId=@1",Request["listLeader"].AsInt(),Request["UserId"].AsInt());            
+        }
+        
+        if(Request["Action"]=="Remove"){
+            db.Execute("UPDATE UserProfile SET LeaderId=0 WHERE UserId=@0",Request["UserId"].AsInt());            
+        }
+    }
     if(User.IsInRole("PM")){
-        var memberList = db.Query("SELECT UserId, Firstname, Lastname FROM UserProfile WHERE ProjectManagerId=@0",currentUserId);        
-        grid = new WebGrid(memberList);        
+        var memberList = db.Query("SELECT * FROM UserProfile WHERE ProjectManagerId=@0",currentUserId);        
+        grid = new WebGrid(memberList, canSort:false,defaultSort: "Role");        
     }
     if(User.IsInRole("LEADER")){
-        var memberList = db.Query("SELECT UserId, Firstname, Lastname FROM UserProfile WHERE LeaderId=@0",currentUserId);
-        grid = new WebGrid(memberList);        
+        var memberList = db.Query("SELECT * FROM UserProfile WHERE LeaderId=@0",currentUserId);
+        grid = new WebGrid(memberList,canSort:false);        
     }
+    
 }
+<script>
+    $(function () {
+        $("a[id*=assignLeader]").click(function () {
+            var userId = $(this).attr("id").match("[0-9].*").toString();
+            $("#dialog").dialog({
+                title: "Assign To Leader",
+                buttons: [{ text: "Save", click: function () {
+                    $.post("/Leader/ManageMembers.cshtml", { UserId: userId }, function () {
+                        $("#action").attr('value', "Add");
+                        $("#userAssigned").attr('value', userId);
+                        $("form[name=assignToLeader]").submit();
+                    });
+                    $(this).dialog("close");
+                }
+                },
+                          { text: "Cancel", click: function () { $(this).dialog("close"); } }]
+            });
+        });
+
+        $("a[id*=removeLeader]").click(function () {
+            var userId = $(this).attr("id").match("[0-9].*").toString();
+            $.post("/Leader/ManageMembers.cshtml", { UserId: userId, Action: "Remove" }, function (data) {});
+            location.reload();
+        });
+
+    });
+</script>
+
 
 <form method="post" action="/Leader/MemberProfile">
+    @if(grid == null){
+        Response.Redirect("~/Account/Logout");
+    }
     @if(grid.TotalRowCount ==0){
-        <div>You don't have any members.</div>
+        <div>You don't have any members now.</div>
     }
     else{
         @grid.GetHtml(
         tableStyle: "grid",    
         headerStyle: "gridheader",
         footerStyle: "gridfooter",           
-        columns: grid.Columns(
+        columns: grid.Columns(            
             grid.Column(
-                columnName: "Firstname"
-            ),                
+                header: "Name",
+                format: @<text>@item.FirstName @item.LastName</text>
+                ),
             grid.Column(
-                columnName: "Lastname"
-            ),                
+                columnName: "UserCompanyId",
+                header: "Empl. ID"
+                ),
             grid.Column(
-                columnName: "UserId",
+                columnName: "Email"
+            ),
+            grid.Column(
+                header: "Title",
+                format: @<text>TBD</text>
+            ),
+            grid.Column(
+                header: "Role",
+                format: @<text>@Roles.GetRolesForUser(item.Email).GetValue(0)</text>
+            ),
+            grid.Column(
+                header: "Leader",
+                format: @<text>
+                            @if(item.LeaderId !=0){
+                                   var leader =  db.QuerySingle("SELECT FirstName,LastName FROM UserProfile WHERE UserId=@0",item.LeaderId);
+                                   <span>@leader.FirstName  @leader.LastName</span>
+                                  if(User.IsInRole("PM")){                                      
+                                      <a href="#" id="assignLeader_@item.UserId">Edit</a>
+                                      <a href="#" id="removeLeader_@item.UserId">Remove</a>
+                                  }
+                              }
+                              else{
+                                  if(Roles.GetRolesForUser(item.Email).GetValue(0) == "MEMBER" && User.IsInRole("PM")){
+                                      <a href="#"id="assignLeader_@item.UserId">Assign</a>
+                                  }
+                              }
+                        </text>
+             ),                
+            grid.Column(
                 header: string.Empty,
-                canSort: false,
                 format: @<input type="radio" value="@item.UserId" name="UserId"></input>
-            )
+            )      
             )
         )
+        <input type="submit" name="action" id="viewMemberDetails" value="View Profile" style="width: 120px" >
     }
-    <input type="submit" id="viewMemberDetails" value="View" >
+    
 </form>
+
+<div id="dialog" style="display: none">
+    <form method="post" name="assignToLeader">
+        <h5>Please choose a leader below:</h5>
+        @Html.DropDownList("listLeader",Functions.getResources(WebSecurity.CurrentUserName,false,"LEADER"))
+        <input type="hidden" id="userAssigned" name="UserId">
+        <input type="hidden" id="action" name="Action">        
+    </form>
+</div>
+
+<div id="js">
+</div>

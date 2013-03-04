@@ -6,7 +6,7 @@
     Page.Title = "Create a new account.";
 
     //Logout if the role is not admin
-    if(!User.IsInRole("ADMIN")){
+    if(!(User.IsInRole("ADMIN") || User.IsInRole("MASTER"))){
         Response.Redirect("/Account/Logout");
     }
 

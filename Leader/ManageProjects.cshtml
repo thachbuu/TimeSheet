@@ -1,8 +1,17 @@
 ﻿@{
      Page.Title = "Manage Your Projects";
      var db = Database.Open("StarterSite");
-     int userID = WebSecurity.CurrentUserId;    
-     var data = db.Query("SELECT * FROM Projects,Project_User WHERE Project_User.UserId=@0 AND Projects.ProjectId = Project_User.ProjectId",userID);
+     int userID = WebSecurity.CurrentUserId;
+     IEnumerable<dynamic> data=null;
+     if(User.IsInRole("LEADER")){
+        data = db.Query("SELECT ProjectName,Description,StartedDate,EndDate,Project_User.ProjectId FROM Projects,Project_User " +
+                        "WHERE Project_User.UserId=@0 AND Projects.ProjectId = Project_User.ProjectId AND Project_User.Status='True'",userID);
+     }
+     if(User.IsInRole("PM")){
+        data = db.Query("SELECT ProjectName,Description,StartedDate,EndDate,ProjectId FROM Projects "+
+                         "WHERE ProjectManager=@0",userID);
+     }    
+    
      var grid = new WebGrid(data,canSort: false);       
      var selectedProjectId = Request["SelectedProjectId"].AsInt(); 
      
@@ -11,37 +20,42 @@
    
      
 }
+
 <form method="get" action="~/Leader/ProjectDetails" name="manageProjectForm">
-    @Html.ValidationSummary("",excludeFieldErrors:false,htmlAttributes:null)
-    @grid.GetHtml(
-    tableStyle: "grid",    
-    headerStyle: "gridheader",
-    footerStyle: "gridfooter",  
-    columns: grid.Columns(
-        grid.Column(
-            columnName: "ProjectName",
-            header: "Project Name"
-        ),
-        grid.Column(
-            columnName: "Description",
-            format: @<div>@Html.Raw(item.Description)</div>
-        ),
-        grid.Column(
-            columnName: "StartedDate",
-            header: "Started Date",
-            format: @<span>@item.StartedDate.ToString("d")</span>
-        ),
-        grid.Column(
-            columnName: "EndDate",
-            header: "End Date",
-            format: @<span>@item.EndDate.ToString("d")</span>
-        ),
-        grid.Column(
-            header: string.Empty,
-            format: @<input type="radio" name="ProjectId" value="@item.ProjectId" @if(selectedProjectId == item.ProjectId || selectedProjectId == 0){<text>checked</text>}></input>                    
+    @if(grid.TotalRowCount == 0){
+        <p>You don't have any projects yet</p>
+    }
+    else{
+        @Html.ValidationSummary("",excludeFieldErrors:false,htmlAttributes:null)
+        @grid.GetHtml(
+        tableStyle: "grid",    
+        headerStyle: "gridheader",
+        footerStyle: "gridfooter",  
+        columns: grid.Columns(
+            grid.Column(
+                columnName: "ProjectName",
+                header: "Project Name"
+            ),
+            grid.Column(
+                columnName: "Description",
+                format: @<div>@Html.Raw(item.Description)</div>
+            ),
+            grid.Column(
+                columnName: "StartedDate",
+                header: "Started Date",
+                format: @<span>@item.StartedDate.ToString("d")</span>
+            ),
+            grid.Column(
+                columnName: "EndDate",
+                header: "End Date",
+                format: @<span>@item.EndDate.ToString("d")</span>
+            ),
+            grid.Column(
+                header: string.Empty,
+                format: @<input type="radio" name="ProjectId" value="@item.ProjectId" @if(selectedProjectId == item.ProjectId || selectedProjectId == 0){<text>checked</text>}></input>                    
+            )
         )
-    )
-    )
-   
-    <button type="submit">Modify</button>  
+)
+    <button type="submit">Modify</button> 
+}
 </form>

@@ -1,88 +1,13 @@
-﻿
-@{
-    Layout = "_Layout.cshtml";
-    var db = Database.Open("StarterSite");
-    var userId = 28;
-    var workingProject = db.Query("SELECT Id,ProjectName FROM Project_User,Projects WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId",@userId);
-    if(IsPost){
-        userId = 28;
-    }
+﻿@{
+    Layout="_Layout.cshtml";
+
 }
 <script>
-
-
     $(function () {
-        alert("da toi ay");
-        $("input[id*=txt_]").click(function () {
-            alert("trong day");
-        });
+        $("#dialog").dialog();
     });
 </script>
-<div>
-    <strong>AAA</strong>
+
+<div id="dialog" title="Basic dialog">
+  <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
 </div>
-
-
-@Html.TextBox("txt_1","a")
-
-@*
-@if(userId == 0){
-    <p>Please select at least a member. Because UserId = @userId</p>
-}
-else{
-
- <div id="tabs">
-     
-
-    @foreach(var item in workingProject){
-        var timesheet = db.Query("SELECT Tasks.Name,Mon,Wed,Tue,Thu,Fri,Sat,Sun FROM TimeManagement,Tasks WHERE Project_UserId=@0 AND TimeManagement.TaskId = Tasks.Id",item.Id);
-        if(timesheet.Count >0 ){
-            var newGrid = new WebGrid(timesheet,canSort:false,rowsPerPage:50);            
-             <div id="tab_@item.Id">
-                 <form>
-                     <h2>@item.ProjectName</h2>
-                     @newGrid.GetHtml(
-                        columns: newGrid.Columns(
-                            newGrid.Column("Name","Task Name",null),
-                            newGrid.Column("Mon"),
-                            newGrid.Column("Tue"),
-                            newGrid.Column("Wed"),
-                            newGrid.Column("Thu"),
-                            newGrid.Column("Fri"),
-                            newGrid.Column("Sat"),
-                            newGrid.Column("Sun")
-                        )                       
-                     )
-                     <input type="hidden" id="timeSheetForProjectUser" value="@item.id">
-                     <input type="submit" value="Accept" style="width: 100px">
-                     <input type="submit" value="Do Not Accept" style="width: 100px">
-                 </form>
-              </div>             
-        }
-    } 
-
-   </div> 
-}
-
-
-
-<div id="tabs">
-  <ul>
-    <li><a href="#fragment-1"><span>One</span></a></li>
-    <li><a href="#fragment-2"><span>Two</span></a></li>
-    <li><a href="#fragment-3"><span>Three</span></a></li>
-  </ul>
-  <div id="fragment-1">
-    <p>First tab is active by default:</p>
-    <pre><code>$( "#tabs" ).tabs(); </code></pre>
-  </div>
-  <div id="fragment-2">
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-  </div>
-  <div id="fragment-3">
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-  </div>
-</div>*@ 

@@ -16,6 +16,9 @@ img{
     background-color: #fbf8f8;
     margin-left: 150px;    
 }
+.submitBtn{
+    width: 120px;
+}
 
 /*  HEADER
     ------------------------*/
@@ -55,9 +58,7 @@ h2{
     text-align: left;
 }
 #logoutForm {
-    float: right;
-    display: inline;
-    margin-right: 10px;
+    text-align:right;
 }
 
 #timeSheetlabel{
@@ -130,3 +131,9 @@ h2{
     color: #fff;    
     text-decoration:none;     
 } 
+
+
+/*VALIDATION FIELD*/
+.field-validation-error{
+    color: #f00;
+}

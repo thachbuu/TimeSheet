@@ -26,15 +26,18 @@
         <div class="logo">
             <img src="~/Images/logo.png" alt="Logigear Logo">           
         </div>
+       
 
         <div class="content">
-             @if(WebSecurity.IsAuthenticated){
-                <form id="logoutForm" action="~/Account/Logout" method="post">
-                    @AntiForgery.GetHtml()
-                    <a href="javascript:document.getElementById('logoutForm').submit()">Sign Out</a>
-                </form>
-            } 
-
+             <div> 
+                @if(WebSecurity.IsAuthenticated){
+                    <form id="logoutForm" action="~/Account/Logout" method="post">
+                        @AntiForgery.GetHtml()
+                        <span>Hello, <strong>@WebSecurity.CurrentUserName</strong></span>
+                        <a href="javascript:document.getElementById('logoutForm').submit()">(Sign Out)</a>
+                    </form>
+                }
+            </div>            
             <div class="header">
                  @RenderPage("~/_Header.cshtml")
             </div>

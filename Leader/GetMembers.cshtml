@@ -7,28 +7,12 @@
     var supervisorId = WebSecurity.CurrentUserId;
     WebGrid userData  = null;
 
-
     //Intialize queries
-    var members_in_project = "SELECT DISTINCT(UserProfile.UserId), FirstName, LastName, Email,UserCompanyId, Project_User.Status FROM UserProfile, Project_User " + 
-                             "WHERE Project_User.UserId !=@0 AND Project_User.ProjectId=@1 AND UserProfile.UserId = Project_User.UserId AND Project_User.Status = 'True' ";
-
-    var members_in_pool_pm = "SELECT DISTINCT(UserProfile.UserId), FirstName, LastName, Email, UserCompanyId, Project_User.Status FROM UserProfile, Project_User " +
-                             "WHERE ProjectManagerId=@0 " +
-                             "AND (UserProfile.UserId NOT IN (SELECT UserId FROM Project_User WHERE ProjectId=@1) " +
-                             "OR  (Project_User.ProjectId =@1 AND UserProfile.UserId = Project_User.UserId AND Project_User.Status = 'False')) ";
-
-     var members_in_pool_leader   = "SELECT DISTINCT(UserProfile.UserId),FirstName, LastName, Email, UserCompanyId, Project_User.Status FROM UserProfile, Project_User " +
-                             "WHERE LeaderId=@0 " +
-                             "AND (UserProfile.UserId NOT IN (SELECT UserId FROM Project_User WHERE ProjectId=@1) " +
-                             "OR  (Project_User.ProjectId =@1 AND UserProfile.UserId = Project_User.UserId AND Project_User.Status = 'False')) ";
-
     if(User.IsInRole("PM")){
-        var queryCombine  = members_in_project + "UNION " + members_in_pool_pm;
-        userData = new WebGrid(db.Query(queryCombine,supervisorId,projectId),canSort:false);        
+        userData = new WebGrid(db.Query("SELECT * FROM UserProfile WHERE ProjectManagerId=@0",supervisorId),canSort:false);        
     }
     if(User.IsInRole("LEADER")){
-        var queryCombine  = members_in_project + "UNION " + members_in_pool_leader;       
-        userData = new WebGrid(db.Query(queryCombine,supervisorId,projectId),canSort:false);        
+        userData = new WebGrid(db.Query("SELECT * FROM UserProfile WHERE LeaderId=@0",supervisorId),canSort:false);        
     }               
    
 
@@ -60,16 +44,16 @@
     }
 }
 
-
 <script>
-    $(function () {       
+    $(function () {
         $("button[name=AddRemoveUser]").click(function () {
-            if ($(this).text() == "Add") {
+            var add = $(this).text();
+            if (add =="Add") {
                 $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value'), Action: 'Add' });
                 alert("Add successfully");
             }
             else {
-                 $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value'), Action: 'Remove' });
+                $.post("/Leader/GetMembers.cshtml", { UserId: $(this).attr('value'), ProjectId: $("input[id=currentProjectId]").attr('value'), Action: 'Remove' });
                 alert("Remove successfully");
             }
         });
@@ -92,9 +76,9 @@ else{
         columns: userData.Columns(
             userData.Column(columnName: "FirstName", header: "First Name"),
             userData.Column(columnName: "LastName",  header: "Last Name"),
-            userData.Column(columnName: "UserCompanyId", header: "Company ID"),
+            userData.Column(columnName: "UserCompanyId", header: "Empl. ID"),
             userData.Column(columnName: "Email"),                                                           
-            userData.Column(format: @<button name="AddRemoveUser" value="@item.UserId" style="float: right; width: 100px">@if(item.Status == true){<text>Remove</text>}else{<text>Add</text>}</button>)
+            userData.Column(format: @<button name="AddRemoveUser" value="@item.UserId" style="float: right; width: 100px">@if(db.QueryValue("SELECT Status FROM Project_User WHERE UserId=@0 AND ProjectId=@1 AND Status='True'",item.UserId,projectId) == true){<text>Remove</text>}else{<text>Add</text>}</button>)
         ))
 }
 

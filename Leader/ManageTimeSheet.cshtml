@@ -10,13 +10,16 @@
 }
 <script>
     $(function () {
-        $("li[id*=mem]").click(function () {           
+        $("li[id*=mem]").click(function () {
             $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
-         //    alert($(this).val());
         });
-    });
+        $("li[id*=mem_]").hover(
+            function () { $(this).css('color', '#ff6a00'); },
+            function () { $(this).css('color', '#000'); }
+        );
+     });
 </script>
-<div style="float: left; background-color: #00ff90; width: 150px">
+<div style="float: left; width: 150px;">
     <h2>MEMBER LIST</h2>
     <ul>
         @foreach(var member in memberList){

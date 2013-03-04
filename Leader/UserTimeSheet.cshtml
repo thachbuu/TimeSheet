@@ -23,7 +23,7 @@
 </style>
 
 @if(userId == 0){
-    <p>Please select at least a member. Because UserId = @userId</p>
+    <p>Please select a member on the right</p>
 }
 else{
     if(userId !=0 && Functions.getTotalUnapprovedTimeSheet(userId) <=0){

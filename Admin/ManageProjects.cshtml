@@ -1,0 +1,19 @@
+﻿@{
+    
+}
+<script>
+    $("#tabs").tabs();
+</script>
+
+<div id="tabs">
+    <ul>
+        <li><a href="#overviewPrj">Overview All Projects</a></li>
+        <li><a href="#addPrj">+</a></li>
+    </ul>
+    <div id="overviewPrj">
+        <p>overview project</p>
+    </div>
+    <div id="addPrj">
+        @RenderPage("AddProjects.cshtml")
+    </div>
+</div>
