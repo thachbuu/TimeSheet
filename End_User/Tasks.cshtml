@@ -35,24 +35,27 @@
     Date.prototype.getWeek = function () {
 
         var onejan = new Date(this.getFullYear(), 0, 1);
-        // var onejan = new Date(this.getFullYear(), 1, 0);
-        // alert("full Year="+this.getFullYear()+"|getweek=" + onejan +"|date="+ onejan.getDay());
         return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
     }
-
     Date.prototype.getWeekMonday = function () {
         var res = new Date();
         (this.getDay() == 0) ? res.setTime(this.getTime() - (6 * 86400000)) : res.setTime(this.getTime() + 86400000 - (this.getDay() * 86400000));
         return res;
     }
-
     $(function () {
         //alert("datepicker"+$("#datepicker").datepicker('getDate').getWeek());
-
+         $.post("Null.cshtml",function (data) { $("#processid").html(data); });
+         $("#datepicker").attr('value',getCookie("valueDatePicker"));
+         $('#testType option[value="' + getCookie("valueTypeId") + '"]').attr('selected', 'selected');
+         $('#projectId option[value="' + getCookie("valueProjectId") + '"]').attr('selected', 'selected');
         // init loading WeekOfYear,TestTypeId,ProjectId
+       
         if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
             var date = new Date($("#datepicker").val());
             var weekOfYear = date.getWeek();
+
+           
+
             $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
             $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
             $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
@@ -67,7 +70,10 @@
             //alert("o day");
             if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
                 var date = new Date($("#datepicker").val());
-                //$("#valueDatePicker").attr('value',date.getWeek());
+                setCookie("valueDatePicker",$("#datepicker").val(),365);
+                setCookie("valueTypeId",$("#testType").val(),365);
+                setCookie("valueProjectId",$("#projectId").val(),365);
+                
                 $.post("Effort.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messTask").html(data); });
                 $.post("Statistic.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
                 $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
@@ -77,18 +83,17 @@
                 $.post("Statistic.cshtml", { WeekOfYear: "0", TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val() }, function (data) { $("#messStatistic").html(data); });
                 $.post("Process.cshtml", { ProjectId: "0" }, function (data) { $("#processid").html(data); });
             }
-
         });
         // save data to database
         $("#button1").click(function () {
             if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
                 var date = new Date($("#datepicker").val());
                
-                alert("week=" + date.getWeek());
-                $("#processid").html('');
+               // alert("week=" + date.getWeek());
+                $.post("Null.cshtml",function (data) { $("#messSubmitLoad,#processid").html(data); });
                 $.post("Process.cshtml", { WeekOfYear: date.getWeek(), Txt_1_1: $("#txt_1_1").val() }, function (data) { $("#processid").html(data); });
                 var id1 = "#txt_1_1";
-                alert("id tam = " + $(id1).val());
+              //  alert("id tam = " + $(id1).val());
                 var startLoop = 0;
                 var endLoop = 0;
                 if ($("#testType").val() == 1) { startLoop = 1; endLoop = 26; } else { startLoop = 26; endLoop = 44; }
@@ -120,16 +125,15 @@
                 alert("You must choose date before saving!!!");
             }
         });
-
         //submit form
         $("#form").submit(function () {
             // alert("aa=" + $("#datepicker").val());
             var date = new Date($("#datepicker").val());
-            alert("week=" + date.getWeek());
+           // alert("week=" + date.getWeek());
             if ($("#datepicker").val() == "" || $("#datepicker").val() == null) {
               
                 alert("WARNING!! Please set date before submit !");
-                $.post("Null.cshtml",function (data) { $("#messSubmitLoad").html(data); });
+                $.post("Null.cshtml",function (data) { $("#messSubmitLoad,#processid").html(data); });
                 return false;
             }
             else {
@@ -172,23 +176,36 @@
         jsonText += '}';
         return jsonText;
     }
+    function getCookie(c_name)
+    {
+        var i,x,y,ARRcookies=document.cookie.split(";");
+        for (i=0;i<ARRcookies.length;i++)
+          {
+          x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+          y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+          x=x.replace(/^\s+|\s+$/g,"");
+          if (x==c_name)
+            {
+            return unescape(y);
+            }
+          }
+    }
+    function setCookie(c_name,value,exdays)
+    {
+        var exdate=new Date();
+        exdate.setDate(exdate.getDate() + exdays);
+        var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+        document.cookie=c_name + "=" + c_value;
+    }
 </script>
-
-@*<div id="tempage">
-    <h1>TEMP PAGE</h1>
-   @RenderPage("~/temp.cshtml") 
-</div>*@
-
-
 
 <form id="form" method="post" action="Submit.cshtml">
     <input type="hidden" value="" id="valueDatePicker" name="valueDatePicker">
+
     @AntiForgery.GetHtml()
     @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
     <fieldset>
-
  <!--Combobox to search  -->
-        @*<div id="processid">@RenderPage("Process.cshtml")</div>*@
        <div id="content">
             <div id="box">
                 <table width="100%">
@@ -226,9 +243,7 @@
                  </table>
              </div>
         </div>
-
-
- <!--Effort on Task (hour)  -->
+<!--Effort on Task (hour)  -->
         <div id="content">
             <div id="box">
 		        <h3>Effort on Tasks (hour)</h3>	        
@@ -249,9 +264,8 @@
 <!--Button save and submit  -->
         <div align="right">
            
-            
-            <div id="messSubmitLoad" name="messSubmitLoad">
-                <div id="processid">@RenderPage("Process.cshtml")</div>
+            <div id="processid">@RenderPage("Process.cshtml")</div>
+            <div id="messSubmitLoad" name="messSubmitLoad">                
                @if(Global_Variables.SUBMIT_SUCCESS != -1){
                   //  <div>Global_Variables=@Global_Variables.SUBMIT_SUCCESS</div>
                      var time= DateTime.Now.Hour+ ":" +DateTime.Now.Minute+":"+DateTime.Now.Second;
@@ -269,7 +283,7 @@
                      }
                      
                 }
-            </div>@**@
+            </div>
                 <input id="button1" type="button"  value="Save" name="button1"/>
 				<input id="button2" type="submit" value="Submit" name="button2"/>
 		</div>
