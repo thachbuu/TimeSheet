@@ -10,7 +10,9 @@
    // <div>weekOfYear=@Request["WeekOfYear"] </div>
    // <div>projectid=@Request["ProjectId"] </div>
    // <div>requestProjectId=@Request["ProjectId"]</div>
-
+   if(IsPost && Request["Submit"] == "Yes"){
+       <div>sumit was pressed</div>
+   }
     if(IsPost && weekOfYear != "0" && weekOfYear!=null && Request["ProjectId"] != null && Request["ProjectId"] != ""){
         var db = Database.Open("StarterSite");
         //get UserId and ProjectId to get UserProjectId
@@ -20,7 +22,7 @@
         if(Session["Email"] == null){
             WebSecurity.RequireAuthenticatedUser();
             WebSecurity.Logout();
-            Response.Redirect("~");
+            Response.Redirect("~/Account/Logout.cshtml");
         }
         else{
              userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
@@ -37,7 +39,7 @@
         
         foreach(var items in jsonObject){
              var timeManagement = new TimeManagement.TimeManagementList();
-             timeManagement.Project_UserId = Request["ProjectId"].AsInt();
+             timeManagement.Project_UserId = projectUserId;
              timeManagement.Disable = false;
              timeManagement.WeekOfYear = weekOfYear.AsInt();   
              foreach(var i in items.Value){
@@ -54,20 +56,20 @@
          }
          bool isUpdate = true;
          bool flagSave = true;
-         if( weekOfYear != "0" && weekOfYear!=null){
+         if( weekOfYear != "0" && weekOfYear!=null && projectUserId != 0){
             isUpdate = TimeManagement.isUpdateOrAdd(timeMList[0].TaskId,int.Parse(weekOfYear),projectUserId);
          }
           // <div>Count add/update=@timeManagementList.Count()</div>
          
          if(isUpdate== true){ // saved 
              //  <div>go into update</div>
-             bool rsUpdate=TimeManagement.updateMoreTimeManagement(timeMList);
+             bool rsUpdate=TimeManagement.updateMoreTimeManagement(timeMList,Global_Variables.DISABLE);
              if(rsUpdate != true) {flagSave = false;}
               // else {<div>Can't save your data at @DateTime.Now.Hour:@DateTime.Now.Minute:@DateTime.Now.Second </div>;} 
          }
          else{//not yet saved
-             <div>go into add new </div>
-            bool rsAdd=TimeManagement.addNewMoreTimeManagement(timeMList); 
+           //  <div>go into add new </div>
+            bool rsAdd=TimeManagement.addNewMoreTimeManagement(timeMList,Global_Variables.DISABLE); 
             if(rsAdd != true) {flagSave = false;}
            // else {<div>Can't save your data at @DateTime.Now.Hour:@DateTime.Now.Minute:@DateTime.Now.Second </div>;}
          } 
