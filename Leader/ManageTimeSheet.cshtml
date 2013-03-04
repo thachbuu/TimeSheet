@@ -3,20 +3,18 @@
     var memberList = db.Query("SELECT DISTINCT FirstName,UserId FROM UserProfile WHERE LeaderId=@0 OR ProjectManagerId=@0",WebSecurity.CurrentUserId);
     var data = new WebGrid(memberList);
 
-    
-    
-
-
 }
 <script>
     $(function () {
         $("li[id*=mem]").click(function () {
             $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
+
         });
         $("li[id*=mem_]").hover(
             function () { $(this).css('color', '#ff6a00'); },
             function () { $(this).css('color', '#000'); }
         );
+        
      });
 </script>
 <div style="float: left; width: 150px;">

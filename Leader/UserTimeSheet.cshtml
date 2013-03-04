@@ -8,12 +8,17 @@
         userId = Request["MemberUserId"].AsInt();
         if(Request["action"]=="Accept"){
             db.Query("UPDATE TimeManagement SET Approved='True' WHERE Project_UserId=@0",Request["timeSheetForProjectUser"].AsInt());           
-            <p>YOU APPROVED SUCCESSFULLY</p>
+            <p style="color: #4cff00">YOU APPROVED SUCCESSFULLY</p>
+
+            
+        }
+        if(Request["action"]=="Do Not Accept"){
+            Response.Redirect("~/Leader/ManageTimeSheet");
         }
     }
 }
 <script>
-    $("#tabs").tabs();
+    $("#tabs").tabs();    
 </script>
 
 <style>
@@ -65,8 +70,9 @@ else{
                         }
                         
                         <input type="hidden" name="timeSheetForProjectUser" value="@item.id">
-                        <input type="submit" name="action" value="Accept" style="width: 100px">
+                        <input type="submit" name="action" id="btnAccept" value="Accept" style="width: 100px">
                         <input type="submit" name="action" value="Do Not Accept" style="width: 100px">
+                        <input type="hidden" name="MemberUserId" value="@Request["MemberUserId"]" >
                     </form>
                 }
             </div>
