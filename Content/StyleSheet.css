@@ -1,6 +1,7 @@
 /*Layout page
     -----------------------------------*/
 
+
 /*  LOGO 
     ------------------------*/
 img{
@@ -14,7 +15,7 @@ img{
 .content{
     width: 1000px;
     background-color: #fbf8f8;
-    margin-left: 150px;    
+    margin: auto;    
 }
 .submitBtn{
     width: 120px;
@@ -137,3 +138,56 @@ h2{
 .field-validation-error{
     color: #f00;
 }
+
+/* login page */
+#loginForm {
+    border-right: solid 2px #c8c8c8;
+    float: left;
+    width: 55%;
+}
+
+    #loginForm .validation-error {
+        display: block;
+        margin-left: 15px;
+    }
+
+    #loginForm .validation-summary-errors ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    #loginForm .validation-summary-errors li {
+        display: inline;
+        list-style: none;
+        margin: 0;
+    }
+
+    #loginForm input {
+        width: 250px;
+    }
+
+    #loginForm input[type="checkbox"],
+    #loginForm input[type="submit"],
+    #loginForm input[type="button"],
+    #loginForm button {
+        width: auto;
+    }
+/* forms */
+fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+    fieldset legend {
+        display: none;
+    }
+
+    fieldset ol {
+        padding: 0;
+        list-style: none;
+    }
+
+        fieldset ol li {
+            padding-bottom: 5px;
+        }

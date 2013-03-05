@@ -2,17 +2,20 @@
     Layout = "";
     var db = Database.Open("StarterSite");
     var userId = Request["MemberUserId"].AsInt();
+    int currentPrjId=0;
     var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName,WeekOfYear FROM Project_User,Projects,TimeManagement " +
                                   "WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId AND TimeManagement.Approved='False' AND TimeManagement.Project_UserId = Project_User.Id",@userId);
     if(IsPost){
+        currentPrjId = Request["CurrentProjectId"].AsInt();
+        @*
         userId = Request["MemberUserId"].AsInt();
         if(Request["action"]=="Accept"){
             db.Query("UPDATE TimeManagement SET Approved='True' WHERE Project_UserId=@0",Request["timeSheetForProjectUser"].AsInt());           
             <p style="color: #4cff00">YOU APPROVED SUCCESSFULLY</p>            
         }
-        if(Request["action"]=="Do Not Accept"){
+        if(Request["action"]=="Decline"){
             Response.Redirect("~/Leader/ManageTimeSheet");
-        }
+        }*@
         
     }
 }
@@ -25,7 +28,26 @@
         width: 350px;
     }
 </style>
+<div>@currentPrjId
+</div>
 
+<div style="float: left; width: 150px;">
+    <h2>MEMBERS</h2>
+    <ul>
+        @{
+            var memberlist = Functions.getUsersInProject(currentPrjId);
+            foreach(var member in memberlist){
+                <li id="mem_@member.UserId" value="@member.UserId">
+                    @member.FirstName
+                    <span>(@Functions.getTotalUnapprovedTimeSheet(member.UserId))</span>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+@*
+<div style="float: right ;width: 850px" id="displayTasks">  
 @if(userId == 0){
     <p>Please select a member on the right</p>
 }
@@ -83,7 +105,7 @@ else{
                         
                         <input type="hidden" name="timeSheetForProjectUser" value="@prj.id">
                         <input type="submit" name="action" id="btnAccept" value="Accept" style="width: 100px">
-                        <input type="submit" name="action" value="Do Not Accept" style="width: 100px">
+                        <input type="submit" name="action" value="Decline" style="width: 100px">
                         <input type="hidden" name="MemberUserId" value="@Request["MemberUserId"]" >
                     </form>
                 }
@@ -92,3 +114,6 @@ else{
     </div>
     }
 }
+
+</div>
+*@

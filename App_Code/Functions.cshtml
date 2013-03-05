@@ -1,5 +1,5 @@
 ﻿@functions {
-    
+    public static String DATABASE = "StarterSite";
     public static int getMasterUserId(){
         var db = Database.Open("StarterSite");
         var masterUserId = db.QueryValue("SELECT UserProfile.UserId FROM UserProfile,webpages_UsersInRoles AS UsersInRoles,webpages_Roles AS Roles "+  
@@ -118,6 +118,22 @@
         DateTime result = firstMonday.AddDays(weekNum * 7);
 
         return result;
+    }
+
+    public static List<SelectListItem> getProjectsFromUser(int UserId){
+        var listIem = new List<SelectListItem>();
+        var db = Database.Open(DATABASE);
+        var query = "SELECT Projects.ProjectName, Projects.ProjectId FROM Projects, Project_User WHERE Projects.ProjectId = Project_User.ProjectId AND Project_User.UserId=@0 " +
+                    "UNION " +
+                    "SELECT Projects.ProjectName, Projects.ProjectId FROM Projects WHERE ProjectManager=@0" ;
+        var prjList = db.Query(query,UserId);        
+        foreach(var prj in prjList){
+            SelectListItem item = new SelectListItem();
+            item.Text = prj.ProjectName;
+            item.Value = prj.ProjectId.ToString();
+            listIem.Add(item);
+        }
+        return listIem;
     }
      
     /*
