@@ -7,6 +7,9 @@
 }
 <script>
     $(function () {
+
+        $("#startedDatepicker").datepicker();
+        $("#endDatepicker").datepicker();
         $("li[id*=mem]").click(function () {
             $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
 
@@ -19,15 +22,21 @@
 
         //Get current project
         var currentPrj = $("#tslistProject").find(":selected").val();
-        $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, action: "showCurrentPrj" }, function (data) { $("#tsContent").html(data); });
+        var testType = $("#tsTestType").find(":selected").val();
+        var startedDate = $("#startedDatepicker").val();
+        var endDate = $("#endDatepicker").val();
+        $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate },
+                                function (data) { $("#tsContent").html(data); });
 
         //The project is changed
         $("#tslistProject").change(function () {
-           currentPrj = $("#tslistProject").find(":selected").val();
-           $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, action: "showCurrentPrj" }, function (data) { $("#tsContent").html(data); });
+            currentPrj = $("#tslistProject").find(":selected").val();
+            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, action: "showCurrentPrj" }, function (data) { $("#tsContent").html(data); });
         });
-       
-        //alert("da post");
+         $("#SearchDate").click(function () {
+            currentPrj = $("#tslistProject").find(":selected").val();
+            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, action: "showCurrentPrj" }, function (data) { $("#tsContent").html(data); });
+        });
     });
 </script>
 
@@ -35,24 +44,26 @@
 <div id="searchBar">
     <div id="component">
         <span><strong>Project</strong></span>
-        @Html.DropDownList("tslistProject",Functions.getProjectsFromUser(WebSecurity.CurrentUserId))
+        @Html.DropDownList("tslistProject",Functions.getListOfProjectsFromUser(WebSecurity.CurrentUserId))
+    </div>
+    <div id="component">
+        <span><strong>Test type</strong></span>
+        @Html.DropDownList("tsTestType",Functions.getListTestType())
     </div>
     <div id="component">
         <span><strong>StarteDate</strong></span>
-        <input type="text" name="startedDatepicker">
+        <input type="text" id="startedDatepicker">
     </div>
     <div id="component">
         <span><strong>EndDate</strong></span>
-        <input type="text" name="endDatepicker">
+        <input type="text" id="endDatepicker">
     </div>
     <div id="component">
-        <input type="button" value="Search">
+        <input type="button" id="SearchDate" value="Search">
     </div>
 </div>
 
-<div id="tsContent">
-    aaaaaaaaaaa
-   
+<div id="tsContent">   
  </div>
 
 @*

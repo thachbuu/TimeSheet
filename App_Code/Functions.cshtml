@@ -99,7 +99,19 @@
      public static dynamic getProjectDetails(int projectId){
          var db = Database.Open("StarterSite");
          return db.QuerySingle("SELECT * FROM Projects WHERE ProjectId=@0",projectId);
-     }      
+     }
+     
+     //GET WEEK OF YEAR
+    public static int getWeekOfYear(DateTime expectedDate){    
+        /*CAUTION: CHUA HOAN THIEN - NOT FINISHED*/
+        DateTime jan1 = new DateTime(expectedDate.Year, 1, 1);    
+        int daysOffset = DayOfWeek.Sunday - jan1.DayOfWeek;
+        DateTime firstMonday = jan1.AddDays(daysOffset);
+        int rangeDate = expectedDate.Subtract(firstMonday.Date).Days;
+        int week = (rangeDate / 7) + (rangeDate % 7 >0?1:0);        
+        return week;
+        
+    }
     public static DateTime FirstDateOfWeek(int year, int weekNum)
     {
 
@@ -119,8 +131,20 @@
 
         return result;
     }
+    public static DateTime FirstDateOfWeek(DateTime chosenDate)
+    {
+        int dayOffSet =0;
+        if(chosenDate.DayOfWeek == DayOfWeek.Sunday){
+            dayOffSet = -6;
+        }
+        else{
+            dayOffSet = DayOfWeek.Monday - chosenDate.DayOfWeek;
+        }         
+        DateTime expectedDate = chosenDate.AddDays(dayOffSet);
+        return expectedDate;        
+    }
 
-    public static List<SelectListItem> getProjectsFromUser(int UserId){
+    public static List<SelectListItem> getListOfProjectsFromUser(int UserId){
         var listIem = new List<SelectListItem>();
         var db = Database.Open(DATABASE);
         var query = "SELECT Projects.ProjectName, Projects.ProjectId FROM Projects, Project_User WHERE Projects.ProjectId = Project_User.ProjectId AND Project_User.UserId=@0 " +
@@ -134,6 +158,20 @@
             listIem.Add(item);
         }
         return listIem;
+    }
+
+    public static List<SelectListItem> getListTestType(){
+        var listItem = new List<SelectListItem>();
+        var db = Database.Open(DATABASE);
+        var testType = db.Query("SELECT * FROM TestType");
+        foreach(var type in testType){
+            SelectListItem item = new SelectListItem();
+            item.Text = type.Name;
+            item.Value = type.Id.ToString();
+            listItem.Add(item);
+        }
+        return listItem;
+
     }
      
     /*

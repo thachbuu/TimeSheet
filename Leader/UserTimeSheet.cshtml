@@ -1,13 +1,36 @@
 ﻿@{
     Layout = "";
     var db = Database.Open("StarterSite");
-    var userId = Request["MemberUserId"].AsInt();
+    int userId = 0;
+    int testType = 0;    
     int currentPrjId=0;
+    int defaultUserId = 0;
+    DateTime filterDate;
     var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName,WeekOfYear FROM Project_User,Projects,TimeManagement " +
                                   "WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId AND TimeManagement.Approved='False' AND TimeManagement.Project_UserId = Project_User.Id",@userId);
     if(IsPost){
+        userId = Request["MemberUserId"].AsInt();
+        testType = Request["testType"].AsInt();
         currentPrjId = Request["CurrentProjectId"].AsInt();
-        @*
+        filterDate =Request["filterDate"].AsDateTime();
+
+        if(filterDate == DateTime.MinValue){
+            filterDate =Functions.FirstDateOfWeek(DateTime.Now);
+        }
+        else{
+            filterDate = Functions.FirstDateOfWeek(filterDate);
+        }
+        <p>@filterDate</p>
+        <p>UserId: @userId</p>
+        <p>TestType: @testType</p>
+        <p>currentPrjectId: @currentPrjId</p>
+
+
+        
+           @*
+        var abc = Functions.getUsersInProject(currentPrjId)[0];
+        <p>defaultUserId : @abc.UserId</p>
+     
         userId = Request["MemberUserId"].AsInt();
         if(Request["action"]=="Accept"){
             db.Query("UPDATE TimeManagement SET Approved='True' WHERE Project_UserId=@0",Request["timeSheetForProjectUser"].AsInt());           
@@ -46,8 +69,8 @@
     </ul>
 </div>
 
-@*
-<div style="float: right ;width: 850px" id="displayTasks">  
+
+<div style="float: right ;width: 850px">  
 @if(userId == 0){
     <p>Please select a member on the right</p>
 }
@@ -116,4 +139,3 @@ else{
 }
 
 </div>
-*@
