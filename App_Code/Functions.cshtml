@@ -78,6 +78,47 @@
         }
         return counter;
      }
+
+     public static List<dynamic> getUsersInProject(int projectId){
+         var db = Database.Open("StarterSite");
+         var userInProject = db.Query("SELECT UserId FROM Project_User WHERE ProjectId=@0 AND Status='True'",projectId);
+         List<dynamic> listUser = new List<dynamic>();
+         foreach(var userId in userInProject){
+            // var userInfo = db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId.UserId);
+            var userInfo = getUserInfo(userId.UserId);
+            listUser.Add(userInfo);
+         }
+         return listUser;
+     }
+
+     public static dynamic getUserInfo(int userId){
+         var db = Database.Open("StarterSite");
+         return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
+     }
+
+     public static dynamic getProjectDetails(int projectId){
+         var db = Database.Open("StarterSite");
+         return db.QuerySingle("SELECT * FROM Projects WHERE ProjectId=@0",projectId);
+     }      
+    public static DateTime FirstDateOfWeek(int year, int weekNum)
+    {
+
+        DateTime jan1 = new DateTime(year, 1, 1);
+        int daysOffset = DayOfWeek.Monday - jan1.DayOfWeek;
+        System.Globalization.CultureInfo cult_info = System.Globalization.CultureInfo.CreateSpecificCulture("no");
+        DateTime firstMonday = jan1.AddDays(daysOffset);
+        var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
+        int firstWeek = cal.GetWeekOfYear(firstMonday, cult_info.DateTimeFormat.CalendarWeekRule, DayOfWeek.Monday);
+
+        if (firstWeek <= 1)
+        {
+            weekNum -= 1;
+        }
+
+        DateTime result = firstMonday.AddDays(weekNum * 7);
+
+        return result;
+    }
      
     /*
        QUERIES SECTION

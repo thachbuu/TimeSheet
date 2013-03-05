@@ -2,19 +2,18 @@
     Layout = "";
     var db = Database.Open("StarterSite");
     var userId = Request["MemberUserId"].AsInt();
-    var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName FROM Project_User,Projects,TimeManagement " +
+    var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName,WeekOfYear FROM Project_User,Projects,TimeManagement " +
                                   "WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId AND TimeManagement.Approved='False' AND TimeManagement.Project_UserId = Project_User.Id",@userId);
     if(IsPost){
         userId = Request["MemberUserId"].AsInt();
         if(Request["action"]=="Accept"){
             db.Query("UPDATE TimeManagement SET Approved='True' WHERE Project_UserId=@0",Request["timeSheetForProjectUser"].AsInt());           
-            <p style="color: #4cff00">YOU APPROVED SUCCESSFULLY</p>
-
-            
+            <p style="color: #4cff00">YOU APPROVED SUCCESSFULLY</p>            
         }
         if(Request["action"]=="Do Not Accept"){
             Response.Redirect("~/Leader/ManageTimeSheet");
         }
+        
     }
 }
 <script>
@@ -44,15 +43,28 @@ else{
         @foreach(var prj in unapprovedProject){
             <div id="tab_@prj.Id">
                 @{
+                    var userInfo = Functions.getUserInfo(userId);
+                    var projectInfo = Functions.getProjectDetails(prj.Id);
+                    DateTime firstDayofWeek = Functions.FirstDateOfWeek(DateTime.Now.Year,prj.WeekOfYear);
+
+                    <h4 style="color: #808080">@userInfo.FirstName @userInfo.LastName - 
+                        <span style="color: #0026ff">@projectInfo.ProjectName</span>
+                        <br> 
+                        <span style="color: #000">From:</span> @firstDayofWeek.ToShortDateString() 
+                        <span style="color: #000">To:</span>@firstDayofWeek.AddDays(7).ToShortDateString()
+                    </h4> 
                     //GET CATEGORIES 
                     var categoriesList = db.Query("SELECT Id FROM Categories");
                     <form method="post">
                         @foreach(var category in categoriesList){
+
                             //GET TIMESHEET FOR ABOVE CATEGORIES IN WORKING PROJECT 
                             var timesheet = db.Query("SELECT Tasks.Name,Mon,Wed,Tue,Thu,Fri,Sat,Sun,Categories.Name AS CategoryName FROM TimeManagement,Tasks,Categories " +
                                                     "WHERE Project_UserId=@0 AND TimeManagement.TaskId = Tasks.Id AND Categories.Id = Tasks.CategoryId AND Categories.Id=@1",prj.Id,category.Id);
                             if(timesheet.Count >0 ){
-                               <h4>@timesheet[0].CategoryName</h4>
+
+                                //SHOW CATEGORY NAME
+                               <h4 style="color: #f00">@timesheet[0].CategoryName.ToUpper()</h4>
                                 var newGrid = new WebGrid(timesheet,canSort:false,rowsPerPage:50);                                   
                                 @newGrid.GetHtml(
                                     columns: newGrid.Columns(
