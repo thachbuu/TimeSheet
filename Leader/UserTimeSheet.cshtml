@@ -5,25 +5,32 @@
     int testType = 0;    
     int currentPrjId=0;
     int defaultUserId = 0;
-    DateTime filterDate;
+    DateTime filterDate ;
+   // string startedDate = Request["StartedDate"].AsDateTime(DateTime.Parse("1/1/1753")).ToShortDateString();
+    string startedDate = "";
+    //string endDate ;=Request["EndDate"];
+    string endDate ="";
     var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName,WeekOfYear FROM Project_User,Projects,TimeManagement " +
                                   "WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId AND TimeManagement.Approved='False' AND TimeManagement.Project_UserId = Project_User.Id",@userId);
     if(IsPost){
         userId = Request["MemberUserId"].AsInt();
         testType = Request["testType"].AsInt();
         currentPrjId = Request["CurrentProjectId"].AsInt();
-        filterDate =Request["filterDate"].AsDateTime();
-
+        //filterDate =Request["filterDate"];
+        startedDate=Request["StartedDate"];
+        endDate= Request["EndDate"];
+        @*
         if(filterDate == DateTime.MinValue){
             filterDate =Functions.FirstDateOfWeek(DateTime.Now);
         }
         else{
             filterDate = Functions.FirstDateOfWeek(filterDate);
         }
-        <p>@filterDate</p>
+        <p>@filterDate</p>*@
         <p>UserId: @userId</p>
         <p>TestType: @testType</p>
         <p>currentPrjectId: @currentPrjId</p>
+        <p>startedDate: @startedDate</p>
 
 
         
@@ -53,6 +60,30 @@
 </style>
 <div>@currentPrjId
 </div>
+
+@{
+    if(startedDate == "" && endDate ==""){
+        <p>2 fields empty</p>
+        var currentFirstOfWeek = Functions.FirstDateOfWeek(DateTime.Now);
+        var timesheetReports = db.Query("SELECT DISTINCT(Datetime) FROM TimeManagement WHERE( @0 <= Datetime)",currentFirstOfWeek);
+        foreach(var ts in timesheetReports){
+            <div>@ts.Datetime</div>
+        }
+    }else{
+        // Date: 1/1/1753 is MinValue of SQL
+        startedDate = startedDate==""?DateTime.Parse("1/1/1753").ToShortDateString():startedDate;
+        endDate = endDate==""?DateTime.Parse("1/1/9999").ToShortDateString():endDate;
+        var timesheetReports = db.Query("SELECT * FROM TimeManagement WHERE( @0 <= Datetime) AND (Datetime <=@1)",startedDate,endDate);
+        foreach(var ts in timesheetReports){
+            <div>ts.Datetime</div>
+        }
+        
+    }
+    //var timesheetReports = db.Query("SELECT * FROM TimeManagement WHERE( @0 <= Datetime) AND (Datetime <=@1)",startedDate,endDate);
+    
+}
+
+@*
 
 <div style="float: left; width: 150px;">
     <h2>MEMBERS</h2>
@@ -139,3 +170,4 @@ else{
 }
 
 </div>
+*@
