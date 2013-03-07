@@ -48,6 +48,12 @@
          return db.QuerySingle("SELECT * From TestType WHERE Id=@0",testTypeId);
      }
 
+     //PROJECT USER SECTION
+     public static int getProjectUserId(int userId, int projectId){
+         var db = Database.Open(DATABASE);
+         return db.QueryValue("SELECT Id FROM Project_User WHERE UserId=@0 AND ProjectId=@1",userId, projectId);
+     }
+
 
      //USERPROFILE SECTION
 
