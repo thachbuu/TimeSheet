@@ -1,15 +1,13 @@
 ﻿@{
     Page.Title = "Manage Time Sheet";
-    var db = Database.Open("StarterSite");
-    
-    //var data = new WebGrid(memberList);
-
+    var db = Database.Open("StarterSite");      
 }
 <script>
     $(function () {
         //Get current project
         var currentPrj = "";
         var testType = "";
+        var currentFirstOfWeek = "";
         var startedDate = "";
         var endDate = "";
 
@@ -17,9 +15,18 @@
         $.fn.collectInfo = function () {
             currentPrj = $("#tslistProject").find(":selected").val();
             testType = $("#tsTestType").find(":selected").val();
+            currentFirstOfWeek = $("#currentFirstDayOfWeek").val();
             startedDate = $("#startedDatepicker").val();
             endDate = $("#endDatepicker").val();
             $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate }, function (data) { $("#tsContent").html(data); });
+        }
+
+        $.fn.changeFirstDayOfWeek = function (day) {
+            var posting = $.post("/Leader/ChangeFirstDayofWeek.cshtml", { currentFirstOfWeek: $("#currentFirstDayOfWeek").val(), additionDate: day.toString() });
+            posting.done(function (data) {
+                var result = $("#currentFirstDayOfWeek").html(data).find('#fow').val();
+                $("#currentFirstDayOfWeek").attr('value', result);
+            });
         }
 
         //OPEN THE DATEPICKER
@@ -30,7 +37,6 @@
         -----------------------------------*/
         $("li[id*=mem]").click(function () {
             $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
-
         });
 
         $("li[id*=mem]").hover(
@@ -48,11 +54,21 @@
             $.fn.collectInfo();
         });
 
+        $("#paginationNext, #paginationPrevious").click(function () {
+            if ($(this).text() == "NEXT") {
+                $.fn.changeFirstDayOfWeek(7);
+                alert("NEXT");
+            }
+            if ($(this).text() == "PREVIOUS") {
+                $.fn.changeFirstDayOfWeek(-7);
+                alert("PREVIOUS");
+            }
+        });
+
         //SEND INFORMATION FOR THE FIRST TIME
         $.fn.collectInfo();
     });
 </script>
-
 
 <div id="searchBar">
     <div id="component">
@@ -75,6 +91,16 @@
         <input type="button" id="SearchDate" value="Search">
     </div>
 </div>
+
+<div>
+    <input type="text" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
+    <span id="paginationNext">NEXT</span>
+    <span id="paginationPrevious">PREVIOUS</span>
+</div>
+
+<div id="result">
+</div>
+
 <div id="tsContent">   
  </div>
 

@@ -1,0 +1,13 @@
+﻿@{
+    Layout="";  
+    var currentFirstOfWeek = Request["currentFirstOfWeek"].AsDateTime();
+    var additionalDate = Request["additionDate"].AsInt();    
+    if(IsPost){
+         currentFirstOfWeek = Request["currentFirstOfWeek"].AsDateTime();
+         additionalDate = Request["additionDate"].AsInt();       
+    }    
+}
+<input id="fow" value="@currentFirstOfWeek.AddDays(additionalDate).ToShortDateString()">
+
+
+ 
