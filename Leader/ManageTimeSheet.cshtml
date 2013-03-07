@@ -18,14 +18,15 @@
             currentFirstOfWeek = $("#currentFirstDayOfWeek").val();
             startedDate = $("#startedDatepicker").val();
             endDate = $("#endDatepicker").val();
-            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate }, function (data) { $("#tsContent").html(data); });
+            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate, CurrentFirstOfWeek: currentFirstOfWeek }, function (data) { $("#tsContent").html(data); });
         }
 
         $.fn.changeFirstDayOfWeek = function (day) {
             var posting = $.post("/Leader/ChangeFirstDayofWeek.cshtml", { currentFirstOfWeek: $("#currentFirstDayOfWeek").val(), additionDate: day.toString() });
             posting.done(function (data) {
-                var result = $("#currentFirstDayOfWeek").html(data).find('#fow').val();
+                var result = $("#result").html(data).find('#fow').val();
                 $("#currentFirstDayOfWeek").attr('value', result);
+                $.fn.collectInfo();
             });
         }
 
@@ -55,15 +56,16 @@
         });
 
         $("#paginationNext, #paginationPrevious").click(function () {
+            alert($(this).text());
             if ($(this).text() == "NEXT") {
                 $.fn.changeFirstDayOfWeek(7);
-                alert("NEXT");
             }
             if ($(this).text() == "PREVIOUS") {
                 $.fn.changeFirstDayOfWeek(-7);
-                alert("PREVIOUS");
             }
+           
         });
+
 
         //SEND INFORMATION FOR THE FIRST TIME
         $.fn.collectInfo();
@@ -94,8 +96,8 @@
 
 <div>
     <input type="text" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
-    <span id="paginationNext">NEXT</span>
     <span id="paginationPrevious">PREVIOUS</span>
+    <span id="paginationNext">NEXT</span>   
 </div>
 
 <div id="result">

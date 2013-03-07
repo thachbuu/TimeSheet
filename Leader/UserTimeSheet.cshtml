@@ -14,12 +14,14 @@
         chosenTestType = Request["TestType"].AsInt();
         chosenPrjId = Request["CurrentProjectId"].AsInt();
         startedDate=Request["StartedDate"];
-        endDate= Request["EndDate"];        
-        
+        endDate= Request["EndDate"];
+        currentFirstOfWeek=Request["CurrentFirstOfWeek"]==""?Functions.FirstDateOfWeek(DateTime.Now):Request["CurrentFirstOfWeek"].AsDateTime();
+                
         <p>TestType: @chosenTestType</p>
         <p>currentPrjectId: @chosenPrjId</p>
         <p>startedDate: @startedDate</p>
         <p>endDate: @endDate</p>
+        <p>Current : @currentFirstOfWeek</p>
     }
 }
 <script>
