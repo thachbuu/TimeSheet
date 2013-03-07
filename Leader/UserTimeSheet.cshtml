@@ -54,7 +54,8 @@
     }
 }
 <script>
-    $("#tabs").tabs();    
+    $("#tabs").tabs();
+    $("#accordion").accordion();    
 </script>
 
 <style>
@@ -67,48 +68,48 @@
 
 @{
     if(startedDate == "" && endDate ==""){
-         <p>2 fields empty</p>
         var lsOfProjectUserId = db.Query("SELECT * FROM Project_User WHERE ProjectId=@0",chosenPrjId);
-        foreach(var prjusrid in lsOfProjectUserId){
-            
-        }
-
-       
         var currentFirstOfWeek = Functions.FirstDateOfWeek(DateTime.Now);
+        <h3>currentFOW: @currentFirstOfWeek</h3>
+        <h2>@Functions.getProjectDetails(chosenPrjId).ProjectName - @Functions.getTestType(chosenTestType).Name</h2>
         var timesheetReports = db.Query("SELECT DISTINCT(Datetime) FROM TimeManagement WHERE( @0 = Datetime)",currentFirstOfWeek.ToShortDateString());
         foreach(var ts in timesheetReports){
              var lsMemberInDuration = Functions.getUsersInProject(chosenPrjId,ts.Datetime.ToShortDateString());
-             foreach(var mem in lsMemberInDuration){
-                 <p>@Functions.getUserInfo(mem.UserId).FirstName</p>
-             }
-             var listCategory = Functions.getListCategory();
-             foreach(var cate in listCategory){
+             <div id="accordion">
+                 @foreach(var mem in lsMemberInDuration){
+                    <h3>@Functions.getUserInfo(mem.UserId).FirstName</h3>
+                    <div>@{
+                    var listCategory = Functions.getListCategory();
+                    foreach(var cate in listCategory){
+                     //GIAI NGHIA QUERY: LAY HET ~ COT TRONG TIMEMANAGEMENT CO' THOI GIAN LA @0 VA
+                     // NAM TRONG CATEGORY @1 VA THUOC LOAI  @2 VA PHAI NAM TRONG PROJECT @3
+                         var currentDataTS = db.Query("SELECT * FROM TimeManagement WHERE Datetime=@0 "+
+                                                  "AND TaskId IN (SELECT Id FROM Tasks WHERE CategoryId=@1 AND TypeId=@2) "+
+                                                  "AND Project_UserId IN (SELECT Id FROM Project_User WHERE ProjectId=@3 AND UserId=@4)",
+                                            ts.Datetime.ToShortDateString(),cate.Id,chosenTestType,chosenPrjId,mem.UserId);
 
-                 //GIAI NGHIA QUERY: LAY HET ~ COT TRONG TIMEMANAGEMENT CO' THOI GIAN LA @0 VA
-                 // NAM TRONG CATEGORY @1 VA THUOC LOAI  @2 VA PHAI NAM TRONG PROJECT @3
-                 var currentDataTS = db.Query("SELECT * FROM TimeManagement WHERE Datetime=@0 "+
-                                              "AND TaskId IN (SELECT Id FROM Tasks WHERE CategoryId=@1 AND TypeId=@2) "+
-                                              "AND Project_UserId IN (SELECT Id FROM Project_User WHERE ProjectId=@3)",
-                                        ts.Datetime.ToShortDateString(),cate.Id,chosenTestType,chosenPrjId);
-
-                if(currentDataTS.Count >0){
-                    <div>@cate.Name</div>
-                    WebGrid gridData = new WebGrid(currentDataTS,canSort:false,rowsPerPage:100);                
-                    <div> @gridData.GetHtml(
-                        columns: gridData.Columns(
-                            gridData.Column("TaskId","Task Name",@<text>@Functions.getTaskName(item.TaskId)</text>,"taskField"),
-                            gridData.Column("Mon",format:@<span>@if(item.Mon != -1){<text>@item.Mon</text>}</span>),
-                            gridData.Column("Tue",format:@<span>@if(item.Tue != -1){<text>@item.Tue</text>}</span>),
-                            gridData.Column("Wed",format:@<span>@if(item.Wed != -1){<text>@item.Wed</text>}</span>),
-                            gridData.Column("Thu",format:@<span>@if(item.Thu != -1){<text>@item.Thu</text>}</span>),
-                            gridData.Column("Fri",format:@<span>@if(item.Fri != -1){<text>@item.Fri</text>}</span>),
-                            gridData.Column("Sat",format:@<span>@if(item.Sat != -1){<text>@item.Sat</text>}</span>),
-                            gridData.Column("Sun",format:@<span>@if(item.Sun != -1){<text>@item.Sun</text>}</span>)
-                        )
-                      )
-                    </div>}
+                        if(currentDataTS.Count >0){
+                            <div>@cate.Name</div>
+                            WebGrid gridData = new WebGrid(currentDataTS,canSort:false,rowsPerPage:100);                
+                            <div> @gridData.GetHtml(
+                                columns: gridData.Columns(
+                                    gridData.Column("TaskId","Task Name",@<text>@Functions.getTaskName(item.TaskId)</text>,"taskField"),
+                                    gridData.Column("Mon",format:@<span>@if(item.Mon != -1){<text>@item.Mon</text>}</span>),
+                                    gridData.Column("Tue",format:@<span>@if(item.Tue != -1){<text>@item.Tue</text>}</span>),
+                                    gridData.Column("Wed",format:@<span>@if(item.Wed != -1){<text>@item.Wed</text>}</span>),
+                                    gridData.Column("Thu",format:@<span>@if(item.Thu != -1){<text>@item.Thu</text>}</span>),
+                                    gridData.Column("Fri",format:@<span>@if(item.Fri != -1){<text>@item.Fri</text>}</span>),
+                                    gridData.Column("Sat",format:@<span>@if(item.Sat != -1){<text>@item.Sat</text>}</span>),
+                                    gridData.Column("Sun",format:@<span>@if(item.Sun != -1){<text>@item.Sun</text>}</span>)
+                                )
+                              )
+                            </div>}
                           
-            }
+                    }
+                    }
+                    </div>
+                }
+             </div>
         }
     }else{
         // Date: 1/1/1753 is MinValue of SQL

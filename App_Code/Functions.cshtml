@@ -17,10 +17,35 @@
          return db.QueryValue("SELECT Name FROM Tasks WHERE Tasks.Id=@0",taskId);
      }
 
+     public static List<SelectListItem>  getTasksInType(int testTypeId){
+        var db = Database.Open("StarterSite");
+        var taskQuery = "SELECT * " + 
+                          "FROM  Tasks " +  
+                          "WHERE  TypeId=testTypeId and CategoryId=1 ";
+        
+        var taskData = db.Query(taskQuery);    
+        var taskList = new List<SelectListItem>();
+
+        foreach(var item in taskData ){                        
+                var task = new SelectListItem();
+                task.Text = item.Name;
+               // task.Value = item.UserId.ToString();        
+               
+                taskList.Add(task);            
+        }
+        return taskList;  
+     } 
+
      //CATEGORY SECTION
      public static IEnumerable<dynamic> getListCategory(){
          var db = Database.Open(DATABASE);
          return db.Query("SELECT * FROM Categories");
+     }
+
+     //TEST TYPE SECTION
+     public static dynamic getTestType(int testTypeId){
+         var db = Database.Open(DATABASE);
+         return db.QuerySingle("SELECT * From TestType WHERE Id=@0",testTypeId);
      }
 
 
@@ -55,24 +80,7 @@
         return resourceList;        
     }
 
-    public static List<SelectListItem>  getTask(int testTypeId){
-        var db = Database.Open("StarterSite");
-        var taskQuery = "SELECT * " + 
-                          "FROM  Tasks " +  
-                          "WHERE  TypeId=testTypeId and CategoryId=1 ";
-        
-        var taskData = db.Query(taskQuery);    
-        var taskList = new List<SelectListItem>();
-
-        foreach(var item in taskData ){                        
-                var task = new SelectListItem();
-                task.Text = item.Name;
-               // task.Value = item.UserId.ToString();        
-               
-                taskList.Add(task);            
-        }
-        return taskList;  
-     } 
+    
 
      public static int getTotalUnapprovedTimeSheet(int userId){
          var db = Database.Open("StarterSite");
@@ -137,7 +145,7 @@
      }
 
      
-     /* ULTILITIES METHODS
+     /* ULTILITY METHODS
      -----------------------------------------------------------------------------------------------------
      */
      //GET WEEK OF YEAR
