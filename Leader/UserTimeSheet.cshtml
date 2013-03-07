@@ -2,20 +2,17 @@
     Layout = "";
     var db = Database.Open("StarterSite");
     int userId = 0;
-    int testType = 0;    
-    int currentPrjId=0;
+    int chosenTestType = 0;    
+    int chosenPrjId=0;
     int defaultUserId = 0;
-    DateTime filterDate ;
-   // string startedDate = Request["StartedDate"].AsDateTime(DateTime.Parse("1/1/1753")).ToShortDateString();
     string startedDate = "";
-    //string endDate ;=Request["EndDate"];
     string endDate ="";
     var unapprovedProject = db.Query("SELECT DISTINCT Project_User.Id,ProjectName,WeekOfYear FROM Project_User,Projects,TimeManagement " +
                                   "WHERE UserId=@0 AND Project_User.Status='True' AND Project_User.ProjectId=Projects.ProjectId AND TimeManagement.Approved='False' AND TimeManagement.Project_UserId = Project_User.Id",@userId);
     if(IsPost){
         userId = Request["MemberUserId"].AsInt();
-        testType = Request["testType"].AsInt();
-        currentPrjId = Request["CurrentProjectId"].AsInt();
+        chosenTestType = Request["TestType"].AsInt();
+        chosenPrjId = Request["CurrentProjectId"].AsInt();
         //filterDate =Request["filterDate"];
         startedDate=Request["StartedDate"];
         endDate= Request["EndDate"];
@@ -28,14 +25,21 @@
         }
         <p>@filterDate</p>*@
         <p>UserId: @userId</p>
-        <p>TestType: @testType</p>
-        <p>currentPrjectId: @currentPrjId</p>
+        <p>TestType: @chosenTestType</p>
+        <p>currentPrjectId: @chosenPrjId</p>
         <p>startedDate: @startedDate</p>
+        <p>endDate: @endDate</p>
+        
+          //startedDate.AsDateTime();
+         // DateTime.TryParse(startedDate);
+       // var firstDayofweek = Functions.FirstDateOfWeek(startedDate.AsDateTime());
+
+       // <p>@firstDayofweek</p>
 
 
         
            @*
-        var abc = Functions.getUsersInProject(currentPrjId)[0];
+        var abc = Functions.getUsersInProject(chosenPrjId)[0];
         <p>defaultUserId : @abc.UserId</p>
      
         userId = Request["MemberUserId"].AsInt();
@@ -58,26 +62,61 @@
         width: 350px;
     }
 </style>
-<div>@currentPrjId
+<div>@chosenPrjId
 </div>
 
 @{
     if(startedDate == "" && endDate ==""){
-        <p>2 fields empty</p>
+         <p>2 fields empty</p>
+        var lsOfProjectUserId = db.Query("SELECT * FROM Project_User WHERE ProjectId=@0",chosenPrjId);
+        foreach(var prjusrid in lsOfProjectUserId){
+            
+        }
+
+       
         var currentFirstOfWeek = Functions.FirstDateOfWeek(DateTime.Now);
-        var timesheetReports = db.Query("SELECT DISTINCT(Datetime) FROM TimeManagement WHERE( @0 <= Datetime)",currentFirstOfWeek);
+        var timesheetReports = db.Query("SELECT DISTINCT(Datetime) FROM TimeManagement WHERE( @0 = Datetime)",currentFirstOfWeek.ToShortDateString());
         foreach(var ts in timesheetReports){
-            <div>@ts.Datetime</div>
+             var lsMemberInDuration = Functions.getUsersInProject(chosenPrjId,ts.Datetime.ToShortDateString());
+             foreach(var mem in lsMemberInDuration){
+                 <p>@Functions.getUserInfo(mem.UserId).FirstName</p>
+             }
+             var listCategory = Functions.getListCategory();
+             foreach(var cate in listCategory){
+
+                 //GIAI NGHIA QUERY: LAY HET ~ COT TRONG TIMEMANAGEMENT CO' THOI GIAN LA @0 VA
+                 // NAM TRONG CATEGORY @1 VA THUOC LOAI  @2 VA PHAI NAM TRONG PROJECT @3
+                 var currentDataTS = db.Query("SELECT * FROM TimeManagement WHERE Datetime=@0 "+
+                                              "AND TaskId IN (SELECT Id FROM Tasks WHERE CategoryId=@1 AND TypeId=@2) "+
+                                              "AND Project_UserId IN (SELECT Id FROM Project_User WHERE ProjectId=@3)",
+                                        ts.Datetime.ToShortDateString(),cate.Id,chosenTestType,chosenPrjId);
+
+                if(currentDataTS.Count >0){
+                    <div>@cate.Name</div>
+                    WebGrid gridData = new WebGrid(currentDataTS,canSort:false,rowsPerPage:100);                
+                    <div> @gridData.GetHtml(
+                        columns: gridData.Columns(
+                            gridData.Column("TaskId","Task Name",@<text>@Functions.getTaskName(item.TaskId)</text>,"taskField"),
+                            gridData.Column("Mon",format:@<span>@if(item.Mon != -1){<text>@item.Mon</text>}</span>),
+                            gridData.Column("Tue",format:@<span>@if(item.Tue != -1){<text>@item.Tue</text>}</span>),
+                            gridData.Column("Wed",format:@<span>@if(item.Wed != -1){<text>@item.Wed</text>}</span>),
+                            gridData.Column("Thu",format:@<span>@if(item.Thu != -1){<text>@item.Thu</text>}</span>),
+                            gridData.Column("Fri",format:@<span>@if(item.Fri != -1){<text>@item.Fri</text>}</span>),
+                            gridData.Column("Sat",format:@<span>@if(item.Sat != -1){<text>@item.Sat</text>}</span>),
+                            gridData.Column("Sun",format:@<span>@if(item.Sun != -1){<text>@item.Sun</text>}</span>)
+                        )
+                      )
+                    </div>}
+                          
+            }
         }
     }else{
         // Date: 1/1/1753 is MinValue of SQL
         startedDate = startedDate==""?DateTime.Parse("1/1/1753").ToShortDateString():startedDate;
         endDate = endDate==""?DateTime.Parse("1/1/9999").ToShortDateString():endDate;
         var timesheetReports = db.Query("SELECT * FROM TimeManagement WHERE( @0 <= Datetime) AND (Datetime <=@1)",startedDate,endDate);
-        foreach(var ts in timesheetReports){
-            <div>ts.Datetime</div>
-        }
-        
+        WebGrid currentDataTS = new WebGrid(timesheetReports);
+        currentDataTS.GetHtml();
     }
     //var timesheetReports = db.Query("SELECT * FROM TimeManagement WHERE( @0 <= Datetime) AND (Datetime <=@1)",startedDate,endDate);
     
@@ -89,7 +128,7 @@
     <h2>MEMBERS</h2>
     <ul>
         @{
-            var memberlist = Functions.getUsersInProject(currentPrjId);
+            var memberlist = Functions.getUsersInProject(chosenPrjId);
             foreach(var member in memberlist){
                 <li id="mem_@member.UserId" value="@member.UserId">
                     @member.FirstName

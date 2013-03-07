@@ -7,36 +7,49 @@
 }
 <script>
     $(function () {
+        //Get current project
+        var currentPrj = "";
+        var testType = "";
+        var startedDate = "";
+        var endDate = "";
 
+        //METHOD GET INFORMATION
+        $.fn.collectInfo = function () {
+            currentPrj = $("#tslistProject").find(":selected").val();
+            testType = $("#tsTestType").find(":selected").val();
+            startedDate = $("#startedDatepicker").val();
+            endDate = $("#endDatepicker").val();
+            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate }, function (data) { $("#tsContent").html(data); });
+        }
+
+        //OPEN THE DATEPICKER
         $("#startedDatepicker").datepicker();
         $("#endDatepicker").datepicker();
+
+        /*HANDLE EVENTS 
+        -----------------------------------*/
         $("li[id*=mem]").click(function () {
             $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
 
         });
 
-        $("li[id*=mem_]").hover(
+        $("li[id*=mem]").hover(
             function () { $(this).css('color', '#ff6a00'); },
             function () { $(this).css('color', '#000'); }
         );
 
-        //Get current project
-        var currentPrj = $("#tslistProject").find(":selected").val();
-        var testType = $("#tsTestType").find(":selected").val();
-        var startedDate = $("#startedDatepicker").val();
-        var endDate = $("#endDatepicker").val();
-        $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate },
-                                function (data) { $("#tsContent").html(data); });
+        //WHEN THE PROJECT IS CHANGE
+        $("#tslistProject,#tsTestType").change(function () {
+            $.fn.collectInfo();
+        });
 
-        //The project is changed
-        $("#tslistProject").change(function () {
-            currentPrj = $("#tslistProject").find(":selected").val();
-            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, action: "showCurrentPrj" }, function (data) { $("#tsContent").html(data); });
+        //WHEN BUTTON SEARCH IS PRESSED
+        $("#SearchDate").click(function () {
+            $.fn.collectInfo();
         });
-         $("#SearchDate").click(function () {
-            currentPrj = $("#tslistProject").find(":selected").val();
-            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, action: "showCurrentPrj" }, function (data) { $("#tsContent").html(data); });
-        });
+
+        //SEND INFORMATION FOR THE FIRST TIME
+        $.fn.collectInfo();
     });
 </script>
 

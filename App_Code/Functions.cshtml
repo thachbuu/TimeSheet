@@ -1,11 +1,30 @@
 ﻿@functions {
-    public static String DATABASE = "StarterSite";
+    public static string DATABASE = "StarterSite";
     public static int getMasterUserId(){
         var db = Database.Open("StarterSite");
         var masterUserId = db.QueryValue("SELECT UserProfile.UserId FROM UserProfile,webpages_UsersInRoles AS UsersInRoles,webpages_Roles AS Roles "+  
                                          "WHERE  UserProfile.UserId = UsersInRoles.UserId AND UsersInRoles.RoleId = Roles.RoleId AND Roles.RoleName = 'MASTER'");             
         return masterUserId;
     }   
+
+    /* GET INFORMATIONS
+     ---------------------------------------------------------------------------------------------------------------
+     */
+
+     //TASK SECTION
+     public static string getTaskName(int taskId){
+         var db = Database.Open(DATABASE);
+         return db.QueryValue("SELECT Name FROM Tasks WHERE Tasks.Id=@0",taskId);
+     }
+
+     //CATEGORY SECTION
+     public static IEnumerable<dynamic> getListCategory(){
+         var db = Database.Open(DATABASE);
+         return db.Query("SELECT * FROM Categories");
+     }
+
+
+     //USERPROFILE SECTION
 
     public static List<SelectListItem> getResources(String currentSupervisorEmail=null,Boolean includeDefaultValue=true,String role="LEADER"){
         /**
@@ -79,6 +98,8 @@
         return counter;
      }
 
+     
+
      public static List<dynamic> getUsersInProject(int projectId){
          var db = Database.Open("StarterSite");
          var userInProject = db.Query("SELECT UserId FROM Project_User WHERE ProjectId=@0 AND Status='True'",projectId);
@@ -90,9 +111,23 @@
          }
          return listUser;
      }
+     
+     public static List<dynamic> getUsersInProject(int projectId,string date){
+         var db = Database.Open(DATABASE);
+         var userInProject = db.Query("SELECT DISTINCT UserId FROM Project_User,TimeManagement WHERE ProjectId=@0 AND Datetime=@1 AND Project_User.Id = TimeManagement.Project_UserId",projectId,date);
+         List<dynamic> listUser = new List<dynamic>();
+         foreach(var userId in userInProject){
+            // var userInfo = db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId.UserId);
+            var userInfo = getUserInfo(userId.UserId);
+            listUser.Add(userInfo);
+         }
+         return listUser;
+     }
+
+
 
      public static dynamic getUserInfo(int userId){
-         var db = Database.Open("StarterSite");
+         var db = Database.Open(DATABASE);
          return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
      }
 
@@ -100,7 +135,11 @@
          var db = Database.Open("StarterSite");
          return db.QuerySingle("SELECT * FROM Projects WHERE ProjectId=@0",projectId);
      }
+
      
+     /* ULTILITIES METHODS
+     -----------------------------------------------------------------------------------------------------
+     */
      //GET WEEK OF YEAR
     public static int getWeekOfYear(DateTime expectedDate){    
         /*CAUTION: CHUA HOAN THIEN - NOT FINISHED*/
