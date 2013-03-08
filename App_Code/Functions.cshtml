@@ -86,6 +86,36 @@
         return resourceList;        
     }
 
+    //TIME MANAGEMENT SECTION
+    public static string getCommentFor(string dayOfWeek,int rowId){
+        var db = Database.Open(DATABASE);
+        string result = "";
+
+        switch(dayOfWeek){
+            case "Mon":
+                result = db.QueryValue("SELECT CommentForMon FROM TimeManagement WHERE Id=@0",rowId);
+                break;
+            case "Tue":
+                result = db.QueryValue("SELECT CommentForTue FROM TimeManagement WHERE Id=@0",rowId);
+                break;
+            case "Wed":
+                result = db.QueryValue("SELECT CommentForWed FROM TimeManagement WHERE Id=@0",rowId);
+                break;
+            case "Thu":
+                result = db.QueryValue("SELECT CommentForThu FROM TimeManagement WHERE Id=@0",rowId);
+                break;
+            case "Fri":
+                result = db.QueryValue("SELECT CommentForFri FROM TimeManagement WHERE Id=@0",rowId);
+                break;
+            case "Sat":
+                result = db.QueryValue("SELECT CommentForSat FROM TimeManagement WHERE Id=@0",rowId);
+                break;
+            case "Sun":
+                result = db.QueryValue("SELECT CommentForSun FROM TimeManagement WHERE Id=@0",rowId);
+                break;                
+        }
+        return result;
+    }
     
 
      public static int getTotalUnapprovedTimeSheet(int userId){

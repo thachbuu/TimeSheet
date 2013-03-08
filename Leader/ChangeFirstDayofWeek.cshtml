@@ -7,7 +7,7 @@
          additionalDate = Request["additionDate"].AsInt();       
     }    
 }
-<input id="fow" value="@currentFirstOfWeek.AddDays(additionalDate).ToShortDateString()">
+<input type="hidden" id="fow" value="@currentFirstOfWeek.AddDays(additionalDate).ToShortDateString()">
 
 
  

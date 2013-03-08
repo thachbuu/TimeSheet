@@ -2,20 +2,6 @@
     Layout="_Layout.cshtml";
 }
 
-<script>
-    $(function () {
-        var gg = $(this).find('#abc').val();
-        //alert(gg);
-        var posting = $.post("/Leader/ChangeFirstDayofWeek.cshtml");
-        posting.done(function (data) {
-            // var hh = $(data).find('#fow').val();
-            var bb = $("#result").html(data).find('#fow').val();
-            $("#abc").attr('value', bb);
-            alert(bb);
-        });
-
-
-    });
-</script>
-<input type="text" id="abc" value="athh">
-<div id="result"></div>
+<div>
+    @Functions.getCommentFor("Mon",669)
+</div>

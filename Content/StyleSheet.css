@@ -21,6 +21,15 @@ img{
     width: 120px;
 }
 
+
+#component{
+        width: 300px;
+        display: inline-block;
+        margin: 20px 20px 20px 10px;
+}
+#tslistProject,#tsTestType {
+        width: 200px;
+}
 /*  HEADER
     ------------------------*/
 .projectHeader{

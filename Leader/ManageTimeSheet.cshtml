@@ -8,17 +8,13 @@
         var currentPrj = "";
         var testType = "";
         var currentFirstOfWeek = "";
-        var startedDate = "";
-        var endDate = "";
 
         //METHOD GET INFORMATION
         $.fn.collectInfo = function () {
             currentPrj = $("#tslistProject").find(":selected").val();
             testType = $("#tsTestType").find(":selected").val();
             currentFirstOfWeek = $("#currentFirstDayOfWeek").val();
-            startedDate = $("#startedDatepicker").val();
-            endDate = $("#endDatepicker").val();
-            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, StartedDate: startedDate, EndDate: endDate, CurrentFirstOfWeek: currentFirstOfWeek }, function (data) { $("#tsContent").html(data); });
+            $.post("/Leader/UserTimeSheet.cshtml", { CurrentProjectId: currentPrj, TestType: testType, CurrentFirstOfWeek: currentFirstOfWeek }, function (data) { $("#tsContent").html(data); });
         }
 
         $.fn.changeFirstDayOfWeek = function (day) {
@@ -56,7 +52,6 @@
         });
 
         $("#paginationNext, #paginationPrevious").click(function () {
-            alert($(this).text());
             if ($(this).text() == "NEXT") {
                 $.fn.changeFirstDayOfWeek(7);
             }
@@ -66,13 +61,16 @@
            
         });
 
-
         //SEND INFORMATION FOR THE FIRST TIME
         $.fn.collectInfo();
     });
 </script>
 
-<div id="searchBar">
+<style>
+    
+</style>
+
+<div id="componentbar">
     <div id="component">
         <span><strong>Project</strong></span>
         @Html.DropDownList("tslistProject",Functions.getListOfProjectsFromUser(WebSecurity.CurrentUserId))
@@ -81,23 +79,12 @@
         <span><strong>Test type</strong></span>
         @Html.DropDownList("tsTestType",Functions.getListTestType())
     </div>
-    <div id="component">
-        <span><strong>StarteDate</strong></span>
-        <input type="text" id="startedDatepicker">
-    </div>
-    <div id="component">
-        <span><strong>EndDate</strong></span>
-        <input type="text" id="endDatepicker">
-    </div>
-    <div id="component">
-        <input type="button" id="SearchDate" value="Search">
-    </div>
 </div>
 
 <div>
-    <input type="text" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
+    <input type="hidden" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
     <span id="paginationPrevious">PREVIOUS</span>
-    <span id="paginationNext">NEXT</span>   
+    <span id="paginationNext" style="float:  right">NEXT</span>   
 </div>
 
 <div id="result">
