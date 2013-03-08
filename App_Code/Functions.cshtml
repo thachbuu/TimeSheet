@@ -87,13 +87,12 @@
     }
 
     //TIME MANAGEMENT SECTION
-    public static string getCommentFor(string dayOfWeek,int rowId){
+    public static string getCommentFor(string dayOfWeek,float rowId){
         var db = Database.Open(DATABASE);
-        string result = "";
-
-        switch(dayOfWeek){
+        Object result = "";
+        switch(dayOfWeek){            
             case "Mon":
-                result = db.QueryValue("SELECT CommentForMon FROM TimeManagement WHERE Id=@0",rowId);
+                result = db.QueryValue("SELECT CommentForMon FROM TimeManagement WHERE Id=@0",rowId);               
                 break;
             case "Tue":
                 result = db.QueryValue("SELECT CommentForTue FROM TimeManagement WHERE Id=@0",rowId);
@@ -114,7 +113,7 @@
                 result = db.QueryValue("SELECT CommentForSun FROM TimeManagement WHERE Id=@0",rowId);
                 break;                
         }
-        return result;
+        return result.ToString();
     }
     
 
