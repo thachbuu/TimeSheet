@@ -21,7 +21,7 @@
 }
 <script>
     $("#tabs").tabs();
-    $("#accordion").accordion();    
+    $("#accordion").accordion({ active: false, collapsible: true });    
 </script>
 
 <style>
@@ -47,7 +47,7 @@ else{
         <div id="accordion">
 
             @foreach(var mem in lsMemberInDuration){
-            <h3>@Functions.getUserInfo(mem.UserId).FirstName</h3>
+            <h3><strong>@Functions.getUserInfo(mem.UserId).FirstName</strong></h3>
             bool displayAcceptButton = false;
             <div><form>@{
             var listCategory = Functions.getListCategory();

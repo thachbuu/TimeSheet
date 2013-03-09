@@ -52,10 +52,10 @@
         });
 
         $("#paginationNext, #paginationPrevious").click(function () {
-            if ($(this).text() == "NEXT") {
+            if ($(this).text() == "NEXT >") {
                 $.fn.changeFirstDayOfWeek(7);
             }
-            if ($(this).text() == "PREVIOUS") {
+            if ($(this).text() == "< PREVIOUS") {
                 $.fn.changeFirstDayOfWeek(-7);
             }
            
@@ -63,28 +63,34 @@
 
         //SEND INFORMATION FOR THE FIRST TIME
         $.fn.collectInfo();
+
+        //SET CSS FOR ACTIVE TAB
+        $("#nav3").attr('class', 'componentActive');
+        $("#nav3 a").css('color', 'blue');
     });
 </script>
 
 <style>
-    
+    #paginationNext, #paginationPrevious:hover{
+        cursor: pointer;
+    }
 </style>
 
 <div id="componentbar">
     <div id="component">
-        <span><strong>Project</strong></span>
+        <span><strong>PROJECT  </strong></span>
         @Html.DropDownList("tslistProject",Functions.getListOfProjectsFromUser(WebSecurity.CurrentUserId))
     </div>
     <div id="component">
-        <span><strong>Test type</strong></span>
+        <span><strong>TESTING TYPE  </strong></span>
         @Html.DropDownList("tsTestType",Functions.getListTestType())
     </div>
 </div>
 
 <div>
     <input type="hidden" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
-    <span id="paginationPrevious">PREVIOUS</span>
-    <span id="paginationNext" style="float:  right">NEXT</span>   
+    <span id="paginationPrevious" style="color:  blue; font-weight: bold; margin-left: 5px">< PREVIOUS</span>
+    <span id="paginationNext" style="float:  right; color:  blue;font-weight: bold; margin-right: 5px">NEXT ></span>   
 </div>
 
 <div id="result">

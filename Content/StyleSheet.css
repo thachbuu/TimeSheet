@@ -27,6 +27,33 @@ img{
         display: inline-block;
         margin: 20px 20px 20px 10px;
 }
+
+.componentActive{
+        border-width: 1px;
+        border-color: rgb(0, 174, 233);
+        background-color: #fbf8f8;
+        border-style: solid;
+        border-bottom-width: 0px;
+        height: 50px;
+        width: 200px;
+        vertical-align: middle;
+        display: table-cell;
+        font-size: medium;
+        font-weight: 900;
+        text-align: center;
+}
+
+.component {
+        height: 50px;
+        width: 200px;
+        vertical-align: middle;
+        display: table-cell;
+        color: white;
+        font-size: medium;
+        font-weight: 900;
+        text-align: center;
+}
+
 #tslistProject,#tsTestType {
         width: 200px;
 }

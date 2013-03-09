@@ -1,7 +1,61 @@
 ﻿@{
     Layout="_Layout.cshtml";
 }
+<script>
+    $(function () {
+        $("div[id*=nav]").click(function () {
+            var navId = $(this).attr('id').match("[0-9].*");
+            var expectedContent = "#content" + navId;
+            $("div[id*=content]").css('display', 'none');
+            $("#nav2").css({'background-color': 'blue','border-right' : '1px solid #d4d4d4', 'border-left':'1px solid #d4d4d4'});
 
-<div>
-    @Functions.getCommentFor("Mon",669)
+        });
+    });
+</script>
+
+<style>
+    .compentActive{
+        border-width: 1px;
+        border-color: rgb(0, 174, 233);
+        background-color: #fbf8f8;
+        border-style: solid;
+        border-bottom-width: 0px;
+        height: 50px;
+        width: 200px;
+        vertical-align: middle;
+        display: table-cell;
+        font-size: medium;
+        font-weight: 900;
+        text-align: center;
+    }
+    .component {
+        height: 50px;
+        width: 200px;
+        vertical-align: middle;
+        display: table-cell;
+        color: white;
+        font-size: medium;
+        font-weight: 900;
+        text-align: center;
+    }
+</style>
+<nav style="background-color: rgb(0, 174, 233)">
+    <div id="nav1" class="component"><a style="text-decoration: none; color: White">MANAGE MEMBERS</a></div>
+    <div style="display: table-cell; width: 5px"></div>
+    <div id="nav2" class="component">MANAGE PROJECTS</div>
+    <div style="display: table-cell; width: 5px"></div>
+    <div id="nav3" class="component">MANAGE TIMESHEETS</div>
+</nav>
+
+<div id="content1">
+    members
 </div>
+
+<div id="content2" class="hidden">
+    projects
+</div>
+
+<div id="content3" class="hidden">
+    timesheet
+</div>
+

@@ -21,6 +21,14 @@
      
 }
 
+<script>
+    $(function () {
+        /*Active navigation tab*/
+        $("#nav2").attr('class', 'componentActive');
+        $("#nav2 a").css('color', 'blue');
+    });
+</script>
+
 <form method="get" action="~/Leader/ProjectDetails" name="manageProjectForm">
     @if(grid.TotalRowCount == 0){
         <p>You don't have any projects yet</p>
