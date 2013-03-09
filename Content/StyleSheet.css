@@ -9,13 +9,16 @@ img{
     padding: 0px 0px 0px 0px;
     display: inline;
 }
-
+body{
+    font-family: Arial, Tahoma, Verdana;
+}
 /*--------------------CONTENT PAGE----------------------------------------------*/
 
 .content{
     width: 1000px;
     background-color: #fbf8f8;
-    margin: auto;    
+    margin: auto;
+    box-shadow: 3px 3px 2px #888888;
 }
 .submitBtn{
     width: 120px;
@@ -109,14 +112,7 @@ h2{
     text-align: center;        
 }
 
-#projectName{
-//    font-size: xx-large;
-//    font-style: oblique;
-//    font-weight: 900;
-//    color: #0026ff;
-//    text-shadow: 20px;
-//    margin-bottom: 30px;
-}
+
 #projectDescription{
     width: 500px;
     height: auto;
@@ -157,11 +153,11 @@ h2{
     color: #000; 
 }
 .alternate{
-    //background: #d3ff80; 
+    /*background: #d3ff80; */ 
     background: #b0caf8;
 }
 .gridheader, .gridfooter{
-    //background: #9ebf60; 
+    /*background: #9ebf60; */
     background: #72286b;
 } 
 .gridheader a, .gridfooter a{

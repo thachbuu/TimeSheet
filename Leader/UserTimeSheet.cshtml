@@ -21,12 +21,31 @@
 }
 <script>
     $("#tabs").tabs();
-    $("#accordion").accordion({ active: false, collapsible: true });    
+    $("#accordion").accordion({ active: false, collapsible: true });
+    $(function () {
+        $(".havingComment").click(
+            function () {
+                var elementId = "span#"+$(this).attr('id');
+                var posting = $.post("/Leader/CommentDialog.cshtml", { DayOfWeek: 'Mon', RowId: '567' })
+                posting.done(
+                    function (data) {
+                        $("#commentDiaglog").empty().append(data);
+                        $("#commentDiaglog").dialog({ show: 'clip', hide: 'clip', position: { my:'left top',of: $(elementId)} });
+                    });
+            }
+        );
+    }); 
 </script>
 
 <style>
     .taskField{
         width: 350px;
+    }
+    .havingComment{
+        color: blue;
+    }
+    .havingComment:hover{
+        cursor: pointer;
     }
 </style>
 
@@ -67,13 +86,13 @@ else{
                         @gridData.GetHtml(
                         columns: gridData.Columns(
                             gridData.Column("TaskId","Task Name",@<text>@Functions.getTaskName(item.TaskId)</text>,"taskField"),
-                            gridData.Column("Mon",format:@<span>@if(item.Mon != -1){<text>@item.Mon</text>}</span>),
-                            gridData.Column("Tue",format:@<span>@if(item.Tue != -1){<text>@item.Tue</text>}</span>),
-                            gridData.Column("Wed",format:@<span>@if(item.Wed != -1){<text>@item.Wed</text>}</span>),
-                            gridData.Column("Thu",format:@<span>@if(item.Thu != -1){<text>@item.Thu</text>}</span>),
-                            gridData.Column("Fri",format:@<span>@if(item.Fri != -1){<text>@item.Fri</text>}</span>),
-                            gridData.Column("Sat",format:@<span>@if(item.Sat != -1){<text>@item.Sat</text>}</span>),
-                            gridData.Column("Sun",format:@<span>@if(item.Sun != -1){<text>@item.Sun</text>}</span>)
+                            gridData.Column("Mon",format:@<text>@if(item.Mon != -1){<span id="Mon_@item.Id" @if(Functions.getCommentFor("Mon",item.Id)!=""){<text>class="havingComment"</text>}>@item.Mon</span>}</text>),
+                            gridData.Column("Tue",format:@<text>@if(item.Tue != -1){<span id="Tue_@item.Id" @if(Functions.getCommentFor("Tue",item.Id)!=""){<text>class="havingComment"</text>}>@item.Tue</span>}</text>),
+                            gridData.Column("Wed",format:@<text>@if(item.Wed != -1){<span id="Wed_@item.Id" @if(Functions.getCommentFor("Wed",item.Id)!=""){<text>class="havingComment"</text>}>@item.Wed</span>}</text>),
+                            gridData.Column("Thu",format:@<text>@if(item.Thu != -1){<span id="Thu_@item.Id" @if(Functions.getCommentFor("Thu",item.Id)!=""){<text>class="havingComment"</text>}>@item.Thu</span>}</text>),
+                            gridData.Column("Fri",format:@<text>@if(item.Fri != -1){<span id="Fri_@item.Id" @if(Functions.getCommentFor("Fri",item.Id)!=""){<text>class="havingComment"</text>}>@item.Fri</span>}</text>),
+                            gridData.Column("Sat",format:@<text>@if(item.Sat != -1){<span id="Sat_@item.Id" @if(Functions.getCommentFor("Sat",item.Id)!=""){<text>class="havingComment"</text>}>@item.Sat</span>}</text>),
+                            gridData.Column("Sun",format:@<text>@if(item.Sun != -1){<span id="sun_@item.Id" @if(Functions.getCommentFor("sun",item.Id)!=""){<text>class="havingComment"</text>}>@item.Sun</span>}</text>)
                         )
                         )
                     </div> 
@@ -96,96 +115,5 @@ else{
     
     }
 }
-@*
-// Date: 1/1/1753 is MinValue of SQL
-        startedDate = startedDate==""?DateTime.Parse("1/1/1753").ToShortDateString():startedDate;
-        endDate = endDate==""?DateTime.Parse("1/1/9999").ToShortDateString():endDate;
-        var timesheetReports = db.Query("SELECT * FROM TimeManagement WHERE( @0 <= Datetime) AND (Datetime <=@1)",startedDate,endDate);
-        WebGrid currentDataTS = new WebGrid(timesheetReports);
-        currentDataTS.GetHtml();
-<div style="float: left; width: 150px;">
-    <h2>MEMBERS</h2>
-    <ul>
-        @{
-            var memberlist = Functions.getUsersInProject(chosenPrjId);
-            foreach(var member in memberlist){
-                <li id="mem_@member.UserId" value="@member.UserId">
-                    @member.FirstName
-                    <span>(@Functions.getTotalUnapprovedTimeSheet(member.UserId))</span>
-                </li>
-            }
-        }
-    </ul>
-</div>
-
-
-<div style="float: right ;width: 850px">  
-@if(userId == 0){
-    <p>Please select a member on the right</p>
-}
-else{
-    if(userId !=0 && Functions.getTotalUnapprovedTimeSheet(userId) <=0){
-        <p>All @db.QueryValue("SELECT FirstName FROM UserProfile WHERE UserId=@0",userId)'s time sheet reports are approved</p>
-    }
-    else{    
-    <div id="tabs">
-         <ul>
-             @foreach(var item in unapprovedProject){
-                <li><a href="#tab_@item.Id"><span>@item.ProjectName</span></a></li>
-             }
-        </ul>
-        @foreach(var prj in unapprovedProject){
-            <div id="tab_@prj.Id">
-                @{
-                    var userInfo = Functions.getUserInfo(userId);
-                    var projectInfo = Functions.getProjectDetails(prj.Id);
-                    DateTime firstDayofWeek = Functions.FirstDateOfWeek(DateTime.Now.Year,prj.WeekOfYear);
-
-                    <h4 style="color: #808080">@userInfo.FirstName @userInfo.LastName - 
-                        <span style="color: #0026ff">@projectInfo.ProjectName</span>
-                        <br> 
-                        <span style="color: #000">From:</span> @firstDayofWeek.ToShortDateString() 
-                        <span style="color: #000">To:</span>@firstDayofWeek.AddDays(7).ToShortDateString()
-                    </h4> 
-                    //GET CATEGORIES 
-                    var categoriesList = db.Query("SELECT Id FROM Categories");
-                    <form method="post">
-                        @foreach(var category in categoriesList){
-
-                            //GET TIMESHEET FOR ABOVE CATEGORIES IN WORKING PROJECT 
-                            var timesheet = db.Query("SELECT Tasks.Name,Mon,Wed,Tue,Thu,Fri,Sat,Sun,Categories.Name AS CategoryName FROM TimeManagement,Tasks,Categories " +
-                                                    "WHERE Project_UserId=@0 AND TimeManagement.TaskId = Tasks.Id AND Categories.Id = Tasks.CategoryId AND Categories.Id=@1",prj.Id,category.Id);
-                            if(timesheet.Count >0 ){
-
-                                //SHOW CATEGORY NAME
-                               <h4 style="color: #f00">@timesheet[0].CategoryName.ToUpper()</h4>
-                                var newGrid = new WebGrid(timesheet,canSort:false,rowsPerPage:50);                                   
-                                @newGrid.GetHtml(
-                                    columns: newGrid.Columns(
-                                        newGrid.Column("Name","Task Name",null,"taskField"),
-                                        newGrid.Column("Mon",format:@<span>@if(item.Mon != -1){<text>@item.Mon</text>}</span>),
-                                        newGrid.Column("Tue",format:@<span>@if(item.Tue != -1){<text>@item.Tue</text>}</span>),
-                                        newGrid.Column("Wed",format:@<span>@if(item.Wed != -1){<text>@item.Wed</text>}</span>),
-                                        newGrid.Column("Thu",format:@<span>@if(item.Thu != -1){<text>@item.Thu</text>}</span>),
-                                        newGrid.Column("Fri",format:@<span>@if(item.Fri != -1){<text>@item.Fri</text>}</span>),
-                                        newGrid.Column("Sat",format:@<span>@if(item.Sat != -1){<text>@item.Sat</text>}</span>),
-                                        newGrid.Column("Sun",format:@<span>@if(item.Sun != -1){<text>@item.Sun</text>}</span>)
-                                    )                       
-                                ); 
-                            }
-                        }
-                        
-                        <input type="hidden" name="timeSheetForProjectUser" value="@prj.id">
-                        <input type="submit" name="action" id="btnAccept" value="Accept" style="width: 100px">
-                        <input type="submit" name="action" value="Decline" style="width: 100px">
-                        <input type="hidden" name="MemberUserId" value="@Request["MemberUserId"]" >
-                    </form>
-                }
-            </div>
-        }
-    </div>
-    }
-}
-
-</div>
-*@
+<div id="commentDiaglog" style="display: none"></div>
+<div style="height: 30px"></div>

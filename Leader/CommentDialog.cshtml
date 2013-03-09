@@ -1,0 +1,8 @@
+﻿@{
+    Layout="";
+    if(IsPost){
+       var dayOfWeek = Request["DayOfWeek"];
+       var rowId = Request["RowId"].AsInt();
+       <text>@Functions.getCommentFor(dayOfWeek,rowId)</text>
+    }
+}
