@@ -12,9 +12,6 @@
         chosenTestType = Request["TestType"].AsInt();
         chosenPrjId = Request["CurrentProjectId"].AsInt();
         currentFirstOfWeek=Request["CurrentFirstOfWeek"]==""?Functions.FirstDateOfWeek(DateTime.Now):Request["CurrentFirstOfWeek"].AsDateTime();
-        if(Request["action"]=="Accept"){
-            
-        }
         @*
             <p>TestType: @chosenTestType</p>
             <p>currentPrjectId: @chosenPrjId</p>
@@ -32,7 +29,7 @@
                 var dayOfWeek = $(this).attr('id').match("[a-z]*").toString();
                 var rowId = $(this).attr('id').match("[0-9]+").toString();
                 var dialogTitle = 'Comment for ' + dayOfWeek;
-                var posting = $.post("/Leader/CommentDialog.cshtml", { DayOfWeek: dayOfWeek, RowId: rowId })
+                var posting = $.post("/Leader/CommentDialog.cshtml", { DayOfWeek: dayOfWeek, RowId: rowId });
                 posting.done(
                     function (data) {
                         $("#commentDiaglog").empty().append(data);
@@ -40,9 +37,27 @@
                     });
             }
         );
-      });
-      
-   
+        $(".tk-button").click(function () {
+            var valueConfirmationDialog = $(this).val();
+            var currentPrjUserId = valueConfirmationDialog.split('_')[0].toString();
+            var currentFirstOfWeek = valueConfirmationDialog.split('_')[1].toString();
+            $("#timsheet-confirmationDialog").dialog({
+                buttons: [
+                    { text: 'OK', click: function () {
+                        var posting = $.post("/Leader/ProcessingTimeSheet.cshtml",
+                            { CurrentProjectUserId: currentPrjUserId, CurrentFirstOfWeek: currentFirstOfWeek, Action: 'AcceptTSReport' });
+                        posting.done(function (data) {
+                            $("#timsheet-confirmationDialog").dialog('close');
+                        });
+                    }},
+                { text: 'Cancel', click: function () { $("#timsheet-confirmationDialog").dialog('close'); }}
+                ]
+
+            });
+        });
+    });
+
+
 </script>
 
 <style>
@@ -112,10 +127,10 @@ else{
                         
             }
             if(displayAcceptButton){
+                var prjUserId = Functions.getProjectUserId(mem.UserId,chosenPrjId);
+                var curFoW = currentFirstOfWeek.ToShortDateString();
                 <div id="btn-field">
-                    <input type="hidden"  name="currentFirstOfWeek" value="@currentFirstOfWeek.ToShortDateString()">
-                    <input type="hidden" value="@Functions.getProjectUserId(mem.UserId,chosenPrjId)">
-                    <button class="tk-button">Accept</button>
+                    <button class="tk-button" value="@Functions.getProjectUserId(mem.UserId,chosenPrjId)_@currentFirstOfWeek.ToShortDateString()">Accept</button>
                     <button class="tk-button">Decline</button>
                 </div>
                }
@@ -127,5 +142,6 @@ else{
 }
 }
 <div id="commentDiaglog" style="display: none"></div>
-<div id="timsheet-confirmationDialog" style="display: none">Are your sure?</div>
+<div id="timsheet-confirmationDialog" style="display: none">Are you sure?</div>
+
 <div style="height: 30px"></div>
