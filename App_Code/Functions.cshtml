@@ -11,7 +11,7 @@
      ---------------------------------------------------------------------------------------------------------------
      */
 
-     //TASK SECTION
+     //TASK TABLE
      public static string getTaskName(int taskId){
          var db = Database.Open(DATABASE);
          return db.QueryValue("SELECT Name FROM Tasks WHERE Tasks.Id=@0",taskId);
@@ -36,26 +36,25 @@
         return taskList;  
      } 
 
-     //CATEGORY SECTION
+     //CATEGORY TABLE
      public static IEnumerable<dynamic> getListCategory(){
          var db = Database.Open(DATABASE);
          return db.Query("SELECT * FROM Categories");
      }
 
-     //TEST TYPE SECTION
+     //TEST TYPE TABLE
      public static dynamic getTestType(int testTypeId){
          var db = Database.Open(DATABASE);
          return db.QuerySingle("SELECT * From TestType WHERE Id=@0",testTypeId);
      }
 
-     //PROJECT USER SECTION
+     //PROJECT USER TABLE
      public static int getProjectUserId(int userId, int projectId){
          var db = Database.Open(DATABASE);
          return db.QueryValue("SELECT Id FROM Project_User WHERE UserId=@0 AND ProjectId=@1",userId, projectId);
      }
 
-
-     //USERPROFILE SECTION
+     //USERPROFILE TABLE
 
     public static List<SelectListItem> getResources(String currentSupervisorEmail=null,Boolean includeDefaultValue=true,String role="LEADER"){
         /**
@@ -86,7 +85,12 @@
         return resourceList;        
     }
 
-    //TIME MANAGEMENT SECTION
+     public static dynamic getUserInfo(int userId){
+         var db = Database.Open(DATABASE);
+         return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
+     }
+
+    //TIMEMANAGEMENT TABLE
     public static string getCommentFor(string dayOfWeek,float rowId){
         var db = Database.Open(DATABASE);
         Object result = "";
@@ -141,8 +145,6 @@
         return counter;
      }
 
-     
-
      public static List<dynamic> getUsersInProject(int projectId){
          var db = Database.Open("StarterSite");
          var userInProject = db.Query("SELECT UserId FROM Project_User WHERE ProjectId=@0 AND Status='True'",projectId);
@@ -167,18 +169,38 @@
          return listUser;
      }
 
-
-
-     public static dynamic getUserInfo(int userId){
-         var db = Database.Open(DATABASE);
-         return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
-     }
-
      public static dynamic getProjectDetails(int projectId){
          var db = Database.Open("StarterSite");
          return db.QuerySingle("SELECT * FROM Projects WHERE ProjectId=@0",projectId);
      }
 
+     //TITLE TABLE
+     public static List<SelectListItem> getSelectListItemOfTitle(bool hasDefaultItem=false){
+         var db = Database.Open(DATABASE);
+         var list = new List<SelectListItem>();
+         var titleList =  db.Query("SELECT * FROM Title");
+         if(hasDefaultItem){
+             SelectListItem defaultItem = new SelectListItem();
+             defaultItem.Text = "All";
+             defaultItem.Value= "0";
+             list.Add(defaultItem);
+         }
+         foreach(var t in titleList ){
+             var item = new SelectListItem();
+             item.Text = t.TitleName;
+             item.Value = t.TitleId.ToString();
+             list.Add(item);
+         }
+         return list;
+     }
+     public static String getTitleName(int titleId){
+         var db = Database.Open(DATABASE);
+         return db.QueryValue("SELECT TitleName FROM Title WHERE TitleId=@0",titleId);
+     }
+
+
+     //PROJECT TABLE
+     
      
      /* ULTILITY METHODS
      -----------------------------------------------------------------------------------------------------
@@ -226,13 +248,19 @@
         return expectedDate;        
     }
 
-    public static List<SelectListItem> getListOfProjectsFromUser(int UserId){
+    public static List<SelectListItem> getListOfProjectsFromUser(int UserId, bool hasDefaultItem=false){
         var listIem = new List<SelectListItem>();
         var db = Database.Open(DATABASE);
         var query = "SELECT Projects.ProjectName, Projects.ProjectId FROM Projects, Project_User WHERE Projects.ProjectId = Project_User.ProjectId AND Project_User.UserId=@0 " +
                     "UNION " +
                     "SELECT Projects.ProjectName, Projects.ProjectId FROM Projects WHERE ProjectManager=@0" ;
-        var prjList = db.Query(query,UserId);        
+        var prjList = db.Query(query,UserId); 
+        if(hasDefaultItem){
+            SelectListItem defaultItem = new SelectListItem();
+            defaultItem.Text = "All";
+            defaultItem.Value= "0";
+            listIem.Add(defaultItem);
+        }       
         foreach(var prj in prjList){
             SelectListItem item = new SelectListItem();
             item.Text = prj.ProjectName;

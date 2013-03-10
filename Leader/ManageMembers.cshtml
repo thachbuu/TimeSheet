@@ -6,6 +6,9 @@
     WebGrid grid = null;
     var currentUserEmail  = WebSecurity.CurrentUserName;
     var currentUserId = WebSecurity.CurrentUserId;
+    var projectList = Functions.getListOfProjectsFromUser(WebSecurity.CurrentUserId,true);
+    var titleList = Functions.getSelectListItemOfTitle(true);
+    IEnumerable<dynamic> memberList = null;
 
     if(IsPost){
         if(Request["Action"]=="Add"){
@@ -17,15 +20,86 @@
         }
     }
     if(User.IsInRole("PM")){
-        var memberList = db.Query("SELECT * FROM UserProfile WHERE ProjectManagerId=@0",currentUserId);        
+        memberList = db.Query("SELECT * FROM UserProfile WHERE ProjectManagerId=@0",currentUserId);        
         grid = new WebGrid(memberList, canSort:false,defaultSort: "Role");        
     }
     if(User.IsInRole("LEADER")){
-        var memberList = db.Query("SELECT * FROM UserProfile WHERE LeaderId=@0",currentUserId);
+        memberList = db.Query("SELECT * FROM UserProfile WHERE LeaderId=@0",currentUserId);
         grid = new WebGrid(memberList,canSort:false);        
     }
     
 }
+<script>
+    $(function () {
+        $("#mm-memberlist").accordion();
+        $("li[id*=mem_]").click(function () {
+            var userId = $(this).attr('id').match("[0-9]+").toString(); 
+            $.post("/Leader/MemberProfile.cshtml", { UserId: userId}, function(data){$("#mm-memberdetails").html(data)});
+        });
+    });
+</script>
+
+<style>
+    li.mm-memberName:hover{
+        cursor: pointer
+    }
+</style>
+
+
+<div>filter field
+    <form method="post">
+        <div>
+            @Html.Label("Name or Email")
+            @Html.TextBox("mm-memberNameOrEmail",Request["mm-memberNameOrEmail"])
+        </div>
+        <div>
+            @Html.Label("Title")
+            @Html.DropDownList("mm-titleList",null,titleList,Request["mm-titleList"],null)
+        </div>
+        <div>
+            @Html.Label("Project")
+            @Html.DropDownList("mm-projectList",null,projectList,Request["mm-projectList"],null)
+        </div>
+        <button>Search</button>
+    </form>
+    <button><a href="/Leader/ManageMembers.cshtml">View All</a></button>
+</div>
+
+@if(!IsPost){
+<div style="width:  1000px; height: fit-content">    
+    <div class="mm-memberlist" id="mm-memberlist"style="vertical-align: top;width: 200px; display: inline-block; margin-right: 20px;">Member List
+        @foreach(var prj in projectList){
+            if(prj.Text =="All"){continue;}
+            <h4>@prj.Text</h4>
+            var membersInProject = Functions.getUsersInProject(prj.Value.AsInt());
+            <div>
+                <ul>
+                    @foreach(var mem in membersInProject){
+                        <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+    <div class="mm-memberdetails" id="mm-memberdetails" style="padding-left: 3px;width: 700px; display: inline-block; border-left: 2px solid #000">User Details</div>
+</div>
+}
+else{
+    var projectId = Request["mm-projectList"].AsInt();
+    var titleId = Request["mm-titleList"];
+    var memberNameOrEmail = Request["mm-memberNameOrEmail"];
+
+    var projectRangeQuery = projectId==0?"SELECT Id FROM Projects":"SELECT Id FROM Projects WHERE ProjectId=@0";
+    var memberRangeQuery = titleId==0?"SELECT Id FROM Title":"SELECT Id FROM Title WHERE TitleId=@1";
+    if(projectId==0){
+        
+    }
+    
+    <p>ProjectId @projectId</p>
+    <p>MemberTitle @memberTitle</p>
+    <p>Name: @memberNameOrEmail</p>
+}
+@*
 <script>
     $(function () {
         $("a[id*=assignLeader]").click(function () {
@@ -128,3 +202,5 @@
 
 <div id="js">
 </div>
+
+*@

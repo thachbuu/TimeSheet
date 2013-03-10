@@ -1,4 +1,5 @@
 ﻿@{
+    Layout="";
     var userId = Request["UserId"].AsInt();
     var db = Database.Open("StarterSite");
     var data = db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
@@ -25,10 +26,12 @@
     </p>
 }
 else{
-<ol>
+<div style="padding-left: 50px">
+
+<ul style="">
     <li>
         <h2>ACCOUNT INFROMATION</h2>
-        <ul>
+        <ul style="list-style-type: none">
             <li>Name: @data.FirstName @data.LastName</li>
             <li>Comany ID: @data.UserCompanyId</li>
             <li>Working Projects
@@ -60,5 +63,6 @@ else{
             </li>
         </ul>
     </li>
-</ol>
+</ul>
+    </div>
 }

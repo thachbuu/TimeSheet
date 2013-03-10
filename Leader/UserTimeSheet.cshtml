@@ -37,7 +37,7 @@
                     });
             }
         );
-        $(".tk-button").click(function () {
+        $("#tk-button-accept-ts").click(function () {
             var valueConfirmationDialog = $(this).val();
             var currentPrjUserId = valueConfirmationDialog.split('_')[0].toString();
             var currentFirstOfWeek = valueConfirmationDialog.split('_')[1].toString();
@@ -48,11 +48,20 @@
                             { CurrentProjectUserId: currentPrjUserId, CurrentFirstOfWeek: currentFirstOfWeek, Action: 'AcceptTSReport' });
                         posting.done(function (data) {
                             $("#timsheet-confirmationDialog").dialog('close');
+                            location.reload(true);
                         });
-                    }},
-                { text: 'Cancel', click: function () { $("#timsheet-confirmationDialog").dialog('close'); }}
+                    }
+                    },
+                { text: 'Cancel', click: function () { $("#timsheet-confirmationDialog").dialog('close'); } }
                 ]
+            });
+        });
 
+        $("#tk-button-decline-ts").click(function () {
+            $("#ts-leader-comment").dialog({
+                buttons: [
+                { text: 'Send', click: function () { } }
+                ]
             });
         });
     });
@@ -128,10 +137,15 @@ else{
             }
             if(displayAcceptButton){
                 var prjUserId = Functions.getProjectUserId(mem.UserId,chosenPrjId);
-                var curFoW = currentFirstOfWeek.ToShortDateString();
-                <div id="btn-field">
-                    <button class="tk-button" value="@Functions.getProjectUserId(mem.UserId,chosenPrjId)_@currentFirstOfWeek.ToShortDateString()">Accept</button>
-                    <button class="tk-button">Decline</button>
+                var approved = db.QueryValue("SELECT Approved FROM TimeManagement WHERE Project_UserId=@0 AND Datetime=@1",prjUserId,currentFirstOfWeek);
+                <div id="btn-field-@prjUserId.ToString()">
+                    @if(!approved){
+                        <button class="tk-button" id="tk-button-accept-ts" value="@prjUserId.ToString()_@currentFirstOfWeek.ToShortDateString()">Accept</button>
+                        <button class="tk-button" id="tk-button-decline-ts">Decline</button>
+                    }
+                    else{
+                        <button class="tk-button" id="tk-button-reapproval-ts">Reapproval</button>
+                    }
                 </div>
                }
             }                        
@@ -143,5 +157,6 @@ else{
 }
 <div id="commentDiaglog" style="display: none"></div>
 <div id="timsheet-confirmationDialog" style="display: none">Are you sure?</div>
+<div id="ts-leader-comment" style="display: none" title="Leader Comment"><textarea style="width: 270px; height: 60px; margin-bottom: 10px"></textarea></div>
 
 <div style="height: 30px"></div>
