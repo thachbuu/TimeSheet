@@ -26,20 +26,8 @@
             });
         }
 
-        //OPEN THE DATEPICKER
-        $("#startedDatepicker").datepicker();
-        $("#endDatepicker").datepicker();
-
         /*HANDLE EVENTS 
         -----------------------------------*/
-        $("li[id*=mem]").click(function () {
-            $.post("/Leader/UserTimeSheet.cshtml", { MemberUserId: $(this).val() }, function (data) { $("#displayTasks").html(data) });
-        });
-
-        $("li[id*=mem]").hover(
-            function () { $(this).css('color', '#ff6a00'); },
-            function () { $(this).css('color', '#000'); }
-        );
 
         //WHEN THE PROJECT IS CHANGE
         $("#tslistProject,#tsTestType").change(function () {
@@ -52,10 +40,10 @@
         });
 
         $("#paginationNext, #paginationPrevious").click(function () {
-            if ($(this).text() == "NEXT >") {
+            if ($(this).text() == "NEXT >>") {
                 $.fn.changeFirstDayOfWeek(7);
             }
-            if ($(this).text() == "< PREVIOUS") {
+            if ($(this).text() == "<< PREVIOUS") {
                 $.fn.changeFirstDayOfWeek(-7);
             }
            
@@ -78,19 +66,19 @@
 
 <div id="componentbar">
     <div id="component">
-        <span><strong>PROJECT  </strong></span>
+        <span style="margin-right: 10px"><strong>PROJECT :</strong></span>
         @Html.DropDownList("tslistProject",Functions.getListOfProjectsFromUser(WebSecurity.CurrentUserId))
     </div>
     <div id="component">
-        <span><strong>TESTING TYPE  </strong></span>
+        <span style="margin-right: 10px"><strong>TESTING TYPE :</strong></span>
         @Html.DropDownList("tsTestType",Functions.getListTestType())
     </div>
 </div>
 
 <div>
     <input type="hidden" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
-    <span id="paginationPrevious" style="color:  blue; font-weight: bold; margin-left: 5px">< PREVIOUS</span>
-    <span id="paginationNext" style="float:  right; color:  blue;font-weight: bold; margin-right: 5px">NEXT ></span>   
+    <span id="paginationPrevious" style="color:  blue; font-weight: bolder; margin-left: 5px"><< PREVIOUS</span>
+    <span id="paginationNext" style="float:  right; color:  blue;font-weight: bolder; margin-right: 5px">NEXT >></span>   
 </div>
 
 <div id="result">

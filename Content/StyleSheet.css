@@ -10,7 +10,14 @@ img{
     display: inline;
 }
 body{
-    font-family: Arial, Tahoma, Verdana;
+    font-family: Helvetica, Geneva, Calibri, sans-serif;
+}
+
+/*  HEADER
+    ---------------*/
+nav{
+    background-image: -webkit-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
+    background-image: -moz-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
 }
 /*--------------------CONTENT PAGE----------------------------------------------*/
 
@@ -41,9 +48,10 @@ body{
         width: 200px;
         vertical-align: middle;
         display: table-cell;
-        font-size: medium;
-        font-weight: 900;
+        font-size: small;
+        font-weight: bolder;
         text-align: center;
+        font-family: Helvetica;        
 }
 
 .component {
@@ -52,9 +60,10 @@ body{
         vertical-align: middle;
         display: table-cell;
         color: white;
-        font-size: medium;
-        font-weight: 900;
+        font-size: small;
+        font-weight: bolder;
         text-align: center;
+        font-family: Helvetica;
 }
 
 #tslistProject,#tsTestType {
@@ -70,16 +79,6 @@ body{
     margin-bottom: 10px; 
     font-weight: 900;  
 }
-
-.header{
-    width: 1000px;
-    margin-bottom: 20px;    
-}
-
-.sub-header{    
-    margin:  0px 120px 0px 120px;    
-}
-
 
 .spacer{    
     border-top: 2px solid;
@@ -157,8 +156,10 @@ h2{
     background: #b0caf8;
 }
 .gridheader, .gridfooter{
-    /*background: #9ebf60; */
-    background: #72286b;
+    /*background: #9ebf60; 
+    background: #72286b;*/
+    color: white;
+    background-color: rgb(102, 193, 225);
 } 
 .gridheader a, .gridfooter a{
     color: #fff;    

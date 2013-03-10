@@ -90,26 +90,26 @@
     public static string getCommentFor(string dayOfWeek,float rowId){
         var db = Database.Open(DATABASE);
         Object result = "";
-        switch(dayOfWeek){            
-            case "Mon":
+        switch(dayOfWeek.ToLower()){            
+            case "mon":
                 result = db.QueryValue("SELECT CommentForMon FROM TimeManagement WHERE Id=@0",rowId);               
                 break;
-            case "Tue":
+            case "tue":
                 result = db.QueryValue("SELECT CommentForTue FROM TimeManagement WHERE Id=@0",rowId);
                 break;
-            case "Wed":
+            case "wed":
                 result = db.QueryValue("SELECT CommentForWed FROM TimeManagement WHERE Id=@0",rowId);
                 break;
-            case "Thu":
+            case "thu":
                 result = db.QueryValue("SELECT CommentForThu FROM TimeManagement WHERE Id=@0",rowId);
                 break;
-            case "Fri":
+            case "fri":
                 result = db.QueryValue("SELECT CommentForFri FROM TimeManagement WHERE Id=@0",rowId);
                 break;
-            case "Sat":
+            case "sat":
                 result = db.QueryValue("SELECT CommentForSat FROM TimeManagement WHERE Id=@0",rowId);
                 break;
-            case "Sun":
+            case "sun":
                 result = db.QueryValue("SELECT CommentForSun FROM TimeManagement WHERE Id=@0",rowId);
                 break;                
         }

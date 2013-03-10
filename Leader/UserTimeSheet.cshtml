@@ -12,11 +12,12 @@
         chosenTestType = Request["TestType"].AsInt();
         chosenPrjId = Request["CurrentProjectId"].AsInt();
         currentFirstOfWeek=Request["CurrentFirstOfWeek"]==""?Functions.FirstDateOfWeek(DateTime.Now):Request["CurrentFirstOfWeek"].AsDateTime();
-        
-        @*        
-        <p>TestType: @chosenTestType</p>
-        <p>currentPrjectId: @chosenPrjId</p>
-        <p>Current : @currentFirstOfWeek</p>*@
+        <p>Action: @Request["action"]</p>
+        if(Request["action"]=="Accept"){
+            <p>TestType: @chosenTestType</p>
+            <p>currentPrjectId: @chosenPrjId</p>
+            <p>Current : @currentFirstOfWeek</p>
+        }                
     }
 }
 <script>
@@ -25,12 +26,14 @@
     $(function () {
         $(".havingComment").click(
             function () {
-                var elementId = "span#"+$(this).attr('id');
-                var posting = $.post("/Leader/CommentDialog.cshtml", { DayOfWeek: 'Mon', RowId: '567' })
+                var elementId = "span#" + $(this).attr('id');
+                var dayOfWeek = $(this).attr('id').match("[a-z]*").toString();
+                var rowId = $(this).attr('id').match("[0-9]+").toString();
+                var posting = $.post("/Leader/CommentDialog.cshtml", { DayOfWeek: dayOfWeek, RowId: rowId })
                 posting.done(
                     function (data) {
                         $("#commentDiaglog").empty().append(data);
-                        $("#commentDiaglog").dialog({ show: 'clip', hide: 'clip', position: { my:'left top',of: $(elementId)} });
+                        $("#commentDiaglog").dialog({ show: 'clip', hide: 'clip', position: { my: 'left top', of: $(elementId)} });
                     });
             }
         );
@@ -52,7 +55,8 @@
 
 @{
 var lsOfProjectUserId = db.Query("SELECT * FROM Project_User WHERE ProjectId=@0",chosenPrjId);
-<h2 style="text-align: center">@Functions.getProjectDetails(chosenPrjId).ProjectName - @Functions.getTestType(chosenTestType).Name - @currentFirstOfWeek.ToShortDateString() to @currentFirstOfWeek.AddDays(6).ToShortDateString()</h2>
+@*<h2 style="text-align: center">@Functions.getProjectDetails(chosenPrjId).ProjectName - @Functions.getTestType(chosenTestType).Name - @currentFirstOfWeek.ToShortDateString() to @currentFirstOfWeek.AddDays(6).ToShortDateString()</h2>*@
+<h2 style="text-align: center">@currentFirstOfWeek.ToString("dd") - @currentFirstOfWeek.AddDays(6).ToString("dd") @currentFirstOfWeek.ToString("MMMM"). @currentFirstOfWeek.Year</h2>
 var timesheetReports = db.Query("SELECT DISTINCT(Datetime) FROM TimeManagement WHERE( @0 = Datetime)",currentFirstOfWeek.ToShortDateString());
 if(timesheetReports.Count() ==0){
     <p>NO DATA FOUND</p>
@@ -66,9 +70,10 @@ else{
         <div id="accordion">
 
             @foreach(var mem in lsMemberInDuration){
-            <h3><strong>@Functions.getUserInfo(mem.UserId).FirstName</strong></h3>
             bool displayAcceptButton = false;
-            <div><form>@{
+            <h3><strong>@Functions.getUserInfo(mem.UserId).FirstName</strong></h3>
+
+            <div><form method="post" action="~/Leader/UserTimeSheet.cshtml">@{
             var listCategory = Functions.getListCategory();
             foreach(var cate in listCategory){
                         
@@ -84,27 +89,28 @@ else{
                     WebGrid gridData = new WebGrid(currentDataTS,canSort:false,rowsPerPage:100);                
                     <div> 
                         @gridData.GetHtml(
+                        headerStyle: "gridheader",
                         columns: gridData.Columns(
                             gridData.Column("TaskId","Task Name",@<text>@Functions.getTaskName(item.TaskId)</text>,"taskField"),
-                            gridData.Column("Mon",format:@<text>@if(item.Mon != -1){<span id="Mon_@item.Id" @if(Functions.getCommentFor("Mon",item.Id)!=""){<text>class="havingComment"</text>}>@item.Mon</span>}</text>),
-                            gridData.Column("Tue",format:@<text>@if(item.Tue != -1){<span id="Tue_@item.Id" @if(Functions.getCommentFor("Tue",item.Id)!=""){<text>class="havingComment"</text>}>@item.Tue</span>}</text>),
-                            gridData.Column("Wed",format:@<text>@if(item.Wed != -1){<span id="Wed_@item.Id" @if(Functions.getCommentFor("Wed",item.Id)!=""){<text>class="havingComment"</text>}>@item.Wed</span>}</text>),
-                            gridData.Column("Thu",format:@<text>@if(item.Thu != -1){<span id="Thu_@item.Id" @if(Functions.getCommentFor("Thu",item.Id)!=""){<text>class="havingComment"</text>}>@item.Thu</span>}</text>),
-                            gridData.Column("Fri",format:@<text>@if(item.Fri != -1){<span id="Fri_@item.Id" @if(Functions.getCommentFor("Fri",item.Id)!=""){<text>class="havingComment"</text>}>@item.Fri</span>}</text>),
-                            gridData.Column("Sat",format:@<text>@if(item.Sat != -1){<span id="Sat_@item.Id" @if(Functions.getCommentFor("Sat",item.Id)!=""){<text>class="havingComment"</text>}>@item.Sat</span>}</text>),
+                            gridData.Column("Mon",format:@<text>@if(item.Mon != -1){<span id="mon_@item.Id" @if(Functions.getCommentFor("Mon",item.Id)!=""){<text>class="havingComment"</text>}>@item.Mon</span>}</text>),
+                            gridData.Column("Tue",format:@<text>@if(item.Tue != -1){<span id="tue_@item.Id" @if(Functions.getCommentFor("Tue",item.Id)!=""){<text>class="havingComment"</text>}>@item.Tue</span>}</text>),
+                            gridData.Column("Wed",format:@<text>@if(item.Wed != -1){<span id="wed_@item.Id" @if(Functions.getCommentFor("Wed",item.Id)!=""){<text>class="havingComment"</text>}>@item.Wed</span>}</text>),
+                            gridData.Column("Thu",format:@<text>@if(item.Thu != -1){<span id="thu_@item.Id" @if(Functions.getCommentFor("Thu",item.Id)!=""){<text>class="havingComment"</text>}>@item.Thu</span>}</text>),
+                            gridData.Column("Fri",format:@<text>@if(item.Fri != -1){<span id="fri_@item.Id" @if(Functions.getCommentFor("Fri",item.Id)!=""){<text>class="havingComment"</text>}>@item.Fri</span>}</text>),
+                            gridData.Column("Sat",format:@<text>@if(item.Sat != -1){<span id="sat_@item.Id" @if(Functions.getCommentFor("Sat",item.Id)!=""){<text>class="havingComment"</text>}>@item.Sat</span>}</text>),
                             gridData.Column("Sun",format:@<text>@if(item.Sun != -1){<span id="sun_@item.Id" @if(Functions.getCommentFor("sun",item.Id)!=""){<text>class="havingComment"</text>}>@item.Sun</span>}</text>)
                         )
                         )
                     </div> 
                     displayAcceptButton = true;                           
-                    }
+                }
                         
             }
             if(displayAcceptButton){
-                <input type="hidden" value="@currentFirstOfWeek.ToShortDateString()">
+                <input type="hidden"  name="currentFirstOfWeek" value="@currentFirstOfWeek.ToShortDateString()">
                 <input type="hidden" value="@Functions.getProjectUserId(mem.UserId,chosenPrjId)">
-                <input type="submit" value="Accept">
-                <input type="submit" value="Decline">}
+                <input type="submit" name="action" value="Accept">
+                <input type="submit" name="action" value="Decline">}
             }                        
             </form>
             </div>

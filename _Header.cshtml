@@ -1,5 +1,6 @@
 ﻿@if(Roles.IsUserInRole("LEADER") || User.IsInRole("PM")){
-    <nav style="background-color: rgb(0, 174, 233)">
+    @*rgb(0, 174, 233)*@
+    <nav>
         <div id="nav1" class="component"><a style="text-decoration: none; color: White" href="/Leader/ManageMembers.cshtml">MANAGE MEMBERS</a></div>
         <div style="display: table-cell; width: 5px"></div>
         <div id="nav2" class="component"><a style="text-decoration: none; color: White" href="/Leader/ManageProjects.cshtml">MANAGE PROJECTS</a></div>

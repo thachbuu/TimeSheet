@@ -34,7 +34,7 @@
                 @if(WebSecurity.IsAuthenticated){
                     <form id="logoutForm" action="~/Account/Logout" method="post">
                         @AntiForgery.GetHtml()
-                        <span>Hello, <strong>@WebSecurity.CurrentUserName</strong></span>
+                        <span>Hello, <strong>@WebSecurity.CurrentUserName.Split('@')[0]</strong></span>
                         <a href="javascript:document.getElementById('logoutForm').submit()">(Sign Out)</a>
                     </form>
                 }
