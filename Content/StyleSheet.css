@@ -21,6 +21,8 @@ nav{
 }
 /*--------------------CONTENT PAGE----------------------------------------------*/
 
+/*CLASS FIELD*/
+
 .content{
     width: 1000px;
     background-color: #fbf8f8;
@@ -29,13 +31,6 @@ nav{
 }
 .submitBtn{
     width: 120px;
-}
-
-
-#component{
-        width: 300px;
-        display: inline-block;
-        margin: 20px 20px 20px 10px;
 }
 
 .componentActive{
@@ -66,9 +61,31 @@ nav{
         font-family: Helvetica;
 }
 
+.tk-button{
+    height: 30px;
+    padding: 5px 5px 5px 5px;
+    text-align: center;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.tk-button:hover{
+    cursor: pointer;
+}
+
+/*SPECIFIC ID FIELD*/
 #tslistProject,#tsTestType {
         width: 200px;
 }
+
+#component{
+        width: 300px;
+        display: inline-block;
+        margin: 20px 20px 20px 10px;
+}
+
+
+
+
 /*  HEADER
     ------------------------*/
 .projectHeader{
@@ -123,10 +140,6 @@ h2{
     width: fit-content;
 }
 
-
-
-
-
 /*
     ------------------
     GRID
@@ -136,13 +149,13 @@ h2{
     margin-left: 10px;
     background: #fff;
     width: 900px;
-    border-collapse: collapse;    
+    border-collapse: collapse;
+    font-family: Helvetica;    
 } 
 .grid th {
     font-size: 1.1em; 
     font-weight: normal; 
     color: #fff; 
-    padding: 10px 8px;
     border-bottom: 2px solid #728059;
     text-align: left; 
 }
@@ -170,6 +183,7 @@ h2{
 /*VALIDATION FIELD*/
 .field-validation-error{
     color: #f00;
+    padding-left: 10px
 }
 
 /* login page */
@@ -224,3 +238,15 @@ fieldset {
         fieldset ol li {
             padding-bottom: 5px;
         }
+/* --------------------------------
+    GENERAL PAGES
+    -------------------------------   */
+
+
+/*  -------------------------------
+    LEADER - MANAGE TIME SHEET PAGE
+    -------------------------------  */
+
+#paginationNext, #paginationPrevious:hover{
+        cursor: pointer;
+}

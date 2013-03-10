@@ -12,12 +12,14 @@
         chosenTestType = Request["TestType"].AsInt();
         chosenPrjId = Request["CurrentProjectId"].AsInt();
         currentFirstOfWeek=Request["CurrentFirstOfWeek"]==""?Functions.FirstDateOfWeek(DateTime.Now):Request["CurrentFirstOfWeek"].AsDateTime();
-        <p>Action: @Request["action"]</p>
         if(Request["action"]=="Accept"){
+            
+        }
+        @*
             <p>TestType: @chosenTestType</p>
             <p>currentPrjectId: @chosenPrjId</p>
             <p>Current : @currentFirstOfWeek</p>
-        }                
+        *@
     }
 }
 <script>
@@ -29,15 +31,18 @@
                 var elementId = "span#" + $(this).attr('id');
                 var dayOfWeek = $(this).attr('id').match("[a-z]*").toString();
                 var rowId = $(this).attr('id').match("[0-9]+").toString();
+                var dialogTitle = 'Comment for ' + dayOfWeek;
                 var posting = $.post("/Leader/CommentDialog.cshtml", { DayOfWeek: dayOfWeek, RowId: rowId })
                 posting.done(
                     function (data) {
                         $("#commentDiaglog").empty().append(data);
-                        $("#commentDiaglog").dialog({ show: 'clip', hide: 'clip', position: { my: 'left top', of: $(elementId)} });
+                        $("#commentDiaglog").dialog({ show: 'clip', hide: 'clip', position: { my: 'left top', of: $(elementId) }, title: 'Comment' });
                     });
             }
         );
-    }); 
+      });
+      
+   
 </script>
 
 <style>
@@ -55,11 +60,10 @@
 
 @{
 var lsOfProjectUserId = db.Query("SELECT * FROM Project_User WHERE ProjectId=@0",chosenPrjId);
-@*<h2 style="text-align: center">@Functions.getProjectDetails(chosenPrjId).ProjectName - @Functions.getTestType(chosenTestType).Name - @currentFirstOfWeek.ToShortDateString() to @currentFirstOfWeek.AddDays(6).ToShortDateString()</h2>*@
 <h2 style="text-align: center">@currentFirstOfWeek.ToString("dd") - @currentFirstOfWeek.AddDays(6).ToString("dd") @currentFirstOfWeek.ToString("MMMM"). @currentFirstOfWeek.Year</h2>
 var timesheetReports = db.Query("SELECT DISTINCT(Datetime) FROM TimeManagement WHERE( @0 = Datetime)",currentFirstOfWeek.ToShortDateString());
 if(timesheetReports.Count() ==0){
-    <p>NO DATA FOUND</p>
+    <p class="field-validation-error" style="margin-left: 20px">NO DATA FOUND</p>
     
 }
 else{
@@ -71,9 +75,9 @@ else{
 
             @foreach(var mem in lsMemberInDuration){
             bool displayAcceptButton = false;
-            <h3><strong>@Functions.getUserInfo(mem.UserId).FirstName</strong></h3>
+            <h3><strong>@Functions.getUserInfo(mem.UserId).FirstName @Functions.getUserInfo(mem.UserId).LastName</strong></h3>
 
-            <div><form method="post" action="~/Leader/UserTimeSheet.cshtml">@{
+            <div>@{
             var listCategory = Functions.getListCategory();
             foreach(var cate in listCategory){
                         
@@ -85,11 +89,12 @@ else{
                                     ts.Datetime.ToShortDateString(),cate.Id,chosenTestType,chosenPrjId,mem.UserId);
 
                 if(currentDataTS.Count >0){
-                    <div><strong>@cate.Name</strong></div>
+                    <div style="font-size: 1.1em; font-weight: bold; color: #808080; margin-top: 20px;">@cate.Name</div>
                     WebGrid gridData = new WebGrid(currentDataTS,canSort:false,rowsPerPage:100);                
                     <div> 
                         @gridData.GetHtml(
                         headerStyle: "gridheader",
+                        tableStyle: "grid",
                         columns: gridData.Columns(
                             gridData.Column("TaskId","Task Name",@<text>@Functions.getTaskName(item.TaskId)</text>,"taskField"),
                             gridData.Column("Mon",format:@<text>@if(item.Mon != -1){<span id="mon_@item.Id" @if(Functions.getCommentFor("Mon",item.Id)!=""){<text>class="havingComment"</text>}>@item.Mon</span>}</text>),
@@ -107,19 +112,20 @@ else{
                         
             }
             if(displayAcceptButton){
-                <input type="hidden"  name="currentFirstOfWeek" value="@currentFirstOfWeek.ToShortDateString()">
-                <input type="hidden" value="@Functions.getProjectUserId(mem.UserId,chosenPrjId)">
-                <input type="submit" name="action" value="Accept">
-                <input type="submit" name="action" value="Decline">}
+                <div id="btn-field">
+                    <input type="hidden"  name="currentFirstOfWeek" value="@currentFirstOfWeek.ToShortDateString()">
+                    <input type="hidden" value="@Functions.getProjectUserId(mem.UserId,chosenPrjId)">
+                    <button class="tk-button">Accept</button>
+                    <button class="tk-button">Decline</button>
+                </div>
+               }
             }                        
-            </form>
             </div>
         }
         </div>
     }
-    
-    
-    }
+}
 }
 <div id="commentDiaglog" style="display: none"></div>
+<div id="timsheet-confirmationDialog" style="display: none">Are your sure?</div>
 <div style="height: 30px"></div>
