@@ -10,7 +10,27 @@
     
 }
 
-
+<script>
+    $(function () {
+        $(".tk-button").click(function(){
+            $("#mm-showprofile").css("display", "none");
+            $("#mm-editprofile").attr("class","mm-editprofile shown");    
+        });
+        
+    })
+</script>
+ 
+<style>
+ .hidden{
+        display: none;
+    }   
+ .shown{
+        display: normal;
+    }
+ .mm-editprofile{
+        background-color: green;
+    }
+</style>
 
 @if(userId == 0 ){
     <h1 style="margin-left: 50px">Sorry, system cannot find your member</h1>
@@ -26,8 +46,11 @@
     </p>
 }
 else{
-<div style="padding-left: 50px">
-
+<div style="margin-right: 10px; width: 200px; margin-left: 700px">
+    <button class="tk-button">Edit</button>
+    
+</div>
+<div style="padding-left: 50px" id="mm-showprofile">
 <ul style="">
     <li>
         <h2>ACCOUNT INFROMATION</h2>
@@ -64,5 +87,10 @@ else{
         </ul>
     </li>
 </ul>
-    </div>
+</div>
+
+<div id="mm-editprofile" class="mm-editprofile hidden">
+    <button class="tk-button">Save</button>
+    <button class="tk-button">Cancel</button>
+</div>
 }

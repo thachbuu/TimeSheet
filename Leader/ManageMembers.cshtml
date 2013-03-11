@@ -48,26 +48,33 @@
     li.mm-memberName:hover{
         cursor: pointer;
     }
-   
+    .mm-component{
+        width: 200px;
+        display: inline-block;
+        margin: 20px 0 20px 0;
+    }
+    #mm-projectList,#mm-titleList{
+        width: 120px;
+    }           
 </style>
 
 
 <div style="width: 1000px">
     <form method="post">
-        <div class="component">
-            @Html.Label("Project")
+        <div class="mm-component">
+            @Html.Label("PROJECT")
             @Html.DropDownList("mm-projectList",null,projectList,Request["mm-projectList"],null)
         </div>
-        <div class="component">
-            @Html.Label("Title")
+        <div class="mm-component">
+            @Html.Label("TITLE")
             @Html.DropDownList("mm-titleList",null,titleList,Request["mm-titleList"],null)
         </div>
-         <div class="component">
-            @Html.TextBox("mm-memberNameOrEmail",Request["mm-memberNameOrEmail"], new{placeholder = "Enter name or email address"})
+         <div class="mm-component">
+            @Html.TextBox("mm-memberNameOrEmail",Request["mm-memberNameOrEmail"], new{placeholder = "Enter name or email"})
         </div>
-        <div class="component">
-            <button style="display: inline-block">Search</button>
-            <button style="display: inline-block"><a href="/Leader/ManageMembers.cshtml">View All</a></button>
+        <div class="mm-component">
+            <button style="display: inline-block" class="tk-button">Search</button>
+            <button style="display: inline-block" class="tk-button"><a href="/Leader/ManageMembers.cshtml" style="text-decoration: none; color: black">View All</a></button>
         </div>
     </form>
 </div>
