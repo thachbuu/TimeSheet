@@ -33,42 +33,48 @@
     $(function () {
         $("#mm-memberlist").accordion();
         $("li[id*=mem_]").click(function () {
-            var userId = $(this).attr('id').match("[0-9]+").toString(); 
-            $.post("/Leader/MemberProfile.cshtml", { UserId: userId}, function(data){$("#mm-memberdetails").html(data)});
+            $("li[id*=mem_]").css({"background-color": "","font-weight":"normal"});
+            var userId = $(this).attr('id').match("[0-9]+").toString();
+            $.post("/Leader/MemberProfile.cshtml", { UserId: userId }, function (data) { $("#mm-memberdetails").html(data) });
+            $(this).css({"background-color": "#0ff","border-radius" : "10px","font-weight": "bolder"});
         });
+        $("#nav1").attr('class', 'componentActive');
+        $("#nav1 a").css('color', 'blue');
+
     });
 </script>
 
 <style>
     li.mm-memberName:hover{
-        cursor: pointer
+        cursor: pointer;
     }
+   
 </style>
 
 
-<div>filter field
+<div style="width: 1000px">
     <form method="post">
-        <div>
-            @Html.Label("Name or Email")
-            @Html.TextBox("mm-memberNameOrEmail",Request["mm-memberNameOrEmail"])
-        </div>
-        <div>
-            @Html.Label("Title")
-            @Html.DropDownList("mm-titleList",null,titleList,Request["mm-titleList"],null)
-        </div>
-        <div>
+        <div class="component">
             @Html.Label("Project")
             @Html.DropDownList("mm-projectList",null,projectList,Request["mm-projectList"],null)
         </div>
-        <button>Search</button>
+        <div class="component">
+            @Html.Label("Title")
+            @Html.DropDownList("mm-titleList",null,titleList,Request["mm-titleList"],null)
+        </div>
+         <div class="component">
+            @Html.TextBox("mm-memberNameOrEmail",Request["mm-memberNameOrEmail"], new{placeholder = "Enter name or email address"})
+        </div>
+        <div class="component">
+            <button style="display: inline-block">Search</button>
+            <button style="display: inline-block"><a href="/Leader/ManageMembers.cshtml">View All</a></button>
+        </div>
     </form>
-    <button><a href="/Leader/ManageMembers.cshtml">View All</a></button>
 </div>
-
-@if(!IsPost){
-<div style="width:  1000px; height: fit-content">    
+<div style="width:  1000px; height: fit-content; padding-bottom: 20px; padding-left: 10px">  
     <div class="mm-memberlist" id="mm-memberlist"style="vertical-align: top;width: 200px; display: inline-block; margin-right: 20px;">Member List
-        @foreach(var prj in projectList){
+    @if(!IsPost){
+        foreach(var prj in projectList){
             if(prj.Text =="All"){continue;}
             <h4>@prj.Text</h4>
             var membersInProject = Functions.getUsersInProject(prj.Value.AsInt());
@@ -80,25 +86,38 @@
                 </ul>
             </div>
         }
+    }
+    else{
+        var selectedProjectId = Request["mm-projectList"].AsInt();
+        var selectedTitleId = Request["mm-titleList"].AsInt();
+        var memberNameOrEmail = Request["mm-memberNameOrEmail"];
+
+        var filteredProjectList = selectedProjectId==0?db.Query("SELECT * FROM Projects"):db.Query("SELECT * FROM Projects WHERE ProjectId=@0",selectedProjectId);
+        var titleRangeQuery = selectedTitleId==0?"(SELECT TitleId FROM Title) ":"(SELECT TitleId FROM Title WHERE TitleId=@1) ";
+
+        foreach(var prj in filteredProjectList){
+            var filteredMemberList = db.Query("SELECT * FROM UserProfile "+ 
+                                      "WHERE UserProfile.UserId IN (SELECT UserId FROM Project_User WHERE ProjectId=@0 AND Status='True') "+
+                                      "AND UserProfile.TitleId IN "+ titleRangeQuery +
+                                      "AND (Email LIKE @2 OR FirstName LIKE @2 OR LastName LIKE @2)",prj.ProjectId,selectedTitleId,"%"+memberNameOrEmail+"%");
+            if(filteredMemberList.Count !=0){
+                <h3>@prj.ProjectName</h3>
+                <div>
+                    @foreach(var m in filteredMemberList){
+                        <p>@m.FirstName</p>
+                        <p>@m.TitleId</p>
+                    }
+                </div>
+            }
+        }
+    
+        <p>ProjectId @selectedProjectId</p>
+        <p>MemberTitle @selectedTitleId</p>
+        <p>Name: @memberNameOrEmail</p>
+    }
     </div>
     <div class="mm-memberdetails" id="mm-memberdetails" style="padding-left: 3px;width: 700px; display: inline-block; border-left: 2px solid #000">User Details</div>
 </div>
-}
-else{
-    var projectId = Request["mm-projectList"].AsInt();
-    var titleId = Request["mm-titleList"];
-    var memberNameOrEmail = Request["mm-memberNameOrEmail"];
-
-    var projectRangeQuery = projectId==0?"SELECT Id FROM Projects":"SELECT Id FROM Projects WHERE ProjectId=@0";
-    var memberRangeQuery = titleId==0?"SELECT Id FROM Title":"SELECT Id FROM Title WHERE TitleId=@1";
-    if(projectId==0){
-        
-    }
-    
-    <p>ProjectId @projectId</p>
-    <p>MemberTitle @memberTitle</p>
-    <p>Name: @memberNameOrEmail</p>
-}
 @*
 <script>
     $(function () {
