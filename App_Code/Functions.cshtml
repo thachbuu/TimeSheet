@@ -11,6 +11,28 @@
      ---------------------------------------------------------------------------------------------------------------
      */
 
+     //ROLE TABLE
+     public static List<SelectListItem> getListRoles(){
+        var db = Database.Open(DATABASE);
+        var list = new List<SelectListItem>();
+        var roles =  db.Query("SELECT * FROM webpages_Roles WHERE RoleName!='MASTER'");
+
+        foreach(var r in roles){
+            SelectListItem item = new SelectListItem();
+            item.Text = r.RoleName;
+            item.Value= r.RoleId.ToString();
+            list.Add(item);
+        }
+
+        return list;
+
+     }
+
+     public static int getRoleId(String roleName){
+         var db = Database.Open(DATABASE);
+         return db.QueryValue("SELECT RoleId FROM webpages_Roles WHERE RoleName=@0",roleName);
+     }
+
      //TASK TABLE
      public static string getTaskName(int taskId){
          var db = Database.Open(DATABASE);

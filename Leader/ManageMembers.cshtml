@@ -31,7 +31,7 @@
 }
 <script>
     $(function () {
-        $("#mm-memberlist").accordion();
+        $("#mm-memberlist").accordion({active: false, collapsible: true});
         $("li[id*=mem_]").click(function () {
             $("li[id*=mem_]").css({"background-color": "","font-weight":"normal"});
             var userId = $(this).attr('id').match("[0-9]+").toString();
@@ -79,7 +79,7 @@
     </form>
 </div>
 <div style="width:  1000px; height: fit-content; padding-bottom: 20px; padding-left: 10px">  
-    <div class="mm-memberlist" id="mm-memberlist"style="vertical-align: top;width: 200px; display: inline-block; margin-right: 20px;">Member List
+    <div class="mm-memberlist" id="mm-memberlist"style="vertical-align: top;width: 200px; display: inline-block; margin-right: 20px; padding-top: 35px">Member List
     @if(!IsPost){
         foreach(var prj in projectList){
             if(prj.Text =="All"){continue;}
@@ -123,7 +123,7 @@
         <p>Name: @memberNameOrEmail</p>
     }
     </div>
-    <div class="mm-memberdetails" id="mm-memberdetails" style="padding-left: 3px;width: 700px; display: inline-block; border-left: 2px solid #000">User Details</div>
+    <div class="mm-memberdetails" id="mm-memberdetails" style="padding-left: 3px;width: 700px; display: inline-block;"></div>
 </div>
 @*
 <script>

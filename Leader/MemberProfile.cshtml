@@ -2,7 +2,7 @@
     Layout="";
     var userId = Request["UserId"].AsInt();
     var db = Database.Open("StarterSite");
-    var data = db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
+    var userInfo = Functions.getUserInfo(userId);
     var workingProject = db.Query("SELECT ProjectName FROM Projects, Project_User " +
                                   "WHERE Project_User.UserId = @0 AND Project_User.ProjectId = Projects.ProjectId AND Project_User.Status='TRUE'",userId);
 
@@ -12,11 +12,19 @@
 
 <script>
     $(function () {
-        $(".tk-button").click(function(){
-            $("#mm-showprofile").css("display", "none");
-            $("#mm-editprofile").attr("class","mm-editprofile shown");    
+        $("#mm-showprofile-edit").click(function () {
+            var updateShowProfileClass = $("#mm-showprofile").attr("class").replace("shown", "hidden");
+            var updateEditProfileClass = $("#mm-editprofile").attr("class").replace("hidden", "shown");
+            $("#mm-showprofile").attr("class", updateShowProfileClass);
+            $("#mm-editprofile").attr("class", updateEditProfileClass);
         });
-        
+
+        $("#mm-editprofile-cancel").click(function () {
+            var updateShowProfileClass = $("#mm-showprofile").attr("class").replace("hidden", "shown");
+            var updateEditProfileClass = $("#mm-editprofile").attr("class").replace("shown", "hidden");
+            $("#mm-showprofile").attr("class", updateShowProfileClass);
+            $("#mm-editprofile").attr("class", updateEditProfileClass);
+        });
     })
 </script>
  
@@ -28,7 +36,6 @@
         display: normal;
     }
  .mm-editprofile{
-        background-color: green;
     }
 </style>
 
@@ -46,51 +53,79 @@
     </p>
 }
 else{
-<div style="margin-right: 10px; width: 200px; margin-left: 700px">
-    <button class="tk-button">Edit</button>
-    
-</div>
-<div style="padding-left: 50px" id="mm-showprofile">
-<ul style="">
-    <li>
-        <h2>ACCOUNT INFROMATION</h2>
-        <ul style="list-style-type: none">
-            <li>Name: @data.FirstName @data.LastName</li>
-            <li>Comany ID: @data.UserCompanyId</li>
-            <li>Working Projects
-                @if(workingProject.Count() == 0){
-                    <p>None</p>
-                }
-                else{
-                    foreach(var prj in workingProject){
-                        <p>@prj.ProjectName</p>
+
+<div style="padding-left: 50px" id="mm-showprofile" class="shown">
+    <div style="width: 200px; margin-left: 650px">
+        <button class="tk-button" id="mm-showprofile-edit">Edit</button>
+    </div>
+    <ul style="">
+        <li>
+            <h2>ACCOUNT INFROMATION</h2>
+            <ul style="list-style-type: none">
+                <li>Name: @userInfo.FirstName @userInfo.LastName</li>
+                <li>Comany ID: @userInfo.UserCompanyId</li>
+                <li>Working Projects
+                    @if(workingProject.Count() == 0){
+                        <p>None</p>
                     }
-                }
-            </li>
-        </ul>
-    </li>
-    <li>
-        <h2>OTHER INFORMATION</h2>
-        <ul>
-            <li>
-                <h3>PRODUCTIVITY</h3>
-                <p>TO BE DEFINED LATER</p>
-            </li>
-            <li>
-                <h3>QUALITY</h3>
-                <p> TO BE DEFINED LATER</p>
-            </li>
-            <li>
-                <h3>OTHER REPORTS</h3>
-                <p> TO BE DEFINED LATER</p>
-            </li>
-        </ul>
-    </li>
-</ul>
+                    else{
+                        foreach(var prj in workingProject){
+                            <p>@prj.ProjectName</p>
+                        }
+                    }
+                </li>
+            </ul>
+        </li>
+        <li>
+            <h2>OTHER INFORMATION</h2>
+            <ul>
+                <li>
+                    <h3>PRODUCTIVITY</h3>
+                    <p>TO BE DEFINED LATER</p>
+                </li>
+                <li>
+                    <h3>QUALITY</h3>
+                    <p> TO BE DEFINED LATER</p>
+                </li>
+                <li>
+                    <h3>OTHER REPORTS</h3>
+                    <p> TO BE DEFINED LATER</p>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </div>
 
 <div id="mm-editprofile" class="mm-editprofile hidden">
-    <button class="tk-button">Save</button>
-    <button class="tk-button">Cancel</button>
+     <div style="width: 200px; margin-left: 650px">
+        <button class="tk-button" id="mm-editprofile-save">Save</button>
+        <button class="tk-button" id="mm-editprofile-cancel">Cancel</button>
+    </div>
+    <div>
+        <label>Email: </label>
+        <label><a href="mailto:@userInfo.Email">@userInfo.Email</a></label>
+    </div>
+    <div>
+        <label>First Name: </label>
+        <input type="text" value="@userInfo.FirstName">
+    </div>
+    <div>
+        <label>Last Name: </label>
+        <input type="text" value="@userInfo.LastName">
+    </div>
+    <div>
+        <label>Employee ID</label>
+        <input type="text" value="@userInfo.UserCompanyId">
+    </div>
+    <div>
+        <label>Title</label>
+        @Html.DropDownList("lsTitle",null,Functions.getSelectListItemOfTitle(),userInfo.TitleId,null)
+    </div>
+    <div>
+        <label>Role</label>
+        @{var userRoleName = Roles.GetRolesForUser(userInfo.Email)[0];}
+        @Html.DropDownList("lsRole",null,Functions.getListRoles(),Functions.getRoleId(userRoleName),null)
+    </div>
 </div>
 }
+
