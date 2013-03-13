@@ -44,7 +44,7 @@
             $("#timsheet-confirmationDialog").dialog({
                 buttons: [
                     { text: 'OK', click: function () {
-                        var posting = $.post("/Leader/ProcessingTimeSheet.cshtml",
+                        var posting = $.post("/Leader/Processing.cshtml",
                             { CurrentProjectUserId: currentPrjUserId, CurrentFirstOfWeek: currentFirstOfWeek, Action: 'AcceptTSReport' });
                         posting.done(function (data) {
                             $("#timsheet-confirmationDialog").dialog('close');

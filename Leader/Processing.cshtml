@@ -1,0 +1,34 @@
+﻿@{
+    Layout="";
+    var db = Database.Open("StarterSite");
+    if(IsPost){
+        if(Request["Action"]=="AcceptTSReport"){
+            var CurrentProjectUserId = Request["CurrentProjectUserId"].AsInt();
+            var CurrentFirstOfWeek = Request["CurrentFirstOfWeek"].AsDateTime();
+            db.Query("UPDATE TimeManagement SET Approved='True' WHERE Project_UserId=@0 AND Datetime=@1",CurrentProjectUserId,CurrentFirstOfWeek);    
+        }
+
+        //Request From Member Profile
+        if(Request["Action"]=="UpdateUserInfo"){
+            var fn = Request["FirstName"];
+            var ln = Request["LastName"];
+            var employeeId= Request["EmployeeId"];
+            var employeeTitleId = Request["UserTitle"].AsInt();
+            var employeeRoleId = Request["UserRole"].AsInt();
+            var userId = Request["UserId"].AsInt();
+            Functions.updateUserInfo(userId,fn,ln,employeeId,employeeTitleId,employeeRoleId);
+                <p>
+                FN: @Request["FirstName"]
+                LN: @Request["LastName"]
+                EP: @Request["EmployeeId"]
+                TITLE: @Request["UserTitle"]
+                R: @Request["UserRole"]
+                URSID:@Request["UserId"]</p>
+            <p>eeeeeeeeee</p>
+            <text>You're in Update User Info</text>
+        }
+        
+    }
+}
+
+

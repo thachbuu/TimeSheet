@@ -25,6 +25,32 @@
             $("#mm-showprofile").attr("class", updateShowProfileClass);
             $("#mm-editprofile").attr("class", updateEditProfileClass);
         });
+
+        $("#mm-editprofile-save").click(function () {
+            var firstName = $("#mm-user-firstname").val();
+            var lastName = $("#mm-user-lastname").val();
+            var employeeId = $("#mm-user-employeeid").val();
+            var userTitle = $("#mm-user-title").find(":selected").val();
+            var userRole = $("#mm-user-role").find(":selected").val();
+            var userId = $("#mm-user-userid").val();
+            var posting = $.post("/Leader/Processing.cshtml", {
+                Action: "UpdateUserInfo",
+                FirstName: firstName,
+                LastName: lastName,
+                EmployeeId: employeeId,
+                UserTitle: userTitle,
+                UserRole: userRole,
+                UserId: userId
+            });
+            posting.done(function (data) {
+                       var newdiv = "<div id='newdiv'>YOU'VE UPDATED SUCCESSFULLY</div>";
+                  $(newdiv).dialog({
+                       buttons:[{ text: "OK", click: function () { $(this).dialog('close'); }
+                     }]
+                   });
+           //     $("#reback").html(data);
+            });
+        });
     })
 </script>
  
@@ -63,7 +89,7 @@ else{
             <h2>ACCOUNT INFROMATION</h2>
             <ul style="list-style-type: none">
                 <li>Name: @userInfo.FirstName @userInfo.LastName</li>
-                <li>Comany ID: @userInfo.UserCompanyId</li>
+                <li>Comany ID: @userInfo.EmployeeId</li>
                 <li>Working Projects
                     @if(workingProject.Count() == 0){
                         <p>None</p>
@@ -107,25 +133,30 @@ else{
     </div>
     <div>
         <label>First Name: </label>
-        <input type="text" value="@userInfo.FirstName">
+        <input type="text" value="@userInfo.FirstName" id="mm-user-firstname">
     </div>
     <div>
         <label>Last Name: </label>
-        <input type="text" value="@userInfo.LastName">
+        <input type="text" value="@userInfo.LastName" id="mm-user-lastname">
     </div>
     <div>
         <label>Employee ID</label>
-        <input type="text" value="@userInfo.UserCompanyId">
+        <input type="text" value="@userInfo.EmployeeId" id="mm-user-employeeid">
     </div>
     <div>
         <label>Title</label>
-        @Html.DropDownList("lsTitle",null,Functions.getSelectListItemOfTitle(),userInfo.TitleId,null)
+        @Html.DropDownList("mm-user-title",null,Functions.getSelectListItemOfTitle(),userInfo.TitleId,null)
     </div>
     <div>
         <label>Role</label>
         @{var userRoleName = Roles.GetRolesForUser(userInfo.Email)[0];}
-        @Html.DropDownList("lsRole",null,Functions.getListRoles(),Functions.getRoleId(userRoleName),null)
+        @Html.DropDownList("mm-user-role",null,Functions.getListRoles(),Functions.getRoleId(userRoleName),null)
+    </div>
+    <div>
+        <input type="hidden" value="@userId" id="mm-user-userid">
     </div>
 </div>
 }
+
+<div id="reback">fffffffffff</div>
 

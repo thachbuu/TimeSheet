@@ -76,7 +76,7 @@ else{
         columns: userData.Columns(
             userData.Column(columnName: "FirstName", header: "First Name"),
             userData.Column(columnName: "LastName",  header: "Last Name"),
-            userData.Column(columnName: "UserCompanyId", header: "Empl. ID"),
+            userData.Column(columnName: "EmployeeId", header: "Empl. ID"),
             userData.Column(columnName: "Email"),                                                           
             userData.Column(format: @<button name="AddRemoveUser" value="@item.UserId" style="float: right; width: 100px">@if(db.QueryValue("SELECT Status FROM Project_User WHERE UserId=@0 AND ProjectId=@1 AND Status='True'",item.UserId,projectId) == true){<text>Remove</text>}else{<text>Add</text>}</button>)
         ))

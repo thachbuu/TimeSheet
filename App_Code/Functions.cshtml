@@ -33,6 +33,11 @@
          return db.QueryValue("SELECT RoleId FROM webpages_Roles WHERE RoleName=@0",roleName);
      }
 
+     public static string getRoleName(int roleId){
+         var db = Database.Open(DATABASE);
+         return db.QueryValue("SELECT RoleName FROM webpages_Roles WHERE RoleId=@0",roleId);
+     }
+
      //TASK TABLE
      public static string getTaskName(int taskId){
          var db = Database.Open(DATABASE);
@@ -110,6 +115,21 @@
      public static dynamic getUserInfo(int userId){
          var db = Database.Open(DATABASE);
          return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
+     }
+
+     public static void updateUserInfo(int userId, string firstname, string lastname, String employeeid, int titleId, int newRoleId){
+         var db = Database.Open(DATABASE);
+         var userInfo = Functions.getUserInfo(userId);
+         var currentUsername = userInfo.Email;
+         var currentRoleName = Roles.GetRolesForUser(currentUsername)[0];
+         var newRoleName = Functions.getRoleName(newRoleId);
+
+         //update in user profile table including firstname, lastname, title, employeeid
+         db.Execute("UPDATE UserProfile SET FirstName=@0, LastName=@1, EmployeeId=@2, TitleId=@3 WHERE UserId=@4",firstname,lastname,employeeid,titleId,userId);
+
+         //remove the old role and update new role
+        Roles.RemoveUserFromRole(currentUsername,currentRoleName);
+        Roles.AddUserToRole(currentUsername,newRoleName);
      }
 
     //TIMEMANAGEMENT TABLE
