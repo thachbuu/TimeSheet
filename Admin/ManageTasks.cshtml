@@ -1,0 +1,76 @@
+﻿@{
+    var db = Database.Open("StarterSite");
+    
+    WebGrid grid = null;
+    int counter = 0;
+
+}
+<script>
+    //SET CSS FOR ACTIVE TAB
+    $("#nav3").attr('class', 'componentActive');
+    $("#nav3 a").css('color', 'blue');
+    $("#sub-nav3").attr('class', 'shown');
+</script>
+
+<div>
+    <form method="post">
+        <div>
+            <label>Category</label>
+            @Html.DropDownList("mt-cateList",null,Functions.getSelectListCategory(true),Request["mt-cateList"],null)
+        </div>
+
+        <div>
+            <label>Test Type</label>
+            @Html.DropDownList("mt-testypeList",null,Functions.getSelectListTestType(true),Request["mt-testypeList"],null)
+        </div>
+
+        <div>
+            <input name="mt-task-name" type="text" placeholder="Task name" value="@Request["mt-task-name"]">
+        </div>
+
+        <div>
+            <button class="tk-button">Search</button>
+            <button class="tk-button"><a href="/Admin/ManageTasks.cshtml" style="text-decoration: none; color: #000">View All</a></button>
+        </div>
+    </form>
+</div>
+
+@if(IsPost){
+    var chosenCategoryId = Request["mt-cateList"].AsInt();
+    var chosenTestType = Request["mt-testypeList"].AsInt();
+    var chosenTaskName = Request["mt-task-name"];
+
+    //chosenCategoryId =0 or chosenTestType = 0 mean that user is choosing "All" in drop down list;
+    var queryFilterCategory = chosenCategoryId ==0?"(SELECT Id FROM Categories) ": "(SELECT Id FROM Categories WHERE Id=@0) ";
+    var queryFilterTestType = chosenTestType ==0?"(SELECT Id FROM TestType) ": "(SELECT Id FROM TestType WHERE Id=@1) ";
+    
+    var queryFilteredTasks = "SELECT * FROM Tasks WHERE " +
+                        "CategoryId IN " + queryFilterCategory +
+                        "AND TypeId IN " + queryFilterTestType +
+                        "AND (Name LIKE @2)";
+
+@*
+    <p>@queryFilteredTasks</p>
+    <p>@chosenCategoryId</p>
+    <p>@chosenTestType</p>
+    <p>@chosenTaskName</p>
+  *@  
+    var filterTasks = db.Query(queryFilteredTasks,chosenCategoryId,chosenTestType,"%"+chosenTaskName+"%");
+    grid = new WebGrid(filterTasks,rowsPerPage:100,defaultSort: "CategoryId", canSort:false);
+
+}
+else{
+   var listTasks = Functions.getAllTasks();
+   grid= new WebGrid(listTasks,rowsPerPage:100,defaultSort: "CategoryId",canSort: false);
+  
+}
+
+@grid.GetHtml(
+    columns: grid.Columns(
+        grid.Column(header:"No.",format:@<text>@{counter++;}@counter</text>),
+        grid.Column("Name"),
+        grid.Column("TypeId",format:@<text>@Functions.getTestType(item.TypeId).Name</text>),
+        grid.Column("CategoryId",format:@<text>@Functions.getCategoryName(item.CategoryId)</text>)
+    )    
+)  
+

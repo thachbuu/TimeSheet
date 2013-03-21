@@ -61,6 +61,11 @@
                 taskList.Add(task);            
         }
         return taskList;  
+     }
+     
+     public static IEnumerable<dynamic> getAllTasks(){
+         var db = Database.Open(DATABASE);
+         return db.Query("SELECT * FROM Tasks");
      } 
 
      //CATEGORY TABLE
@@ -69,17 +74,66 @@
          return db.Query("SELECT * FROM Categories");
      }
 
+     public static string getCategoryName(int categoryID){
+         var db = Database.Open(DATABASE);
+         return db.QueryValue("SELECT Name FROM Categories WHERE Id=@0",categoryID);
+     }
+
+     public static List<SelectListItem> getSelectListCategory(bool hasDefaultValue=false){
+         var db = Database.Open(DATABASE);
+         var categoryList = getListCategory();
+         List<SelectListItem> list = new List<SelectListItem>();
+         if(hasDefaultValue){
+             SelectListItem defaultItem = new SelectListItem();
+             defaultItem.Text = "All";
+             defaultItem.Value="0";
+             list.Add(defaultItem);
+         }
+         foreach(var cate in categoryList){
+             SelectListItem item = new SelectListItem();
+             item.Text = cate.Name;
+             item.Value = cate.Id.ToString();
+             list.Add(item);
+         }
+         return list;
+     }
+
      //TEST TYPE TABLE
      public static dynamic getTestType(int testTypeId){
          var db = Database.Open(DATABASE);
          return db.QuerySingle("SELECT * From TestType WHERE Id=@0",testTypeId);
      }
 
+     public static IEnumerable<dynamic> getListTestType(){
+         var db = Database.Open(DATABASE);
+         return db.Query("SELECT * FROM TestType");
+     }
+
+    public static List<SelectListItem> getSelectListTestType(bool hasDefaultValue=false){
+        var db = Database.Open(DATABASE);
+        var testTypeList = getListTestType();
+        List<SelectListItem> list = new List<SelectListItem>();
+        if(hasDefaultValue){
+            SelectListItem defaultItem = new SelectListItem();
+            defaultItem.Text = "All";
+            defaultItem.Value="0";
+            list.Add(defaultItem);
+        }
+        foreach(var type in testTypeList){
+            SelectListItem item = new SelectListItem();
+            item.Text = type.Name;
+            item.Value = type.Id.ToString();
+            list.Add(item);
+        }
+        return list;
+}
+
      //PROJECT USER TABLE
      public static int getProjectUserId(int userId, int projectId){
          var db = Database.Open(DATABASE);
          return db.QueryValue("SELECT Id FROM Project_User WHERE UserId=@0 AND ProjectId=@1",userId, projectId);
      }
+    
 
      //USERPROFILE TABLE
 
@@ -117,7 +171,7 @@
          return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
      }
 
-     public static void updateUserInfo(int userId, string firstname, string lastname, String employeeid, int titleId, int newRoleId){
+     public static int updateUserInfo(int userId, string firstname, string lastname, String employeeid, int titleId, int newRoleId){
          var db = Database.Open(DATABASE);
          var userInfo = Functions.getUserInfo(userId);
          var currentUsername = userInfo.Email;
@@ -125,11 +179,12 @@
          var newRoleName = Functions.getRoleName(newRoleId);
 
          //update in user profile table including firstname, lastname, title, employeeid
-         db.Execute("UPDATE UserProfile SET FirstName=@0, LastName=@1, EmployeeId=@2, TitleId=@3 WHERE UserId=@4",firstname,lastname,employeeid,titleId,userId);
+         int succeedRow = db.Execute("UPDATE UserProfile SET FirstName=@0, LastName=@1, EmployeeId=@2, TitleId=@3 WHERE UserId=@4",firstname,lastname,employeeid,titleId,userId);
 
          //remove the old role and update new role
         Roles.RemoveUserFromRole(currentUsername,currentRoleName);
         Roles.AddUserToRole(currentUsername,newRoleName);
+        return succeedRow;
      }
 
     //TIMEMANAGEMENT TABLE
@@ -187,6 +242,7 @@
         return counter;
      }
 
+     // PROJECT_USER TABLEupdateUserInfo
      public static List<dynamic> getUsersInProject(int projectId){
          var db = Database.Open("StarterSite");
          var userInProject = db.Query("SELECT UserId FROM Project_User WHERE ProjectId=@0 AND Status='True'",projectId);
@@ -312,20 +368,7 @@
         return listIem;
     }
 
-    public static List<SelectListItem> getListTestType(){
-        var listItem = new List<SelectListItem>();
-        var db = Database.Open(DATABASE);
-        var testType = db.Query("SELECT * FROM TestType");
-        foreach(var type in testType){
-            SelectListItem item = new SelectListItem();
-            item.Text = type.Name;
-            item.Value = type.Id.ToString();
-            listItem.Add(item);
-        }
-        return listItem;
-
-    }
-     
+         
     /*
        QUERIES SECTION
     */  

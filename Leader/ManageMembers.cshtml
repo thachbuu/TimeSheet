@@ -88,7 +88,12 @@
             <div>
                 <ul>
                     @foreach(var mem in membersInProject){
-                        <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>
+                        if(User.IsInRole("LEADER") && mem.LeaderId== WebSecurity.CurrentUserId ){
+                            <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>
+                        }
+                        if(User.IsInRole("PM")  && mem.ProjectManagerId==WebSecurity.CurrentUserId){
+                            <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>                            
+                        }                        
                     }
                 </ul>
             </div>
@@ -110,17 +115,19 @@
             if(filteredMemberList.Count !=0){
                 <h3>@prj.ProjectName</h3>
                 <div>
-                    @foreach(var m in filteredMemberList){
-                        <p>@m.FirstName</p>
-                        <p>@m.TitleId</p>
-                    }
+                    <ul>
+                        @foreach(var mem in filteredMemberList){
+                            if(User.IsInRole("LEADER") && mem.LeaderId== WebSecurity.CurrentUserId ){
+                                <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>
+                            }
+                            if(User.IsInRole("PM")  && mem.ProjectManagerId==WebSecurity.CurrentUserId){
+                                <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>                            
+                            }
+                        }
+                    </ul>
                 </div>
             }
         }
-    
-        <p>ProjectId @selectedProjectId</p>
-        <p>MemberTitle @selectedTitleId</p>
-        <p>Name: @memberNameOrEmail</p>
     }
     </div>
     <div class="mm-memberdetails" id="mm-memberdetails" style="padding-left: 3px;width: 700px; display: inline-block;"></div>

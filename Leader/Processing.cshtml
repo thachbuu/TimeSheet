@@ -16,7 +16,8 @@
             var employeeTitleId = Request["UserTitle"].AsInt();
             var employeeRoleId = Request["UserRole"].AsInt();
             var userId = Request["UserId"].AsInt();
-            Functions.updateUserInfo(userId,fn,ln,employeeId,employeeTitleId,employeeRoleId);
+            int succeedRows = Functions.updateUserInfo(userId,fn,ln,employeeId,employeeTitleId,employeeRoleId);
+            @*
                 <p>
                 FN: @Request["FirstName"]
                 LN: @Request["LastName"]
@@ -24,10 +25,8 @@
                 TITLE: @Request["UserTitle"]
                 R: @Request["UserRole"]
                 URSID:@Request["UserId"]</p>
-            <p>eeeeeeeeee</p>
-            <text>You're in Update User Info</text>
+            <p>eeeeeeeeee</p>*@
         }
-        
     }
 }
 

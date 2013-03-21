@@ -3,6 +3,7 @@
      var db = Database.Open("StarterSite");
      int userID = WebSecurity.CurrentUserId;
      IEnumerable<dynamic> data=null;
+     String[] roles = new string[]{"MEMBER"};
      if(User.IsInRole("LEADER")){
         data = db.Query("SELECT ProjectName,Description,StartedDate,EndDate,Project_User.ProjectId FROM Projects,Project_User " +
                         "WHERE Project_User.UserId=@0 AND Projects.ProjectId = Project_User.ProjectId AND Project_User.Status='True'",userID);
@@ -23,11 +24,33 @@
 
 <script>
     $(function () {
+        $("#mp-start-date,#mp-end-date").datepicker();
         /*Active navigation tab*/
         $("#nav2").attr('class', 'componentActive');
         $("#nav2 a").css('color', 'blue');
     });
 </script>
+
+<div id="mp-filter-bar">
+    <div>
+        <label>Started Date</label>
+        <input type="text" id="mp-start-date">
+    </div>
+    <div>
+        <label>End Date</label>
+        <input type="text" id="mp-end-date">
+    </div>
+    <div>
+        <label>Leader</label>
+        
+    </div>
+    <div>
+        <input type="text" placeholder="Project name">
+    </div>
+    <div>
+        <button class="tk-button">Search</button>
+    </div>
+</div>
 
 <form method="get" action="~/Leader/ProjectDetails" name="manageProjectForm">
     @if(grid.TotalRowCount == 0){

@@ -43,12 +43,11 @@
                 UserId: userId
             });
             posting.done(function (data) {
-                       var newdiv = "<div id='newdiv'>YOU'VE UPDATED SUCCESSFULLY</div>";
-                  $(newdiv).dialog({
-                       buttons:[{ text: "OK", click: function () { $(this).dialog('close'); }
-                     }]
-                   });
-           //     $("#reback").html(data);
+                var newdiv = "<div id='newdiv'>YOU'VE UPDATED SUCCESSFULLY</div>" ;
+                $(newdiv).dialog({
+                    buttons: [{ text: "OK", click: function () { $(this).dialog('close'); }
+                    }]
+                });
             });
         });
     })
@@ -157,6 +156,3 @@ else{
     </div>
 </div>
 }
-
-<div id="reback">fffffffffff</div>
-

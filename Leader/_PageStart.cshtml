@@ -1,5 +1,9 @@
 ﻿@{
     Layout ="~/_Layout.cshtml";
+
+    if(!WebSecurity.IsAuthenticated){
+        Response.Redirect("~/Account/Logout.cshtml");
+    }
     
     @*
     if(!Roles.IsUserInRole("LEADER") || !User.IsInRole("PM")){
