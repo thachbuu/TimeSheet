@@ -31,12 +31,12 @@
 }
 <script>
     $(function () {
-        $("#mm-memberlist").accordion({active: false, collapsible: true});
+        $("#mm-memberlist").accordion();
         $("li[id*=mem_]").click(function () {
-            $("li[id*=mem_]").css({"background-color": "","font-weight":"normal"});
+            $("li[id*=mem_]").removeClass("mm-member-on");
             var userId = $(this).attr('id').match("[0-9]+").toString();
             $.post("/Leader/MemberProfile.cshtml", { UserId: userId }, function (data) { $("#mm-memberdetails").html(data) });
-            $(this).css({"background-color": "#0ff","border-radius" : "10px","font-weight": "bolder"});
+            $(this).addClass("mm-member-on");
         });
         $("#nav1").attr('class', 'componentActive');
         $("#nav1 a").css('color', 'blue');
@@ -48,6 +48,9 @@
     li.mm-memberName:hover{
         cursor: pointer;
     }
+    li.mm-memberName{
+        padding: 5px 5px 5px 5px;
+    }
     .mm-component{
         width: 200px;
         display: inline-block;
@@ -55,18 +58,39 @@
     }
     #mm-projectList,#mm-titleList{
         width: 120px;
-    }           
+    }
+    #mm-memberNameOrEmail{
+        width: 250px;
+        height: 27px;
+    } 
+    ul#mm-list-member{
+        list-style-type: none;
+    }
+    
+    li.mm-member-on{
+        color: white;
+        font-weight: bold;
+        background-color: #00A3EF;
+    }
+    
+    div.mm-memberlist{
+        vertical-align: top;
+        width: 200px; 
+        display: inline-block;
+        margin-right: 20px; 
+        margin-top: 35px;
+    }          
 </style>
 
 
 <div style="width: 1000px">
     <form method="post">
-        <div class="mm-component">
-            @Html.Label("PROJECT")
+        <div class="mm-component" style="margin-right: 10px">
+            <label><strong>PROJECT : </strong></label>
             @Html.DropDownList("mm-projectList",null,projectList,Request["mm-projectList"],null)
         </div>
         <div class="mm-component">
-            @Html.Label("TITLE")
+            <label><strong>TITLE : </strong></label>
             @Html.DropDownList("mm-titleList",null,titleList,Request["mm-titleList"],null)
         </div>
          <div class="mm-component">
@@ -78,15 +102,15 @@
         </div>
     </form>
 </div>
-<div style="width:  1000px; height: fit-content; padding-bottom: 20px; padding-left: 10px">  
-    <div class="mm-memberlist" id="mm-memberlist"style="vertical-align: top;width: 200px; display: inline-block; margin-right: 20px; padding-top: 35px">Member List
+<div style="width:  1000px; height: fit-content; padding-bottom: 20px; padding-left: 10px"> 
+   <div class="mm-memberlist" id="mm-memberlist">
     @if(!IsPost){
         foreach(var prj in projectList){
             if(prj.Text =="All"){continue;}
             <h4>@prj.Text</h4>
             var membersInProject = Functions.getUsersInProject(prj.Value.AsInt());
             <div>
-                <ul>
+                <ul id="mm-list-member">
                     @foreach(var mem in membersInProject){
                         if(User.IsInRole("LEADER") && mem.LeaderId== WebSecurity.CurrentUserId ){
                             <li id="mem_@mem.UserId" class="mm-memberName">@mem.FirstName @mem.LastName</li>
@@ -130,110 +154,5 @@
         }
     }
     </div>
-    <div class="mm-memberdetails" id="mm-memberdetails" style="padding-left: 3px;width: 700px; display: inline-block;"></div>
+    <div class="mm-memberdetails" id="mm-memberdetails" style="width: 700px; display: inline-block;"></div>
 </div>
-@*
-<script>
-    $(function () {
-        $("a[id*=assignLeader]").click(function () {
-            var userId = $(this).attr("id").match("[0-9].*").toString();
-            $("#dialog").dialog({
-                title: "Assign To Leader",
-                buttons: [{ text: "Save", click: function () {
-                    $.post("/Leader/ManageMembers.cshtml", { UserId: userId }, function () {
-                        $("#action").attr('value', "Add");
-                        $("#userAssigned").attr('value', userId);
-                        $("form[name=assignToLeader]").submit();
-                    });
-                    $(this).dialog("close");
-                }
-                },
-                          { text: "Cancel", click: function () { $(this).dialog("close"); } }]
-            });
-        });
-
-        $("a[id*=removeLeader]").click(function () {
-            var userId = $(this).attr("id").match("[0-9].*").toString();
-            $.post("/Leader/ManageMembers.cshtml", { UserId: userId, Action: "Remove" }, function (data) { });
-            location.reload();
-        });
-        // $("#nav1").css({'background-color': 'blue','border-right' : '1px solid #d4d4d4', 'border-left':'1px solid #d4d4d4'});
-        $("#nav1").attr('class', 'componentActive');
-        $("#nav1 a").css('color', 'blue');
-    });
-</script>
-
-<form method="post" action="/Leader/MemberProfile">
-    @if(grid == null){
-        Response.Redirect("~/Account/Logout");
-    }
-    @if(grid.TotalRowCount ==0){
-        <div>You don't have any members now.</div>
-    }
-    else{
-        @grid.GetHtml(
-        tableStyle: "grid",    
-        headerStyle: "gridheader",
-        footerStyle: "gridfooter",           
-        columns: grid.Columns(            
-            grid.Column(
-                header: "Name",
-                format: @<text>@item.FirstName @item.LastName</text>
-                ),
-            grid.Column(
-                columnName: "UserCompanyId",
-                header: "Empl. ID"
-                ),
-            grid.Column(
-                columnName: "Email"
-            ),
-            grid.Column(
-                header: "Title",
-                format: @<text>TBD</text>
-            ),
-            grid.Column(
-                header: "Role",
-                format: @<text>@Roles.GetRolesForUser(item.Email).GetValue(0)</text>
-            ),
-            grid.Column(
-                header: "Leader",
-                format: @<text>
-                            @if(item.LeaderId !=0){
-                                   var leader =  db.QuerySingle("SELECT FirstName,LastName FROM UserProfile WHERE UserId=@0",item.LeaderId);
-                                   <span>@leader.FirstName  @leader.LastName</span>
-                                  if(User.IsInRole("PM")){                                      
-                                      <a href="#" id="assignLeader_@item.UserId">Edit</a>
-                                      <a href="#" id="removeLeader_@item.UserId">Remove</a>
-                                  }
-                              }
-                              else{
-                                  if(Roles.GetRolesForUser(item.Email).GetValue(0) == "MEMBER" && User.IsInRole("PM")){
-                                      <a href="#"id="assignLeader_@item.UserId">Assign</a>
-                                  }
-                              }
-                        </text>
-             ),                
-            grid.Column(
-                header: string.Empty,
-                format: @<input type="radio" value="@item.UserId" name="UserId"></input>
-            )      
-            )
-        )
-        <input type="submit" name="action" id="viewMemberDetails" value="View Profile" style="width: 120px" >
-    }
-    
-</form>
-
-<div id="dialog" style="display: none">
-    <form method="post" name="assignToLeader">
-        <h5>Please choose a leader below:</h5>
-        @Html.DropDownList("listLeader",Functions.getResources(WebSecurity.CurrentUserName,false,"LEADER"))
-        <input type="hidden" id="userAssigned" name="UserId">
-        <input type="hidden" id="action" name="Action">        
-    </form>
-</div>
-
-<div id="js">
-</div>
-
-*@

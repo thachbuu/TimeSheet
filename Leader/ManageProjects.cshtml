@@ -3,22 +3,18 @@
      var db = Database.Open("StarterSite");
      int userID = WebSecurity.CurrentUserId;
      IEnumerable<dynamic> data=null;
+     WebGrid grid = null;      
      String[] roles = new string[]{"MEMBER"};
      if(User.IsInRole("LEADER")){
-        data = db.Query("SELECT ProjectName,Description,StartedDate,EndDate,Project_User.ProjectId FROM Projects,Project_User " +
+        data = db.Query("SELECT * FROM Projects,Project_User " +
                         "WHERE Project_User.UserId=@0 AND Projects.ProjectId = Project_User.ProjectId AND Project_User.Status='True'",userID);
      }
      if(User.IsInRole("PM")){
-        data = db.Query("SELECT ProjectName,Description,StartedDate,EndDate,ProjectId FROM Projects "+
+        data = db.Query("SELECT * FROM Projects "+
                          "WHERE ProjectManager=@0",userID);
      }    
     
-     var grid = new WebGrid(data,canSort: false);       
-     var selectedProjectId = Request["SelectedProjectId"].AsInt(); 
      
-     //Validation:
-     Validation.RequireField("ProjectId","Please select a project");
-   
      
 }
 
@@ -31,62 +27,103 @@
     });
 </script>
 
+<style>
+    div#mp-filter-bar {
+        margin-top: 10px;
+    }
+    div#mp-filter-bar div{
+        width: 200px;
+        display: inline-block;       
+    }
+    div#mp-filter-bar div input{
+        width: 150px;
+    }
+</style>
 <div id="mp-filter-bar">
-    <div>
-        <label>Started Date</label>
-        <input type="text" id="mp-start-date">
-    </div>
-    <div>
-        <label>End Date</label>
-        <input type="text" id="mp-end-date">
-    </div>
-    <div>
-        <label>Leader</label>
-        
-    </div>
-    <div>
-        <input type="text" placeholder="Project name">
-    </div>
-    <div>
-        <button class="tk-button">Search</button>
-    </div>
+    <form method="post">
+        <div>
+            <label><strong>STARTED DATE :</strong></label>
+            <input type="text" name="mp-start-date" id="mp-start-date" value="@Request["mp-start-date"]">
+        </div>
+
+        <div>
+            <label><strong>END DATE :</strong></label>
+            <input type="text" name="mp-end-date" id="mp-end-date" value="@Request["mp-end-date"]">
+        </div>
+
+        <div>
+            <label><strong>PROJECT NAME:</strong></label>
+            <input type="text" name="mp-project-name" value="@Request["mp-project-name"]">
+        </div>
+
+        <div>
+            <button class="tk-button">Search</button>
+        </div>
+    </form>
+    
 </div>
 
-<form method="get" action="~/Leader/ProjectDetails" name="manageProjectForm">
-    @if(grid.TotalRowCount == 0){
-        <p>You don't have any projects yet</p>
+<div>
+@if(IsPost){
+
+    // Get information from request
+    var startedDate = Request["mp-start-date"];
+    var endDate = Request["mp-end-date"];
+    var prjName = Request["mp-project-name"];
+
+    // Create query based on info
+    var queryStartedDate = startedDate.IsEmpty()?"":"StartedDate >= @1 AND ";
+    var queryEndDate = endDate.IsEmpty()?"":"@2 >= EndDate AND ";
+    var queryFilteredPrj ="";
+    if(User.IsInRole("PM")){
+        queryFilteredPrj = "SELECT * FROM Projects WHERE ProjectManager=@0 AND " + queryStartedDate + queryEndDate + "ProjectName LIKE @3";
     }
-    else{
-        @Html.ValidationSummary("",excludeFieldErrors:false,htmlAttributes:null)
-        @grid.GetHtml(
-        tableStyle: "grid",    
-        headerStyle: "gridheader",
-        footerStyle: "gridfooter",  
-        columns: grid.Columns(
-            grid.Column(
-                columnName: "ProjectName",
-                header: "Project Name"
-            ),
-            grid.Column(
-                columnName: "Description",
-                format: @<div>@Html.Raw(item.Description)</div>
-            ),
-            grid.Column(
-                columnName: "StartedDate",
-                header: "Started Date",
-                format: @<span>@item.StartedDate.ToString("d")</span>
-            ),
-            grid.Column(
-                columnName: "EndDate",
-                header: "End Date",
-                format: @<span>@item.EndDate.ToString("d")</span>
-            ),
-            grid.Column(
-                header: string.Empty,
-                format: @<input type="radio" name="ProjectId" value="@item.ProjectId" @if(selectedProjectId == item.ProjectId || selectedProjectId == 0){<text>checked</text>}></input>                    
-            )
-        )
-)
-    <button type="submit">Modify</button> 
+                                                   
+    // Get information from database
+    var filteredPrj = db.Query(queryFilteredPrj,WebSecurity.CurrentUserId,startedDate,endDate,"%" + prjName + "%");
+    <p>SD: @startedDate</p>
+    <p>ED: @endDate</p>
+    <p>PN: @prjName</p>
+    <p>UID: @WebSecurity.CurrentUserId</p>
+    <p>Query: @queryFilteredPrj</p>
+    
+    grid= new WebGrid(filteredPrj,canSort: false);
 }
-</form>
+else{
+    grid = new WebGrid(data,canSort: false);
+}
+
+@* ------ Display data in WebGrid -----------*@
+
+@if(grid.TotalRowCount == 0){
+    <p>There is no projects matched</p>
+}
+else{
+    @grid.GetHtml(
+    // tableStyle: "grid",    
+    headerStyle: "gridheader",
+    //   footerStyle: "gridfooter",  
+    columns: grid.Columns(
+        grid.Column(
+            columnName: "ProjectName",
+            header: "Project Name",
+            format: @<div style="text-align: center">@item.ProjectName</div>
+        ),
+        grid.Column(
+            columnName: "Description",
+            format: @<div>@Html.Raw(item.Description)</div>
+        ),
+        grid.Column(
+            columnName: "StartedDate",
+            header: "Started Date",
+            format: @<div style="text-align: center">@item.StartedDate.ToString("d")</div>
+        ),
+        grid.Column(
+            columnName: "EndDate",
+            header: "End Date",
+            format: @<div style="text-align: center">@item.EndDate.ToString("d")</div>
+        )
+    )
+)
+}
+</div>

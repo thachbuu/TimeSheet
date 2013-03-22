@@ -43,9 +43,12 @@
                 UserId: userId
             });
             posting.done(function (data) {
-                var newdiv = "<div id='newdiv'>YOU'VE UPDATED SUCCESSFULLY</div>" ;
+                var newdiv = "<div id='newdiv'>YOU'VE UPDATED SUCCESSFULLY</div>";
                 $(newdiv).dialog({
-                    buttons: [{ text: "OK", click: function () { $(this).dialog('close'); }
+                    buttons: [{ text: "OK", click: function () { 
+                        $(this).dialog('close'); 
+                        location.reload(); 
+                        }
                     }]
                 });
             });
@@ -54,14 +57,37 @@
 </script>
  
 <style>
- .hidden{
+    .hidden{
         display: none;
     }   
- .shown{
+    
+    .shown{
         display: normal;
     }
- .mm-editprofile{
+    
+    .mm-editprofile {
+        margin-left: 35px;
     }
+    
+    div#mm-editprofile div{
+        margin: 5px 5px 5px 5px;
+    }  
+    
+    div#mm-showprofile{
+        margin-left: 35px
+    }
+    div#mm-showprofile p{
+        margin:  5px 5px 5px 5px;
+    }
+  
+    div.mp-info-line{
+        width: 100px;
+        display: inline-block;
+    }
+    select#mm-user-role, select#mm-user-title{
+        width: 155px;
+    }
+    
 </style>
 
 @if(userId == 0 ){
@@ -79,80 +105,71 @@
 }
 else{
 
-<div style="padding-left: 50px" id="mm-showprofile" class="shown">
+<div id="mm-showprofile" class="shown">
     <div style="width: 200px; margin-left: 650px">
         <button class="tk-button" id="mm-showprofile-edit">Edit</button>
     </div>
-    <ul style="">
-        <li>
-            <h2>ACCOUNT INFROMATION</h2>
-            <ul style="list-style-type: none">
-                <li>Name: @userInfo.FirstName @userInfo.LastName</li>
-                <li>Comany ID: @userInfo.EmployeeId</li>
-                <li>Working Projects
-                    @if(workingProject.Count() == 0){
-                        <p>None</p>
-                    }
-                    else{
-                        foreach(var prj in workingProject){
-                            <p>@prj.ProjectName</p>
-                        }
-                    }
-                </li>
-            </ul>
-        </li>
-        <li>
-            <h2>OTHER INFORMATION</h2>
-            <ul>
-                <li>
-                    <h3>PRODUCTIVITY</h3>
-                    <p>TO BE DEFINED LATER</p>
-                </li>
-                <li>
-                    <h3>QUALITY</h3>
-                    <p> TO BE DEFINED LATER</p>
-                </li>
-                <li>
-                    <h3>OTHER REPORTS</h3>
-                    <p> TO BE DEFINED LATER</p>
-                </li>
-            </ul>
-        </li>
-    </ul>
+    <div>
+        <h2 style="color: grey">ACCOUNT INFORMATION</h2>
+        <div style="font-size: 1.1em">
+            <p>
+                First Name: 
+                <strong> @userInfo.FirstName </strong>
+            </p>
+            <p>
+                Last Name:
+               <strong> @userInfo.LastName</strong>
+            </p>
+            <p>
+                Empl. ID: 
+               <strong> @userInfo.EmployeeId</strong>
+            </p>
+            <p>
+                Title:
+                <strong>@Functions.getTitleName(@userInfo.TitleId)</strong>
+            </p>
+            <p>
+                Role
+               <strong> @Roles.GetRolesForUser(userInfo.Email)[0]</strong>
+            </p>
+        </div>
+        
+    </div>
 </div>
 
 <div id="mm-editprofile" class="mm-editprofile hidden">
-     <div style="width: 200px; margin-left: 650px">
+    <div style="width: 200px; margin-left: 600px">
         <button class="tk-button" id="mm-editprofile-save">Save</button>
         <button class="tk-button" id="mm-editprofile-cancel">Cancel</button>
     </div>
+    <h2 style="color: grey">EDIT MEMBER INFORMATION</h2>
     <div>
-        <label>Email: </label>
-        <label><a href="mailto:@userInfo.Email">@userInfo.Email</a></label>
+        <div class="mp-info-line"><strong>Email :</strong></div>
+        <div class="mp-info-line"><a href="mailto:@userInfo.Email">@userInfo.Email</a></div>
     </div>
     <div>
-        <label>First Name: </label>
-        <input type="text" value="@userInfo.FirstName" id="mm-user-firstname">
+        <div class="mp-info-line"><strong>First Name :</strong></div>
+        <div class="mp-info-line"><input type="text" value="@userInfo.FirstName" id="mm-user-firstname"></div>
     </div>
     <div>
-        <label>Last Name: </label>
-        <input type="text" value="@userInfo.LastName" id="mm-user-lastname">
+        <div class="mp-info-line"><strong>Last Name :</strong></div>
+        <div class="mp-info-line"><input type="text" value="@userInfo.LastName" id="mm-user-lastname"></div>
     </div>
     <div>
-        <label>Employee ID</label>
-        <input type="text" value="@userInfo.EmployeeId" id="mm-user-employeeid">
+        <div class="mp-info-line"><strong>Employee ID :</strong></div>
+        <div class="mp-info-line"><input type="text" value="@userInfo.EmployeeId" id="mm-user-employeeid"></div>
     </div>
     <div>
-        <label>Title</label>
-        @Html.DropDownList("mm-user-title",null,Functions.getSelectListItemOfTitle(),userInfo.TitleId,null)
+        <div class="mp-info-line"><strong>Title :</strong></div>
+        <div class="mp-info-line">@Html.DropDownList("mm-user-title",null,Functions.getSelectListItemOfTitle(),userInfo.TitleId,null)</div>
     </div>
     <div>
-        <label>Role</label>
-        @{var userRoleName = Roles.GetRolesForUser(userInfo.Email)[0];}
-        @Html.DropDownList("mm-user-role",null,Functions.getListRoles(),Functions.getRoleId(userRoleName),null)
+        <div class="mp-info-line"><strong>Role :</strong></div>
+        <div class="mp-info-line">
+            @{var userRoleName = Roles.GetRolesForUser(userInfo.Email)[0];}
+            @Html.DropDownList("mm-user-role",null,Functions.getListRoles(),Functions.getRoleId(userRoleName),null)
+        </div>
     </div>
-    <div>
-        <input type="hidden" value="@userId" id="mm-user-userid">
-    </div>
+    <input type="hidden" value="@userId" id="mm-user-userid">
 </div>
 }

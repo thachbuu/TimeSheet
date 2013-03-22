@@ -16,9 +16,11 @@ body{
 /*  HEADER
     ---------------*/
 nav{
+    background-color: #00A3EF;
+    /*
     background-image: -webkit-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
     background-image: -moz-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
-    background-image: -ms-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
+    background-image: -ms-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);*/
 }
 /*--------------------CONTENT PAGE----------------------------------------------*/
 
