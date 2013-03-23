@@ -32,6 +32,7 @@
             var employeeId = $("#mm-user-employeeid").val();
             var userTitle = $("#mm-user-title").find(":selected").val();
             var userRole = $("#mm-user-role").find(":selected").val();
+            var supervisorId = $("#mm-supervisor-id").find(":selected").val();
             var userId = $("#mm-user-userid").val();
             var posting = $.post("/Leader/Processing.cshtml", {
                 Action: "UpdateUserInfo",
@@ -40,20 +41,21 @@
                 EmployeeId: employeeId,
                 UserTitle: userTitle,
                 UserRole: userRole,
-                UserId: userId
+                UserId: userId,
+                SupervisorId: supervisorId
             });
             posting.done(function (data) {
                 var newdiv = "<div id='newdiv'>YOU'VE UPDATED SUCCESSFULLY</div>";
                 $(newdiv).dialog({
-                    buttons: [{ text: "OK", click: function () { 
-                        $(this).dialog('close'); 
-                        location.reload(); 
-                        }
+                    buttons: [{ text: "OK", click: function () {
+                        $(this).dialog('close');
+                        location.reload();
+                    }
                     }]
                 });
             });
         });
-    })
+        })
 </script>
  
 <style>
@@ -129,13 +131,24 @@ else{
                 <strong>@Functions.getTitleName(@userInfo.TitleId)</strong>
             </p>
             <p>
-                Role
+                Role:
                <strong> @Roles.GetRolesForUser(userInfo.Email)[0]</strong>
+            </p>
+            <p>
+                Supervisor:
+                @{
+                    if(@userInfo.LeaderId !=0){
+                        var supervisor = Functions.getUserInfo(@userInfo.LeaderId);
+                        <strong>@supervisor.FirstName @supervisor.LastName</strong>
+                    }
+                }
             </p>
         </div>
         
     </div>
 </div>
+
+@*---------------- EDIT INFORMATION INFO-----------------------*@
 
 <div id="mm-editprofile" class="mm-editprofile hidden">
     <div style="width: 200px; margin-left: 600px">
@@ -169,6 +182,10 @@ else{
             @{var userRoleName = Roles.GetRolesForUser(userInfo.Email)[0];}
             @Html.DropDownList("mm-user-role",null,Functions.getListRoles(),Functions.getRoleId(userRoleName),null)
         </div>
+    </div>
+    <div>
+        <div class="mp-info-line"><strong>Supervisor :</strong></div>
+        <div class="mp-info-line">@Html.DropDownList("mm-supervisor-id",null,Functions.getResources(WebSecurity.CurrentUserName,true,"LEADER"),userInfo.LeaderId.ToString(),null)</div>
     </div>
     <input type="hidden" value="@userId" id="mm-user-userid">
 </div>

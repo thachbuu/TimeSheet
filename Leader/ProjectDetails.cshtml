@@ -35,7 +35,7 @@
 
                 // Cancel button is pressed
                 if(action =="Cancel"){
-                    Response.Redirect("~/Leader/ManageProjects?SelectedProjectId=" + projectId);
+                    Response.Redirect("~/Leader/ManageProjects");
                 }
             }
         }
@@ -46,43 +46,52 @@
 }
 
 <script>
-    $(function () {        
+    $("#nav2").attr('class', 'componentActive');
+    $("#nav2 a").css('color', 'blue');
+    $(function () {
         $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
-        $("#datepickerEndDate").datepicker({ showAnim: "fold" });        
-        $("#projectDescription").jqte();       
-     });               
+        $("#datepickerEndDate").datepicker({ showAnim: "fold" });
+        $("#projectDescription").jqte();
+    });               
 </script>   
-  
-<form method="post">
-     @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null) 
-    <h2>@data.ProjectName</h2>
-    <ul>
-        <li>
-            <label for="datepickerStartedDate">STARTED DATE</label>
-            <br>
-            <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">  
-            @Html.ValidationMessage("datepickerStartedDate")
-        </li>        
-        <li>
-            <label for="datepickerEndDate">END DATE</label>
-            <br>
-            <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
-            @Html.ValidationMessage("datepickerEndDate")
-        </li>
-        <li>
-            <label for="projectDescription">PROJECT DESCRIPTION</label>
-            @Html.ValidationMessage("projectDescription") 
-            <br>
-            <div style="width: 900px">
-                <textarea id="projectDescription" name="projectDescription">@data.Description</textarea>
-            </div>
-        </li>
-        <li>
-            @RenderPage("GetMembers.cshtml")
-        </li>         
-    </ul>
 
-    <input type="hidden" name="projectId" value="@projectId">
-    <input name="action" id="submit" type="submit" value="Save">
-    <input name="action" id="submit" type="submit" value="Cancel">       
-</form>
+<style>
+    div#jd-edit-prj li{
+        margin: 15px;
+    }
+</style>
+<div id="jd-edit-prj">
+    <form method="post">
+         @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null) 
+        <h2 style="color: grey">@data.ProjectName</h2>
+        <ul>
+            <li>
+                <label for="datepickerStartedDate"><strong>STARTED DATE :</strong></label>
+                <br>
+                <input id="datepickerStartedDate" value="@data.StartedDate.ToString("d")" name="datepickerStartedDate">  
+                @Html.ValidationMessage("datepickerStartedDate")
+            </li>        
+            <li>
+                <label for="datepickerEndDate"><strong>END DATE :</strong></label>
+                <br>
+                <input id="datepickerEndDate" value="@data.EndDate.ToString("d")" name="datepickerEndDate">
+                @Html.ValidationMessage("datepickerEndDate")
+            </li>
+            <li>
+                <label for="projectDescription"><strong>PROJECT DESCRIPTION</strong></label>
+                @Html.ValidationMessage("projectDescription") 
+                <br>
+                <div style="width: 900px">
+                    <textarea id="projectDescription" name="projectDescription">@data.Description</textarea>
+                </div>
+            </li>
+            <li>
+                @RenderPage("GetMembers.cshtml")
+            </li>         
+        </ul>
+
+        <input type="hidden" name="projectId" value="@projectId">
+        <input name="action" id="submit" type="submit" class="tk-button" value="Save">
+        <input name="action" id="submit" type="submit" class="tk-button" value="Cancel">       
+    </form>
+</div>  

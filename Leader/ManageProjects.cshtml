@@ -13,15 +13,13 @@
         data = db.Query("SELECT * FROM Projects "+
                          "WHERE ProjectManager=@0",userID);
      }    
-    
-     
-     
 }
 
 <script>
     $(function () {
         $("#mp-start-date,#mp-end-date").datepicker();
-        /*Active navigation tab*/
+
+        /*Set class for active navigation tab*/
         $("#nav2").attr('class', 'componentActive');
         $("#nav2 a").css('color', 'blue');
     });
@@ -38,21 +36,29 @@
     div#mp-filter-bar div input{
         width: 150px;
     }
+    div.mp-prj-name:hover{
+        cursor: pointer;
+    }
+    div.mp-prj-name a{
+        text-decoration: none;
+        color:  blue;
+    }
 </style>
+
 <div id="mp-filter-bar">
     <form method="post">
         <div>
-            <label><strong>STARTED DATE :</strong></label>
+            <label style="font-size: smaller"><strong>STARTED DATE :</strong></label>
             <input type="text" name="mp-start-date" id="mp-start-date" value="@Request["mp-start-date"]">
         </div>
 
         <div>
-            <label><strong>END DATE :</strong></label>
+            <label style="font-size: smaller"><strong>END DATE :</strong></label>
             <input type="text" name="mp-end-date" id="mp-end-date" value="@Request["mp-end-date"]">
         </div>
 
         <div>
-            <label><strong>PROJECT NAME:</strong></label>
+            <label style="font-size: smaller"><strong>PROJECT NAME:</strong></label>
             <input type="text" name="mp-project-name" value="@Request["mp-project-name"]">
         </div>
 
@@ -63,7 +69,7 @@
     
 </div>
 
-<div>
+<div style="padding: 0px 5px 10px 5px">
 @if(IsPost){
 
     // Get information from request
@@ -78,16 +84,21 @@
     if(User.IsInRole("PM")){
         queryFilteredPrj = "SELECT * FROM Projects WHERE ProjectManager=@0 AND " + queryStartedDate + queryEndDate + "ProjectName LIKE @3";
     }
+    if(User.IsInRole("LEADER")){
+        queryFilteredPrj = "SELECT * FROM Projects,Project_User " +
+                           "WHERE Project_User.UserId=@0 AND Projects.ProjectId = Project_User.ProjectId AND Project_User.Status='True' AND " +
+                           queryStartedDate + queryEndDate + "ProjectName LIKE @3";
+    }
                                                    
     // Get information from database
     var filteredPrj = db.Query(queryFilteredPrj,WebSecurity.CurrentUserId,startedDate,endDate,"%" + prjName + "%");
-    <p>SD: @startedDate</p>
+    grid= new WebGrid(filteredPrj,canSort: false);
+
+   @* <p>SD: @startedDate</p>
     <p>ED: @endDate</p>
     <p>PN: @prjName</p>
     <p>UID: @WebSecurity.CurrentUserId</p>
-    <p>Query: @queryFilteredPrj</p>
-    
-    grid= new WebGrid(filteredPrj,canSort: false);
+    <p>Query: @queryFilteredPrj</p> *@
 }
 else{
     grid = new WebGrid(data,canSort: false);
@@ -100,14 +111,14 @@ else{
 }
 else{
     @grid.GetHtml(
-    // tableStyle: "grid",    
+    //tableStyle: "grid",    
     headerStyle: "gridheader",
     //   footerStyle: "gridfooter",  
     columns: grid.Columns(
         grid.Column(
             columnName: "ProjectName",
             header: "Project Name",
-            format: @<div style="text-align: center">@item.ProjectName</div>
+            format: @<div style="text-align: center;" id="mp-prj-@item.ProjectId" class="mp-prj-name"><a href="/Leader/ProjectDetails.cshtml?ProjectId=@item.ProjectId">@item.ProjectName</a></div>
         ),
         grid.Column(
             columnName: "Description",

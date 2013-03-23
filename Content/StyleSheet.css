@@ -63,6 +63,16 @@ nav{
         text-align: center;
         font-family: Helvetica;
 }
+.component-small {
+        width: 200px;
+        vertical-align: middle;
+        display: table-cell;
+        color: white;
+        font-size: small;
+        font-weight: bolder;
+        text-align: center;
+        font-family: Helvetica;
+}
 
 .tk-button{
     height: 30px;

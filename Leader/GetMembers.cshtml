@@ -62,7 +62,7 @@
 
 
 <input type="hidden" value="@projectId" id="currentProjectId">
-@Html.Label("MEMBER LIST")
+@Html.Label("MEMBER LIST",new {style="font-weight:bold"})
 @if(userData.TotalRowCount == 0){
     <div>You don't have any members</div>
 }

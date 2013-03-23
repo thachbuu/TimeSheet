@@ -148,7 +148,8 @@
         var supervisorData = db.Query(supervisorQuery,role);    
         var resourceList = new List<SelectListItem>();
 
-        var defaultItem = new SelectListItem(){Text = "---- Select One ----", Value = getMasterUserId().ToString(), Selected = (currentSupervisorEmail != null?true:false)};
+        //var defaultItem = new SelectListItem(){Text = "---- Select One ----", Value = getMasterUserId().ToString(), Selected = (currentSupervisorEmail != null?true:false)};
+        var defaultItem = new SelectListItem(){Text = "---- Select One ----", Value = "0"};
         if(includeDefaultValue){
             resourceList.Add(defaultItem);
         }
@@ -156,11 +157,11 @@
                 var person = new SelectListItem();
                 person.Text = item.Email;
                 person.Value = item.UserId.ToString();        
-                if(item.Email == currentSupervisorEmail){
-                    person.Selected = true;
-                }else{
-                    person.Selected = false;                   
-                }
+           //     if(item.Email == currentSupervisorEmail){
+           //         person.Selected = true;
+           //     }else{
+           //         person.Selected = false;                   
+           //     }
                 resourceList.Add(person);            
         }
         return resourceList;        
@@ -171,7 +172,7 @@
          return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
      }
 
-     public static int updateUserInfo(int userId, string firstname, string lastname, String employeeid, int titleId, int newRoleId){
+     public static int updateUserInfo(int userId, string firstname, string lastname, String employeeid, int titleId, int newRoleId, int supervisorId){
          var db = Database.Open(DATABASE);
          var userInfo = Functions.getUserInfo(userId);
          var currentUsername = userInfo.Email;
@@ -179,7 +180,7 @@
          var newRoleName = Functions.getRoleName(newRoleId);
 
          //update in user profile table including firstname, lastname, title, employeeid
-         int succeedRow = db.Execute("UPDATE UserProfile SET FirstName=@0, LastName=@1, EmployeeId=@2, TitleId=@3 WHERE UserId=@4",firstname,lastname,employeeid,titleId,userId);
+         int succeedRow = db.Execute("UPDATE UserProfile SET FirstName=@0, LastName=@1, EmployeeId=@2, TitleId=@3, LeaderId=@4 WHERE UserId=@5",firstname,lastname,employeeid,titleId,supervisorId,userId);
 
          //remove the old role and update new role
         Roles.RemoveUserFromRole(currentUsername,currentRoleName);

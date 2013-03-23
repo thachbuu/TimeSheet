@@ -16,7 +16,8 @@
             var employeeTitleId = Request["UserTitle"].AsInt();
             var employeeRoleId = Request["UserRole"].AsInt();
             var userId = Request["UserId"].AsInt();
-            int succeedRows = Functions.updateUserInfo(userId,fn,ln,employeeId,employeeTitleId,employeeRoleId);
+            var supervisorId = Request["SupervisorId"].AsInt();
+            int succeedRows = Functions.updateUserInfo(userId,fn,ln,employeeId,employeeTitleId,employeeRoleId,supervisorId);
             @*
                 <p>
                 FN: @Request["FirstName"]

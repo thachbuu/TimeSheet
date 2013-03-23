@@ -1,4 +1,26 @@
 ﻿@{
-    
-    <text>@Roles.GetRolesForUser("hung.vo@tmailinator.com")[0];</text>
+    Layout="_Layout.cshtml";
 }
+<script>
+    $(function () {
+        
+        $("#menu-header,#og-add-menu").hover(
+            function () {
+                $("#og-add-menu").menu();
+            },
+            function () {
+                $("#og-add-menu").menu("destroy").removeAttr("style");
+            });
+    });
+</script>
+<div>
+    <div id="menu-header"><a>mmmm</a></div>
+    <ul id="og-add-menu" class="hidden">
+        <li><a>Add task</a></li>
+        <li><a>Add group</a></li>
+        <li><a>Add division</a></li>
+        <li><a>Add company</a></li>
+    </ul>
+</div>
+
+
