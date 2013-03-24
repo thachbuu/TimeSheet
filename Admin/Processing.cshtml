@@ -14,6 +14,40 @@
             <p>@cateId</p>
             <p>@counter</p>
         }
+
+        if(Request["Action"]=="EditTask"){
+            var taskId = Request["TaskId"].AsInt();
+            var taskInfo = Functions.getTaskInfo(taskId);
+            <div style="margin: 10px;">
+                <div style="font-size: smaller; padding: 5px"><strong>Task Name :</strong></div>
+                <div><input value="@taskInfo.Name" style="width: 250px" id="mt-edit-task-name"></div>
+            </div>
+            <div style="margin: 10px;">
+                <div style="font-size: smaller; padding: 5px"><strong>Test type :</strong></div>
+                <div>@Html.DropDownList("mt-edit-task-testType",null,Functions.getSelectListTestType(),taskInfo.TypeId,null)</div>
+            </div>
+            <div style="margin: 10px;">
+                <div style="font-size: smaller; padding: 5px"><strong>Category :</strong></div>
+                <div>@Html.DropDownList("mt-edit-task-category",null,Functions.getSelectListCategory(),taskInfo.CategoryId,null)</div>
+            </div>
+        }
+
+        if(Request["Action"]=="UpdateTaskInfo"){
+            var taskId= Request["TaskId"].AsInt();
+            var newTaskName = Request["TaskName"];
+            var newTestType = Request["TestType"].AsInt();
+            var newCategoryId = Request["CateId"].AsInt();
+            db.Execute("UPDATE Tasks SET Name=@0, TypeId=@1,CategoryId=@2 WHERE Id=@3",newTaskName,newTestType,newCategoryId,taskId);
+            <p>@taskId</p>
+            <p>@newTaskName</p>
+            <p>@newTestType</p>
+            <p>@newCategoryId</p>
+        }
+
+        if(Request["Action"]=="DeleteTaskItem"){
+            var taskId= Request["TaskId"].AsInt();
+
+        }
     }
 }
 

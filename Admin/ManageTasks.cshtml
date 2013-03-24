@@ -29,6 +29,36 @@
                 ]
             });
         });
+
+        $(".mt-task-item-name").click(function () {
+            var taskId = $(this).attr('id').match("[0-9]+").toString();
+            var posting = $.post("/Admin/Processing.cshtml", { Action: "EditTask", TaskId: taskId });
+            posting.done(function (data) {
+                var dialogContent = $("<div title='Edit/Delete task'></div>").append(data);
+                $(dialogContent).dialog({
+                    buttons: [
+                    { text: "Update", click: function () {
+                        var newTaskName = $("#mt-edit-task-name").val().toString();
+                        var newTestTypeId = $("#mt-edit-task-testType").find(":selected").val().toString();
+                        var newCateId = $("#mt-edit-task-category").find(":selected").val().toString();
+                        var posting = $.post("/Admin/Processing.cshtml", { Action: "UpdateTaskInfo", TaskId: taskId, TaskName: newTaskName, TestType: newTestTypeId, CateId: newCateId });
+                        posting.done(function (data) {
+                            $(dialogContent).dialog("close");
+                            location.reload();
+                        });
+                    }
+                    },
+                    { text: "Delete", click: function () {
+                        var posting = $.post("/Admin/Processing.cshtml", { Action: "DeleteTaskItem", TaskId: taskId });
+                        posting.done(function () {
+                            $(dialogContent).dialog("close");
+                        });
+                    }
+                    }
+                    ]
+                });
+            });
+        });
     });
 
     //SET CSS FOR ACTIVE TAB
@@ -36,6 +66,13 @@
     $("#nav3 a").css('color', 'blue');
     $("#sub-nav3").removeClass('hidden').addClass('shown');
 </script>
+<style>
+    .mt-task-item-name:hover {
+        cursor: pointer;
+    }
+</style>
+
+@*-------------------- FILTER SECTION --------------------------------*@
 
 <div>
     <form method="post">
@@ -59,6 +96,9 @@
         </div>
     </form>
 </div>
+
+
+@* --------------- RESULT SECTION ---------------------*@
 
 @if(IsPost){
     var chosenCategoryId = Request["mt-cateList"].AsInt();
@@ -94,12 +134,15 @@ else{
         headerStyle: "gridheader",
         columns: grid.Columns(
             grid.Column(header:"No.",format:@<div style="text-align: center">@{counter++;}@counter</div>),
-            grid.Column("Name"),
-            grid.Column("TypeId",format:@<text>@Functions.getTestType(item.TypeId).Name</text>),
-            grid.Column("CategoryId",format:@<text>@Functions.getCategoryName(item.CategoryId)</text>)
+            grid.Column("Name",format:@<div class="mt-task-item-name" id="mt-task-item-@item.Id">@item.Name</div>),
+            grid.Column("TypeId","Test Type",format:@<div>@Functions.getTestType(item.TypeId).Name</div>),
+            grid.Column("CategoryId","Category",format:@<text>@Functions.getCategoryName(item.CategoryId)</text>)
         )    
     )  
 </div>
+
+
+@*------------- ADD NEW TASK DIALOG ----------------------*@
 
 <div title="Add new task" id="og-add-new-task" class="hidden">
     <div style="margin: 10px;">

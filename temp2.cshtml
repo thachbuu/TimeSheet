@@ -1,26 +1,29 @@
 ﻿@{
     Layout="_Layout.cshtml";
+    if(IsPost){
+        <p>@Request["ffff"].AsDateTime()</p>
+    }
 }
 <script>
     $(function () {
-        
-        $("#menu-header,#og-add-menu").hover(
-            function () {
-                $("#og-add-menu").menu();
-            },
-            function () {
-                $("#og-add-menu").menu("destroy").removeAttr("style");
-            });
+        $("#abcd").dialog({position});
+        $("#abcdef").datepicker();
+        //$("button").click(function (event) {
+        //    event.preventDefault();
+        //    $.post(temp2.cshtml)
+        // });
     });
 </script>
 <div>
-    <div id="menu-header"><a>mmmm</a></div>
-    <ul id="og-add-menu" class="hidden">
-        <li><a>Add task</a></li>
-        <li><a>Add group</a></li>
-        <li><a>Add division</a></li>
-        <li><a>Add company</a></li>
-    </ul>
+    <form method="post">
+        <input id="abcdef" name="ffff">
+        <button>ggg</button>
+    </form>
+    
+</div>
+
+<div id="abcd">
+    dfdafdfd
 </div>
 
 

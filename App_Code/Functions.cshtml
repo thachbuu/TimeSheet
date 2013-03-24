@@ -44,6 +44,11 @@
          return db.QueryValue("SELECT Name FROM Tasks WHERE Tasks.Id=@0",taskId);
      }
 
+     public static dynamic getTaskInfo(int taskId){
+         var db = Database.Open(DATABASE);
+         return db.QuerySingle("SELECT * FROM Tasks WHERE Id=@0",taskId);
+     }
+
      public static List<SelectListItem>  getTasksInType(int testTypeId){
         var db = Database.Open("StarterSite");
         var taskQuery = "SELECT * " + 
