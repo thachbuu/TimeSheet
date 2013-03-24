@@ -7,9 +7,7 @@
     @*rgb(0, 174, 233)*@
     <nav>
         <div id="nav1" class="component"><a style="text-decoration: none; color: White" href="/Leader/ManageMembers.cshtml">MANAGE MEMBERS</a></div>
-        <div style="display: table-cell; width: 5px"></div>
         <div id="nav2" class="component"><a style="text-decoration: none; color: White" href="/Leader/ManageProjects.cshtml">MANAGE PROJECTS</a></div>
-        <div style="display: table-cell; width: 5px"></div>
         <div id="nav3" class="component"><a style="text-decoration: none; color: White" href="/Leader/ManageTimeSheet.cshtml">MANAGE TIMESHEETS</a></div>
     </nav>
 }
@@ -17,15 +15,13 @@
 @if(User.IsInRole("ADMIN") || User.IsInRole("MASTER")){
     <nav>
         <div id="nav1" class="component"><a style="text-decoration: none; color: White" href="/Admin/ManageMembers.cshtml">MANAGE MEMBERS</a></div>
-        <div style="display: table-cell; width: 5px"></div>
-        <div id="nav2" class="component"><a style="text-decoration: none; color: White" href="/Admin/ManageProjects.cshtml">MANAGE PROJECTS</a></div>
-        <div style="display: table-cell; width: 5px"></div>
+        <div id="nav2" class="component" ><a style="text-decoration: none; color: White" href="/Admin/ManageProjects.cshtml">MANAGE PROJECTS</a></div>
         <div id="nav3" class="component"><a style="text-decoration: none; color: White" href="/Admin/Organizations.cshtml">ORGANIZATIONS</a></div>
         <div id="sub-nav3" style="background-color: #808080" class="hidden">
-            <div class="component-small"><a href="/Admin/ManageTasks.cshtml">TASKS</a></div>
-            <div class="component-small">GROUPS</div>
-            <div class="component-small">DIVISION</div>
-            <div class="component-small">COMPANY</div>
+            <div class="component-small"><a href="/Admin/ManageTasks.cshtml" style="font-weight: bold;color: white; text-decoration: none">TASKS</a></div>
+            <div class="component-small hidden">GROUPS</div>
+            <div class="component-small hidden">DIVISION</div>
+            <div class="component-small hidden">COMPANY</div>
         </div>  
     </nav>
 }

@@ -46,7 +46,28 @@
 
         if(Request["Action"]=="DeleteTaskItem"){
             var taskId= Request["TaskId"].AsInt();
+            db.Execute("DELETE FROM Tasks WHERE Id=@0",taskId);
+        }
 
+        if(Request["Action"]=="AddNewCate"){
+            var cateName = Request["CateName"];
+            var counter = db.QueryValue("SELECT COUNT(Id) FROM Categories")+1;
+            db.Execute("INSERT INTO Categories VALUES(@0,@1)",counter,cateName);
+        }
+
+        if(Request["Action"]=="EditCategoryItem"){
+            var cateId = Request["CateId"].AsInt();
+            var cateInfo = Functions.getCategoryName(cateId);
+            <div style="margin: 10px;">
+                <label style="font-size: smaller; padding: 5px"><strong>Category Name :</strong></label>
+                <input value="@cateInfo" style="width: 250px" id="mt-edit-category-name">
+            </div>
+        }
+
+        if(Request["Action"]=="UpdateCategoryItem"){
+            var cateId = Request["CateId"].AsInt();
+            var cateName = Request["CateName"];
+            db.Execute("UPDATE Categories SET Name=@0 WHERE Id=@1",cateName,cateId);
         }
     }
 }

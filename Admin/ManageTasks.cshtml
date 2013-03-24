@@ -5,31 +5,77 @@
 }
 <script>
     $(function () {
-        $("button#og-add-new-task").click(function (event) {
-            event.preventDefault();
+
+        /* OPEN DIALOGS */
+        function openAddNewTaskDialog() {
             $("div#og-add-new-task").dialog({
                 buttons: [
-                    { text: "Add",
-                        click: function () {
-                            var taskName = $("input#og-add-task-name").val();
-                            var testTypeId = $("select#og-mt-list-test-type").find(":selected").val();
-                            var cateId = $("select#og-mt-category-list").find(":selected").val();
-                            var posting = $.post("/Admin/Processing.cshtml", { Action: "AddNewTask", TaskName: taskName, TestTypeId: testTypeId, CategoryId: cateId });
-                            posting.done(function (data) {
-                                $("div#og-add-new-task").dialog("close");
-                                location.reload();
-                            });
-                        }
-                    },
-                    { text: "Cancel",
-                        click: function () {
+                { text: "Add",
+                    click: function () {
+                        var taskName = $("input#og-add-task-name").val();
+                        var testTypeId = $("select#og-mt-list-test-type").find(":selected").val();
+                        var cateId = $("select#og-mt-category-list").find(":selected").val();
+                        var posting = $.post("/Admin/Processing.cshtml", { Action: "AddNewTask", TaskName: taskName, TestTypeId: testTypeId, CategoryId: cateId });
+                        posting.done(function (data) {
                             $("div#og-add-new-task").dialog("close");
-                        }
+                            location.reload();
+                        });
                     }
+                },
+                { text: "Cancel",
+                    click: function () {
+                        $("div#og-add-new-task").dialog("close");
+                    }
+                }
                 ]
+            });
+        }
+
+        function openCategoryDialog() {
+            $("div#og-add-new-category").dialog(
+            {
+                buttons: [
+                {
+                    text: "Add",
+                    click: function () {
+                        var cateName = $("input#og-new-category-name").val();
+                        var posting = $.post("/Admin/Processing.cshtml", { Action: "AddNewCate", CateName: cateName });
+                        posting.done(function () {
+                            $("div#og-add-new-category").dialog("close");
+                            location.reload();
+                        });
+                    }
+                },
+                {
+                    text: "Cancel",
+                    click: function () {
+                        $("div#og-add-new-category").dialog("close");
+                    }
+                }]
+            });
+        }
+
+        /* WHEN USER CLICKS ON 'ADD NEW' BUTTON */
+        $("button#og-add-new-task").click(function (event) {
+            event.preventDefault();
+            $("#mt-add-new-kind").dialog({
+                buttons: [
+                { text: "Next >", click: function () {
+                    $("#mt-add-new-kind").dialog("close");
+                    var kind = $("input[name=mt-add-new-task-category]:checked").val();
+                    if (kind == "AddNewTask") {
+                        openAddNewTaskDialog();
+                    }
+                    if (kind == "AddNewCate") {
+                        openCategoryDialog();
+                    }
+
+                }
+                }]
             });
         });
 
+        /* WHEN USER CLICK ON THE TASK ITEM */
         $(".mt-task-item-name").click(function () {
             var taskId = $(this).attr('id').match("[0-9]+").toString();
             var posting = $.post("/Admin/Processing.cshtml", { Action: "EditTask", TaskId: taskId });
@@ -52,6 +98,7 @@
                         var posting = $.post("/Admin/Processing.cshtml", { Action: "DeleteTaskItem", TaskId: taskId });
                         posting.done(function () {
                             $(dialogContent).dialog("close");
+                            location.reload();
                         });
                     }
                     }
@@ -59,6 +106,32 @@
                 });
             });
         });
+
+        /* WHEN USER CLICKS ON THE CATEGORY ITEM */
+        $(".mt-category-name").click(function () {
+            var cateId = $(this).attr('id').match("[0-9]+").toString();
+            var posting = $.post("/Admin/Processing.cshtml", { Action: "EditCategoryItem", CateId: cateId });
+            posting.done(function (data) {
+                var dialogContent = $("<div title='Edit/Delete category'></div>").append(data);
+                $(dialogContent).dialog(
+                {
+                    buttons: [
+                    {
+                        text: "Update",
+                        click: function () {
+                            var newCateName = $("input#mt-edit-category-name").val();
+                            var updatePosting = $.post("/Admin/Processing.cshtml", { Action: "UpdateCategoryItem", CateId: cateId, CateName: newCateName });
+                            updatePosting.done(function () {
+                                $(dialogContent).dialog("close");
+                                location.reload();
+                            });
+                        }
+                    }]
+                }
+                );
+            });
+        });
+
     });
 
     //SET CSS FOR ACTIVE TAB
@@ -67,9 +140,10 @@
     $("#sub-nav3").removeClass('hidden').addClass('shown');
 </script>
 <style>
-    .mt-task-item-name:hover {
+    .mt-task-item-name, .mt-category-name:hover {
         cursor: pointer;
     }
+    
 </style>
 
 @*-------------------- FILTER SECTION --------------------------------*@
@@ -129,20 +203,20 @@ else{
   
 }
 
-<div style="margin-top: 30px; margin-bottom: 30px">
+<div style="margin-top: 30px; padding-bottom: 20px">
     @grid.GetHtml(
         headerStyle: "gridheader",
         columns: grid.Columns(
             grid.Column(header:"No.",format:@<div style="text-align: center">@{counter++;}@counter</div>),
             grid.Column("Name",format:@<div class="mt-task-item-name" id="mt-task-item-@item.Id">@item.Name</div>),
             grid.Column("TypeId","Test Type",format:@<div>@Functions.getTestType(item.TypeId).Name</div>),
-            grid.Column("CategoryId","Category",format:@<text>@Functions.getCategoryName(item.CategoryId)</text>)
+            grid.Column("CategoryId","Category",format:@<div class="mt-category-name" id="mt-category-name-@item.CategoryId">@Functions.getCategoryName(item.CategoryId)</div>)
         )    
     )  
 </div>
 
 
-@*------------- ADD NEW TASK DIALOG ----------------------*@
+@*------------- ADD NEW TASK/CATEGORIES DIALOG ----------------------*@
 
 <div title="Add new task" id="og-add-new-task" class="hidden">
     <div style="margin: 10px;">
@@ -160,4 +234,18 @@ else{
         <br>
         @Html.DropDownList("og-mt-category-list",Functions.getSelectListCategory())
     </div>
+</div>
+
+<div id="mt-add-new-kind" title="Add new task/category" style="margin: auto" class="hidden">
+    <div><strong>Choose a kind below :</strong></div>
+    <div style="margin-left: 10px">
+        @Html.RadioButton("mt-add-new-task-category","AddNewTask",true,new{style="margin:5px"}) <label>Add new task</label>
+        <br>
+        @Html.RadioButton("mt-add-new-task-category","AddNewCate",new{style="margin:5px"}) <label>Add new category</label>
+    </div>
+</div>
+
+<div title="Add new category" id="og-add-new-category" style="margin-top: 10px" class="hidden">
+    <label><strong>Name :</strong></label>
+    <input type="text" id="og-new-category-name">
 </div>

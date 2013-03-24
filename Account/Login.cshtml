@@ -10,7 +10,7 @@
         Response.Redirect("~/Leader/ManageTimeSheet.cshtml");
     }
     if(User.IsInRole("ADMIN") || User.IsInRole("MASTER")){
-        Response.Redirect("~/Admin/AddProjects");
+        Response.Redirect("~/Admin/Organizations.cshtml");
     }
     if(User.IsInRole("MEMBER")){
        // Session.Add("Email",Request.Form["email"]);       
