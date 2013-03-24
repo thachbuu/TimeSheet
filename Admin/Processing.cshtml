@@ -1,0 +1,19 @@
+﻿@{
+    Layout="";
+    var db = Database.Open("StarterSite");
+    if(IsPost){
+        if(Request["Action"]=="AddNewTask"){
+            var counter = db.QueryValue("SELECT COUNT(Id) FROM Tasks")+1;
+            var taskName = Request["TaskName"];
+            var testTypeId = Request["TestTypeId"].AsInt();
+            var cateId = Request["CategoryId"].AsInt();
+            db.Execute("INSERT INTO Tasks VALUES (@0,@1,@2,@3)",counter,taskName,testTypeId,cateId);
+
+            <p>@taskName</p>
+            <p>@testTypeId</p>
+            <p>@cateId</p>
+            <p>@counter</p>
+        }
+    }
+}
+

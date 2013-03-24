@@ -4,21 +4,39 @@
     int counter = 0;
 }
 <script>
+    $(function () {
+        $("button#og-add-new-task").click(function (event) {
+            event.preventDefault();
+            $("div#og-add-new-task").dialog({
+                buttons: [
+                    { text: "Add",
+                        click: function () {
+                            var taskName = $("input#og-add-task-name").val();
+                            var testTypeId = $("select#og-mt-list-test-type").find(":selected").val();
+                            var cateId = $("select#og-mt-category-list").find(":selected").val();
+                            var posting = $.post("/Admin/Processing.cshtml", { Action: "AddNewTask", TaskName: taskName, TestTypeId: testTypeId, CategoryId: cateId });
+                            posting.done(function (data) {
+                                $("div#og-add-new-task").dialog("close");
+                                location.reload();
+                            });
+                        }
+                    },
+                    { text: "Cancel",
+                        click: function () {
+                            $("div#og-add-new-task").dialog("close");
+                        }
+                    }
+                ]
+            });
+        });
+    });
+
     //SET CSS FOR ACTIVE TAB
     $("#nav3").attr('class', 'componentActive');
     $("#nav3 a").css('color', 'blue');
     $("#sub-nav3").removeClass('hidden').addClass('shown');
 </script>
 
-<style>
-    .mt-line-up{
-        width: 200px;
-        display: inline-block;
-    }
-    .mt-line-up input, .mt-line-up select{
-        height: 25px;
-    }
-</style>
 <div>
     <form method="post">
         <div class="mt-line-up">
@@ -37,6 +55,7 @@
 
         <div class="mt-line-up">
             <button class="tk-button">Search</button>
+            <button class="tk-button" id="og-add-new-task">Add new</button>
         </div>
     </form>
 </div>
@@ -63,7 +82,6 @@
   *@  
     var filterTasks = db.Query(queryFilteredTasks,chosenCategoryId,chosenTestType,"%"+chosenTaskName+"%");
     grid = new WebGrid(filterTasks,rowsPerPage:100,defaultSort: "CategoryId", canSort:false);
-
 }
 else{
    var listTasks = Functions.getAllTasks();
@@ -71,15 +89,32 @@ else{
   
 }
 
-<div style="margin-top: 30px">
+<div style="margin-top: 30px; margin-bottom: 30px">
+    @grid.GetHtml(
+        headerStyle: "gridheader",
+        columns: grid.Columns(
+            grid.Column(header:"No.",format:@<div style="text-align: center">@{counter++;}@counter</div>),
+            grid.Column("Name"),
+            grid.Column("TypeId",format:@<text>@Functions.getTestType(item.TypeId).Name</text>),
+            grid.Column("CategoryId",format:@<text>@Functions.getCategoryName(item.CategoryId)</text>)
+        )    
+    )  
+</div>
 
-@grid.GetHtml(
-    headerStyle: "gridheader",
-    columns: grid.Columns(
-        grid.Column(header:"No.",format:@<div style="text-align: center">@{counter++;}@counter</div>),
-        grid.Column("Name"),
-        grid.Column("TypeId",format:@<text>@Functions.getTestType(item.TypeId).Name</text>),
-        grid.Column("CategoryId",format:@<text>@Functions.getCategoryName(item.CategoryId)</text>)
-    )    
-)  
+<div title="Add new task" id="og-add-new-task" class="hidden">
+    <div style="margin: 10px;">
+        <label style="font-size: smaller"><strong>Task Name</strong></label>
+        <br>
+        <input type="text" id="og-add-task-name">
+    </div>
+    <div style="margin: 10px">
+        <label style="font-size: smaller"><strong>Test Type</strong></label>
+        <br>
+        @Html.DropDownList("og-mt-list-test-type",Functions.getSelectListTestType())
+    </div>
+    <div style="margin: 10px">
+        <label style="font-size: smaller"><strong>Category</strong></label>
+        <br>
+        @Html.DropDownList("og-mt-category-list",Functions.getSelectListCategory())
+    </div>
 </div>

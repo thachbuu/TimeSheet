@@ -64,7 +64,7 @@ nav{
         font-family: Helvetica;
 }
 .component-small {
-        width: 200px;
+        width: 230px;
         vertical-align: middle;
         display: table-cell;
         color: white;
@@ -84,6 +84,15 @@ nav{
 }
 .tk-button:hover{
     cursor: pointer;
+}
+
+.mt-line-up{
+    width: 200px;
+    display: inline-block;
+}
+
+.mt-line-up input, .mt-line-up select{
+    height: 25px;
 }
 
 
