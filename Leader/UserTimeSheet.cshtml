@@ -58,12 +58,33 @@
         });
 
         $("#tk-button-decline-ts").click(function () {
+            var userId = $(this).val().toString();
             $("#ts-leader-comment").dialog({
                 buttons: [
-                { text: 'Send', click: function () { } }
+                { text: 'Send', click: function () {
+                    var content = $("textarea#uts-leader-comment").val();
+                    var posting = $.post("/Leader/Processing.cshtml", { Action: "SendLeaderComment", CommentContent: content, UserId: userId });
+                    posting.done(function (data) {
+                        $("#ts-leader-comment").dialog("close");
+                           $("<div></div>").append(data).dialog({
+                              buttons: [{
+                                   text: "OK",
+                                  click: function () {
+                                       $(this).dialog("close");
+                                  }
+                               }]
+                          });
+                    });
+
+                }
+                }
                 ]
             });
         });
+
+
+        /*------- Add images -------*/
+        $(".havingComment").append("<img src='../Images/comment.png' alt='gg'>");
     });
 
 
@@ -75,6 +96,7 @@
     }
     .havingComment{
         color: blue;
+        background: url("~/Images/bubble.png")
     }
     .havingComment:hover{
         cursor: pointer;
@@ -141,10 +163,10 @@ else{
                 <div id="btn-field-@prjUserId.ToString()">
                     @if(!approved){
                         <button class="tk-button" id="tk-button-accept-ts" value="@prjUserId.ToString()_@currentFirstOfWeek.ToShortDateString()">Accept</button>
-                        <button class="tk-button" id="tk-button-decline-ts">Decline</button>
+                        <button class="tk-button" id="tk-button-decline-ts" value="@mem.UserId">Decline</button>
                     }
                     else{
-                        <button class="tk-button" id="tk-button-reapproval-ts">Reapproval</button>
+                        <button class="tk-button" id="tk-button-reapproval-ts">Reapprove</button>
                     }
                 </div>
                }
@@ -157,6 +179,6 @@ else{
 }
 <div id="commentDiaglog" style="display: none"></div>
 <div id="timsheet-confirmationDialog" style="display: none">Are you sure?</div>
-<div id="ts-leader-comment" style="display: none" title="Leader Comment"><textarea style="width: 270px; height: 60px; margin-bottom: 10px"></textarea></div>
+<div id="ts-leader-comment" style="display: none" title="Leader Comment"><textarea id="uts-leader-comment" style="width: 250px; height: 60px; margin-bottom: 10px"></textarea></div>
 
 <div style="height: 30px"></div>

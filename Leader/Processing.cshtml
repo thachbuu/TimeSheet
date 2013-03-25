@@ -28,6 +28,25 @@
                 URSID:@Request["UserId"]</p>
             <p>eeeeeeeeee</p>*@
         }
+
+        //Send comment to enduser
+        if(Request["Action"]=="SendLeaderComment"){
+            var userId = Request["UserId"].AsInt();
+            var commentContent = Request["CommentContent"];
+            var userEmail = Functions.getUserInfo(userId).Email;
+            var userName = Functions.getUserInfo(userId).FirstName;
+            string mailBody = "Hi " + userName + ", <br><br>"+
+                              "Your timesheet report has been declined due to following reasons. Please contact your leader for more information.<br><br><br>"+
+                              "<strong>" + commentContent + "</strong>" +
+                              "<br><br><br>Best Regards." ;
+            WebMail.Send(
+                to: userEmail,
+                subject: "Your timesheet report has been declined",
+                body: mailBody
+            );
+
+            <p>An email has been sent to your member successfully</p>
+        }
     }
 }
 

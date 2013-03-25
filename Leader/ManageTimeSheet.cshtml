@@ -40,10 +40,10 @@
         });
 
         $("#paginationNext, #paginationPrevious").click(function () {
-            if ($(this).text() == "NEXT >>") {
+            if ($(this).text() == "Next >>") {
                 $.fn.changeFirstDayOfWeek(7);
             }
-            if ($(this).text() == "<< PREVIOUS") {
+            if ($(this).text() == "<< Previous") {
                 $.fn.changeFirstDayOfWeek(-7);
             }
            
@@ -71,8 +71,8 @@
 
 <div>
     <input type="hidden" value="@Functions.FirstDateOfWeek(DateTime.Now).ToShortDateString()" id="currentFirstDayOfWeek">
-    <span id="paginationPrevious" style="color:  blue; font-weight: bolder; margin-left: 5px"><< PREVIOUS</span>
-    <span id="paginationNext" style="float:  right; color:  blue;font-weight: bolder; margin-right: 5px">NEXT >></span>   
+    <span id="paginationPrevious" style="color:  blue; font-weight: bolder; margin-left: 5px"><< Previous</span>
+    <span id="paginationNext" style="float:  right; color:  blue;font-weight: bolder; margin-right: 5px">Next >></span>   
 </div>
 
 <div id="result"></div>
