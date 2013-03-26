@@ -1,0 +1,111 @@
+﻿@{
+    Layout = "";
+    var timeManagementList = new List<TimeManagement.TimeManagementList>();
+    var db = Database.Open("StarterSite");
+    var testTypeId = Request["TestTypeId"];
+    var idproject = Request["ProjectId"];
+
+    //get request from datepicker
+    var weekOfYear = Request["WeekOfYear"];
+
+    //get UserId and ProjectId to get UserProjectId
+    var userQuery = "SELECT * " + 
+                           "FROM  UserProfile WHERE  Email=@0";
+    int userId=0;
+    if(Session["Email"] == null){
+        WebSecurity.RequireAuthenticatedUser();
+        WebSecurity.Logout();
+        Response.Redirect("~/Account/Logout.cshtml");
+    }
+    else{
+         userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
+        // <div>UserId:@userId</div>
+    }
+    int projectUserId=0;
+       //  <div>ProjectIDAA:@Request["ProjectId"]</div>
+    if(userId != 0 && Request["ProjectId"] != null && Request["ProjectId"] != ""){
+       // <div>Thach: @Request["ProjectId"].AsInt()</div>
+          projectUserId = Project_User.getProjectUserId(userId,Request["ProjectId"].AsInt());     
+    }
+    if( weekOfYear != "0" && weekOfYear!=null){
+        timeManagementList = TimeManagement.getTimeManagementListShow(int.Parse(weekOfYear),projectUserId,testTypeId.AsInt(),2);
+    } 
+  
+}
+<script>
+    Date.prototype.getWeek = function () {
+
+        var onejan = new Date(this.getFullYear(), 0, 1);
+        return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
+    }
+    Date.prototype.getWeekMonday = function () {
+        var res = new Date();
+        (this.getDay() == 0) ? res.setTime(this.getTime() - (6 * 86400000)) : res.setTime(this.getTime() + 86400000 - (this.getDay() * 86400000));
+        return res;
+    }
+
+    $("#button1").click(function () {
+        if ($("#datepicker").val() != '' && $("#datepicker").val() != null) {
+
+            var date = new Date($("#datepicker").val());
+            var answer = confirm('Are you sure to save your timesheet?');
+            // alert(answer);
+            if (answer) {
+                //return true;
+
+                $.post("Null.cshtml", function (data) { $("#messSubmitLoad,#processid").html(data); });
+
+                //  var id1 = "#txt_1_1";
+
+                var startLoop = 0;
+                var endLoop = 0;
+                if ($("#testType").val() == 1) { startLoop = 1; endLoop = 26; } else { startLoop = 26; endLoop = 44; }
+                var jsonText = '{ ';
+                var paras = "WeekOfYear=" + date.getWeek();
+                for (var i = startLoop; i < endLoop; i++) {
+                    jsonText += '"task' + i + '": {';
+                    jsonText += '"TaskId":"' + i + '", ';
+                    for (var j = 1; j < 8; j++) {
+                        var id = "#txt_" + i + "_" + j;
+                        if (j == 1) { jsonText += '"Mon":"' + $(id).val() + '", '; }
+                        if (j == 2) { jsonText += '"Tue":"' + $(id).val() + '", '; }
+                        if (j == 3) { jsonText += '"Wed":"' + $(id).val() + '", '; }
+                        if (j == 4) { jsonText += '"Thu":"' + $(id).val() + '", '; }
+                        if (j == 5) { jsonText += '"Fri":"' + $(id).val() + '", '; }
+                        if (j == 6) { jsonText += '"Sat":"' + $(id).val() + '", '; }
+                        if (j == 7) { jsonText += '"Sun":"' + $(id).val() + '"  '; }
+                    }
+                    if (i != (endLoop - 1)) { jsonText += '},'; }
+                    else { jsonText += '}'; }
+                }
+                jsonText += '}';
+
+                $.post("Process.cshtml", { WeekOfYear: date.getWeek(), TestTypeId: +$("#testType").val(), ProjectId: $("#projectId").val(), Json: jsonText
+                }, function (data) { $("#processid").html(data); });
+            }
+        }
+        else {
+            alert("You must choose date before saving!!!");
+        }
+    });
+
+</script>
+
+@if(timeManagementList.Count()>0){
+   // <div>Count==@timeManagementList.Count()</div>
+   // <div>Count==@timeManagementList[0].Mon</div>
+    //<div>Count==@timeManagementList[1].Disable</div>
+    if(timeManagementList[0].Disable == true){
+        <input id="button1" type="button"  value="Save" name="button1" disabled="disabled"/>
+        <input id="button2" type="submit" value="Submit" name="button2" disabled="disabled"/>
+    }
+    else{
+        <input id="button1" type="button"  value="Save" name="button1" />
+        <input id="button2" type="submit" value="Submit" name="button2" />
+    }
+}
+else{
+        <input id="button1" type="button"  value="Save" name="button1" />
+        <input id="button2" type="submit" value="Submit" name="button2" />
+}
+

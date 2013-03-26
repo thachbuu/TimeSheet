@@ -30,6 +30,7 @@
     }
     public class TimeManagementList {
       public int TaskId { get; set; }
+      public string TaskName { get; set; }
       public double Mon { get; set; }
       public double Wed { get; set; }
       public double Tue { get; set; }
@@ -47,7 +48,7 @@
       public string CommentForFri { get; set; }
       public string CommentForSat { get; set; }
       public string CommentForSun { get; set; }
-
+      public DateTime Day { get; set; }
     }
     
     public static List<TimeManagementList>  getTimeManagementList(int weekOfYear,int project_UserId){
@@ -78,6 +79,46 @@
                 timeManagement.CommentForSat = item.CommentForSat;
                 timeManagement.CommentForSun = item.CommentForSun;
 
+                timeManagement.WeekOfYear = item.WeekOfYear;
+                timeManagement.Disable = item.Disable;
+                timeManagement.Project_UserId = item.Project_UserId;
+                timeManagement.Day = item.Datetime; 
+                       
+                timeManagementList.Add(timeManagement);            
+        }
+        return timeManagementList;  
+                                                                               
+     }
+     //get data to show in tasks page
+     public static List<TimeManagementList>  getTimeManagementListShow(int weekOfYear,int project_UserId,int testTypeId,int catogeryId){
+        var db = Database.Open("StarterSite");
+        var timeManagementList = new List<TimeManagementList>();
+        if(project_UserId ==0){
+            return timeManagementList;
+        }
+        var taskDatesQuery = "SELECT * " + 
+                           "FROM  TimeManagement ti, Tasks ta WHERE  WeekOfYear=@0 and Project_UserId=@1 and ta.TypeId=@2 and ta.CategoryId=@3 and ti.TaskId=ta.Id";
+        var timeManagementData = db.Query(taskDatesQuery,weekOfYear,project_UserId,testTypeId,catogeryId);
+        foreach(var item in timeManagementData ){                        
+                var timeManagement = new TimeManagementList();
+                timeManagement.TaskId = item.TaskId;
+                timeManagement.TaskName = item.Name;
+                timeManagement.Mon = item.Mon;
+                timeManagement.Tue = item.Tue;
+                timeManagement.Wed = item.Wed;
+                timeManagement.Thu = item.Thu;
+                timeManagement.Fri = item.Fri;
+                timeManagement.Sat = item.Sat;
+                timeManagement.Sun = item.Sun;
+
+                timeManagement.CommentForMon = item.CommentForMon;
+                timeManagement.CommentForTue = item.CommentForTue;
+                timeManagement.CommentForWed = item.CommentForWed;
+                timeManagement.CommentForThu = item.CommentForThu;
+                timeManagement.CommentForFri = item.CommentForFri;
+                timeManagement.CommentForSat = item.CommentForSat;
+                timeManagement.CommentForSun = item.CommentForSun;
+                timeManagement.Day = item.Datetime; 
                 timeManagement.WeekOfYear = item.WeekOfYear;
                 timeManagement.Disable = item.Disable;
                 timeManagement.Project_UserId = item.Project_UserId;        
@@ -127,11 +168,13 @@
      public static bool  updateTimeManagement(TimeManagementList lst,bool isDisable){
           try{
                var db = Database.Open("StarterSite");
-               var updateTM = "UPDATE  TimeManagement SET  Mon=@0,Tue=@1, Wed=@2, Thu=@3, Fri=@4, Sat=@5, Sun=@6, CommentForMon=@7, "
-               +" CommentForTue=@8, CommentForWed=@9, CommentForThu=@10, CommentForFri=@11, CommentForSat=@12, CommentForSun=@13, Disable=@14 WHERE  Project_UserId=@15 and WeekOfYear = @16 and TaskId=@17 ";
+              // var updateTM = "UPDATE  TimeManagement SET  Mon=@0,Tue=@1, Wed=@2, Thu=@3, Fri=@4, Sat=@5, Sun=@6, CommentForMon=@7, "
+              // +" CommentForTue=@8, CommentForWed=@9, CommentForThu=@10, CommentForFri=@11, CommentForSat=@12, CommentForSun=@13, Disable=@14 WHERE  Project_UserId=@15 and WeekOfYear = @16 and TaskId=@17 ";
        
-               var rs=db.Execute(updateTM,lst.Mon,lst.Tue,lst.Wed,lst.Thu,lst.Fri,lst.Sat,lst.Sun, lst.CommentForMon,
-                  lst.CommentForTue,lst.CommentForWed,lst.CommentForThu,lst.CommentForFri,lst.CommentForSat,lst.CommentForSun,isDisable,lst.Project_UserId,lst.WeekOfYear,lst.TaskId);
+                var updateTM = "UPDATE  TimeManagement SET  Mon=@0,Tue=@1, Wed=@2, Thu=@3, Fri=@4, Sat=@5, Sun=@6,  "
+               +"  Disable=@7 WHERE  Project_UserId=@8 and WeekOfYear = @9 and TaskId=@10 ";
+       
+               var rs=db.Execute(updateTM,lst.Mon,lst.Tue,lst.Wed,lst.Thu,lst.Fri,lst.Sat,lst.Sun,isDisable,lst.Project_UserId,lst.WeekOfYear,lst.TaskId);
                if(rs<1) return false;
                return true;
 
@@ -142,6 +185,58 @@
                                                                                   
      }
 
+     //update Comment time management
+     public static bool  updateComment(int taskId,int commentDay,string comment,int projectUserId, int weekOfYear){
+          try{
+               var db = Database.Open("StarterSite");
+                var updateTM = "UPDATE  TimeManagement SET ";
+              
+               if(commentDay == 1){updateTM += " CommentForMon=@0 ";}
+               else if(commentDay == 2){updateTM += " CommentForTue=@0 ";}
+               else if(commentDay == 3){updateTM += " CommentForWed=@0 ";}
+               else if(commentDay == 4){updateTM += " CommentForThu=@0 ";}
+               else if(commentDay == 5){updateTM += " CommentForFri=@0 ";}
+               else if(commentDay == 6){updateTM += " CommentForSat=@0 ";}
+               else if(commentDay == 7){updateTM += " CommentForSun=@0 ";}
+
+               updateTM +=" WHERE  Project_UserId=@1 and WeekOfYear = @2 and TaskId=@3 ";       
+               var rs=db.Execute(updateTM,comment,projectUserId,weekOfYear,taskId);
+               if(rs<1) return false;
+               return true;
+
+            }catch(Exception ex) {
+                return false;
+            }                                                                         
+     }
+
+      //get content of a comment in time management
+     public static string  getContentComment(int projectUserId, int weekOfYear, int taskId,int commentDay){
+          try{
+               var db = Database.Open("StarterSite");
+                var getTM = "Select  ";
+              
+               if(commentDay == 1){getTM += " CommentForMon ";}
+               else if(commentDay == 2){getTM += " CommentForTue ";}
+               else if(commentDay == 3){getTM += " CommentForWed ";}
+               else if(commentDay == 4){getTM += " CommentForThu ";}
+               else if(commentDay == 5){getTM += " CommentForFri ";}
+               else if(commentDay == 6){getTM += " CommentForSat ";}
+               else if(commentDay == 7){getTM += " CommentForSun ";}
+
+               getTM +=" From TimeManagement WHERE  Project_UserId=@0 and WeekOfYear = @1 and TaskId=@2 ";       
+               var rs=db.QueryValue(getTM,projectUserId,weekOfYear,taskId);
+               if(rs !=null){ return rs;}
+               else return "";
+
+            }catch(Exception ex) {
+                return "Exception when getContent";
+            }                                                                         
+     }
+     public static string[] getCommentName(string commentName){
+         string[] arr = commentName.Split('_');
+         return arr;
+     }
+
      public static bool  updateMoreTimeManagement(List<TimeManagementList> lst,bool isDisable){
        bool flag = true;
        foreach(var item in lst ){                        
@@ -150,5 +245,58 @@
         }
         return flag;                                                                             
      }
+
+     public static int getWeekOfYear(DateTime expectedDate){    
+        /*CAUTION: CHUA HOAN THIEN - NOT FINISHED*/
+        DateTime jan1 = new DateTime(expectedDate.Year, 1, 1);    
+        int daysOffset = DayOfWeek.Sunday - jan1.DayOfWeek;
+        DateTime firstMonday = jan1.AddDays(daysOffset);
+        int rangeDate = expectedDate.Subtract(firstMonday.Date).Days;
+        int week = (rangeDate / 7) + (rangeDate % 7 >0?1:0);        
+        return week;
+        
+    }
+
+     public static int checkStatusTextBox(DateTime dInput, DateTime dCurrent){
+         int curWeek = TimeManagement.getWeekOfYear(dCurrent);
+         int inputWeek = TimeManagement.getWeekOfYear(dInput);
+         if( curWeek < inputWeek ){
+             return 1;
+         }
+         else if(curWeek > inputWeek){
+             return -1;
+         }
+         else if(curWeek == inputWeek){
+           return 0;
+         }
+         return -2;
+     }
+
+     public static int txtDisable(DateTime dCurrent){
+         if(dCurrent.DayOfWeek.ToString() == "Monday"){
+             return 1;
+         }
+         else if(dCurrent.DayOfWeek.ToString() == "Tuesday"){
+             return 2;
+         }
+         else if(dCurrent.DayOfWeek.ToString() == "Wednesday"){
+             return 3;
+         }
+         else if(dCurrent.DayOfWeek.ToString() == "Thursday"){
+             return 4;
+         }
+         else if(dCurrent.DayOfWeek.ToString() == "Friday"){
+             return 5;
+         }
+         else if(dCurrent.DayOfWeek.ToString() == "Saturday"){
+             return 6;
+         }
+         else if(dCurrent.DayOfWeek.ToString() == "Sunday"){
+             return 7;
+         }
+         return 8;
+         
+     }
+    
    
 }

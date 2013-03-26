@@ -1,0 +1,86 @@
+﻿@{
+    Layout = "";
+    var timeManagementList = new List<TimeManagement.TimeManagementList>();
+    var timeMList = new List<TimeManagement.TimeManagementList>();
+    var db = Database.Open("StarterSite");
+    var testTypeId = Request["TestTypeId"];
+    var idproject = Request["ProjectId"];
+    //<div>ProjectIDAA:@Request["ProjectId"]</div>
+    //get request from datepicker
+    var weekOfYear = Request["WeekOfYear"];
+
+    //get UserId and ProjectId to get UserProjectId
+    var userQuery = "SELECT * FROM  UserProfile WHERE  Email=@0";
+    int userId=0;
+    if(Session["Email"] == null){
+        WebSecurity.RequireAuthenticatedUser();
+        WebSecurity.Logout();
+        Response.Redirect("../Account/Logout.cshtml");
+    }
+    else{
+         userId = db.QuerySingle(userQuery,Session["Email"]).UserId; 
+    }
+    int projectUserId=0;
+     if(userId != 0 && Request["ProjectId"] != null && Request["ProjectId"] != ""){
+       projectUserId = Project_User.getProjectUserId(userId,Request["ProjectId"].AsInt());
+      // <div>projectUserId:@projectUserId</div>
+       timeManagementList = TimeManagement.getTimeManagementListShow(int.Parse(weekOfYear),projectUserId,testTypeId.AsInt(),2);
+      
+      var jsontxt = Request["JsonArray"];
+      var jsonObject = Json.Decode(jsontxt); 
+      foreach(var items in jsonObject){
+                var timeManagement = new TimeManagement.TimeManagementList();
+                timeManagement.Project_UserId = projectUserId;
+                timeManagement.Disable = false;
+                timeManagement.WeekOfYear = weekOfYear.AsInt();   
+                foreach(var i in items.Value){
+                if(i.Key == "TaskId") { string value= i.Value;timeManagement.TaskId = int.Parse(value);}
+                if(i.Key == "Mon") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Mon = double.Parse(value);timeManagement.CommentForMon = "";}
+                if(i.Key == "Tue") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Tue = double.Parse(value);timeManagement.CommentForTue = "";}
+                if(i.Key == "Wed") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Wed = double.Parse(value);timeManagement.CommentForWed = "";}
+                if(i.Key == "Thu") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Thu = double.Parse(value);timeManagement.CommentForThu = "";}
+                if(i.Key == "Fri") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Fri = double.Parse(value);timeManagement.CommentForFri = "";}
+                if(i.Key == "Sat") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Sat = double.Parse(value);timeManagement.CommentForSat = "";}
+                if(i.Key == "Sun") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Sun = double.Parse(value);timeManagement.CommentForSun = "";}
+                }
+                timeMList.Add(timeManagement);
+                
+      }
+      //<div>List to Add success=@timeMList.Count()</div>
+      if(timeManagementList.Count() == 0){// add new timeManagement      
+          try{
+                bool rsAdd=TimeManagement.addNewMoreTimeManagement(timeMList,Global_Variables.DISABLE); 
+               // <div>Adding success=@rsAdd</div>
+               
+                if(rsAdd == true){
+                    string[] arr = TimeManagement.getCommentName(Request["TaskName"]);
+                    var  rsUpdateComment = TimeManagement.updateComment(arr[1].AsInt(),arr[2].AsInt(),Request["CommentValue"],projectUserId,weekOfYear.AsInt()); 
+                  //  <div>Update comment after adding TM success=@rsUpdateComment</div> 
+                }/* */
+           }
+           catch(Exception ex){
+                throw;
+           }   
+       }
+       else{// update Comment into TimeManagement
+           try{
+               bool rsAdd=TimeManagement.updateMoreTimeManagement(timeMList,Global_Variables.DISABLE); 
+               //<div>Update success=@rsAdd</div>
+               if(rsAdd == true){
+                    string[] arr = TimeManagement.getCommentName(Request["TaskName"]);
+                  //  <div>TaskName:@Request["TaskName"]</div>
+                    var  rsUpdateComment = TimeManagement.updateComment(arr[1].AsInt(),arr[2].AsInt(),Request["CommentValue"],projectUserId,weekOfYear.AsInt());  
+                   // <div>Update comment success=@rsUpdateComment</div> 
+                }
+           }
+           catch(Exception ex){
+              throw;       
+           }
+       } 
+    }
+}
+<script>
+   
+
+</script>
+

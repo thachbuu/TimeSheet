@@ -9,51 +9,96 @@
     var weekOfYear = Request["WeekOfYear"];
 
     //get UserId and ProjectId to get UserProjectId
-    var userQuery = "SELECT * " + 
-                           "FROM  UserProfile WHERE  Email=@0";
+    var userQuery = "SELECT * FROM  UserProfile WHERE  Email=@0";
     int userId=0;
     if(Session["Email"] == null){
         WebSecurity.RequireAuthenticatedUser();
         WebSecurity.Logout();
-        Response.Redirect("~/Account/Logout.cshtml");
+        Response.Redirect("../Account/Logout.cshtml");
     }
     else{
          userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
         // <div>UserId:@userId</div>
     }
     int projectUserId=0;
-        // <div>ProjectIDAA:@Request["ProjectId"]</div>
     if(userId != 0 && Request["ProjectId"] != null && Request["ProjectId"] != ""){
-       // <div>Thach: @Request["ProjectId"].AsInt()</div>
           projectUserId = Project_User.getProjectUserId(userId,Request["ProjectId"].AsInt());     
     }
     if( weekOfYear != "0" && weekOfYear!=null){
-        timeManagementList = TimeManagement.getTimeManagementList(int.Parse(weekOfYear),projectUserId);
-    }  
-    var taskQuery = "SELECT * " + 
-                          "FROM  Tasks " +  
-                          "WHERE  TypeId=@0 and CategoryId=@1 ";
-    var taskData = db.Query(taskQuery,testTypeId,1);
-    Global_Variables.COUNT = 0;
+        timeManagementList = TimeManagement.getTimeManagementListShow(int.Parse(weekOfYear),projectUserId,testTypeId.AsInt(),2);
+    }
+    var taskData = db.Query("SELECT * FROM  Tasks WHERE  TypeId=@0 and CategoryId=@1 ",testTypeId,2);
+    Global_Variables.COUNT=0;
 }
 
 <script>
+    Date.prototype.getWeek = function () {
+
+        var onejan = new Date(this.getFullYear(), 0, 1);
+        return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
+    }
+    Date.prototype.getWeekMonday = function () {
+        var res = new Date();
+        (this.getDay() == 0) ? res.setTime(this.getTime() - (6 * 86400000)) : res.setTime(this.getTime() + 86400000 - (this.getDay() * 86400000));
+        return res;
+    }
+
     $(function () {
+        $("img[id*=img_]").click(function () {
+            var date = new Date($("#datepicker").val());
+            var weekOfYear = date.getWeek();
+            $("#enduser-task-info").attr('value', "");
+            $("#enduser-task-info").val("");
+            var item = $(this);
+            $.post("SetComment.cshtml", { TaskName: item.attr("name"), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val(), WeekOfYear: weekOfYear }, function (data) { $("#enduser-task-info").val(data); });
+            if ($("#datepicker").val() != "" && $("#datepicker").val() != null && item.attr("width") == "16") {
+                $("#enduser-task-commment").dialog({
+                    position: { my: "left top", of: $(item) },
+                    buttons: [
+                        { text: "Save", click: function () {
+                            var txtValue = $("#enduser-task-info").val();
+                            if (txtValue != "" && txtValue != null) {
+                                $.post("Comment.cshtml", { JsonArray: getStringJson(), CommentValue: txtValue, TaskName: item.attr("name"), TestTypeId: $("#testType").val(), ProjectId: $("#projectId").val(), WeekOfYear: date.getWeek() }, function (data) { $("#messComment").html(data); });
+                                $("#enduser-task-commment").dialog("close");
+                                item.attr("src", "../Images/comment_edit.png");
+                            }
+                            else {
+                                $("#enduser-task-commment").dialog("close");
+                            }
+                        }
+                        },
+                        { text: "Cancel", click: function () {
+                            $("#enduser-task-commment").dialog("close");
+                        }
+                        }
+                    ]
+                });
+            }
+            else if(item.attr("width") != "17"){
+                $("#check-choose-datetimpicker-commment").dialog({
+                    position: { my: "left top", of: $(item) },
+                    buttons: [
+                    { text: "Ok", click: function () {
+                        $("#check-choose-datetimpicker-commment").dialog("close");
+                    }
+                    }
+                ]
+                });
+            }
+
+        });
         $("input[id*=txt_]").keypress(function (e) {
             var keypressed = null;
-
             if (window.event)
                 keypressed = window.event.keyCode; //IE
             else
                 keypressed = e.which; //NON-IE, Standard
-
             if (keypressed == 0 || keypressed == 8 || keypressed == 46 || keypressed == 9) //Phím Delete và Phím Back
                 return true;
-		
             if (keypressed >= 65 && keypressed <= 90) // A->Z
-		        return false;
-	        if (keypressed >= 97 && keypressed <= 122) // a->z
-		        return false;	
+                return false;
+            if (keypressed >= 97 && keypressed <= 122) // a->z
+                return false;
             //CharCode của 0 là 48 (Theo bảng mã ASCII)
             //CharCode của 9 là 57 (Theo bảng mã ASCII)
             if (keypressed < 48 || keypressed > 57)
@@ -77,101 +122,147 @@
             <th width="20px" bgcolor="#ccccc0">Sun</th>
 		</tr>
       
-        @foreach(var item in taskData ){  
-         Global_Variables.COUNT++;                      
-         <tr>
-              <th width="140px" align="left">@Global_Variables.COUNT.@item.Name</th>
+      @*  @foreach(var item in taskData ){  
+      //   Global_Variables.COUNT++;                      
+      //   <tr>
+            //  <th width="140px" align="left">@Global_Variables.COUNT.@item.Name</th>*@
            
-                  @if(timeManagementList.Count() > 0 && timeManagementList!=null){
+       @if(timeManagementList.Count() > 0 && timeManagementList!=null){
                        int flag_equalTask=0;
                        foreach(var itemValue in timeManagementList ){  
-  
-                             if(itemValue.TaskId == item.Id){
-                                 flag_equalTask++;
-                                 
-                                 for(int j=1;j<8;j++){
+                            Global_Variables.COUNT++;   
+                            DateTime day = DateTime.Now; 
+                          //  <div>@day</div>
+                          //  <div>A=@itemValue.Day.DayOfYear</div>
+                           //<div>A=@itemValue.Day.DayOfWeek</div>
+                         string date= "03/19/2013";
+                         if(IsPost){
+                             //<div>inputDay=@date.AsDateTime()</div>
+                            // <div>inputDay=@Request["Day"].AsDateTime().ToShortDateString()</div>
+                             //<div>inputDay=@Request["Day"]</div>
+                         }
+                         
+                         <tr>
+                                 <th width="140px" align="left">@Global_Variables.COUNT.@itemValue.TaskName</th>
+                      
+                                 @for(int j=1;j<8;j++){
+                                    
                                     if(j!=7 && j!=6){
                                         @Html.Raw("<th width='20px'>")      
                                     }
                                     else{
-                                         @Html.Raw("<th width='20px' bgcolor='#cccccc'>")
-                                              
-                                    } 
+                                         @Html.Raw("<th width='20px' bgcolor='#cccccc'>")  
+                                    }
+                                    var idImg = "img_"+itemValue.TaskId+"_"+j;
                                     if(j==1){
                                         var value =itemValue.Mon.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" })
-                                       
+                                       // <div>comment=@itemValue.CommentForMon</div>
+                                        if(itemValue.Disable == true){ 
+                                            @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new {@style = "width: 20px; align:right",disabled="disabled"});
+                                            if(itemValue.CommentForMon != "" && itemValue.CommentForMon != null){<img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg" />; }
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />; } 
+                                        }
+                                        else {@Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new {@style = "width: 20px; align:right"});
+                                             if(itemValue.CommentForMon != "" && itemValue.CommentForMon != null){<img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                             else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                        }
                                     }
                                     if(j==2){
                                         var value =itemValue.Tue.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        if(itemValue.Disable == true){ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right",disabled="disabled" });
+                                            if(itemValue.CommentForTue != "" && itemValue.CommentForTue != null){<img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg"/>}
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />}
+                                        }
+                                        else{ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right" });
+                                             if(itemValue.CommentForTue != "" && itemValue.CommentForTue != null){<img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                             else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                        }
                                     }
                                     if(j==3){
                                         var value =itemValue.Wed.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        if(itemValue.Disable == true){ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right",disabled="disabled" });
+                                            if(itemValue.CommentForWed != "" && itemValue.CommentForWed != null){ <img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg" /> ;}
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />}
+                                        }
+                                        else{ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right" });
+                                            if(itemValue.CommentForWed != "" && itemValue.CommentForWed != null){ <img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" /> ;}
+                                            else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                        }
                                     }
                                     if(j==4){
                                         var value =itemValue.Thu.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        if(itemValue.Disable == true){ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right",disabled="disabled" });
+                                            if(itemValue.CommentForThu != "" && itemValue.CommentForThu != null){<img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg" /> }
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                                                                     
+                                        }
+                                        else{ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right" });
+                                            if(itemValue.CommentForThu != "" && itemValue.CommentForThu != null){ <img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                            else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}                                                                            
+                                        }   
                                     }
                                     if(j==5){
                                         var value =itemValue.Fri.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        if(itemValue.Disable == true){ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right",disabled="disabled" });
+                                            if(itemValue.CommentForFri != "" && itemValue.CommentForFri != null){<img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg" /> }
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                                                                     
+                                        }
+                                        else{ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right" });
+                                            if(itemValue.CommentForFri != "" && itemValue.CommentForFri != null){<img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" /> }
+                                            else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                        
+                                        }
                                     }
                                     if(j==6){
                                         var value =itemValue.Sat.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        if(itemValue.Disable == true){ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right",disabled="disabled" });
+                                            if(itemValue.CommentForSat != "" && itemValue.CommentForSat != null){<img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg" /> }
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                                                                     
+                                        }
+                                        else{ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right" });
+                                             if(itemValue.CommentForSat != "" && itemValue.CommentForSat != null){<img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" /> }
+                                             else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                       
+                                        }
                                     }
                                     if(j==7){
                                         var value =itemValue.Sun.ToString();if(value == "-1"){value = "";}
-                                        @Html.TextBox("txt_"+item.Id+"_"+j,@value,new { @style = "width: 20px; align:right" }) 
+                                        if(itemValue.Disable == true){ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right",disabled="disabled" });
+                                            if(itemValue.CommentForSun != "" && itemValue.CommentForSun != null){ <img src="../Images/comment_edit.png" width="17" height="16" align="right" name="@idImg" id="@idImg" />}
+                                            else{<img src="../Images/arrow_down_mini.gif" width="17" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                                                                     
+                                        }
+                                        else{ @Html.TextBox("txt_"+itemValue.TaskId+"_"+j,@value,new { @style = "width: 20px; align:right" });
+                                           if(itemValue.CommentForSun != "" && itemValue.CommentForSun != null){ <img src="../Images/comment_edit.png" width="16" height="16" align="right" name="@idImg" id="@idImg" />}
+                                           else{<img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />}                                                                                         
+                                        }
                                     }
-                                        var idImg = "img_"+item.Id+"_"+j; 
-                                        <img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="input-box1" onclick="OpenPopUp()" />  
-                                      @Html.Raw(" </th>  ")
+                                    
+                                    @Html.Raw(" </th>  ")
 
                                  }
-                                 break;
-                             }
+                            </tr>   
                     }
-                    if(flag_equalTask == 0){
-                              
-                              for(var i = 1; i<8;i++){
-                                   if(i!=7 && i!=6){
-                                        @Html.Raw("<th width='20px'>")      
-                                    }
-                                   else{
-                                        @Html.Raw("<th width='20px' bgcolor='#cccccc'>")
-                                              
-                                    } 
-                                                 @Html.TextBox("txt_"+item.Id+"_"+i,null,new { @style = "width: 20px; align:right" })
-                                                 var idImg = "img_"+item.Id+"_"+i;
-                                                 <img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="input-box1" onclick="OpenPopUp()" />
-                                         
-                                         @Html.Raw(" </th>  ")
-                                   }
-                             
-                    }
+
                   }
-                  else{
-                     for(int i = 1; i<8;i++){
-                         if(i!=7 && i!=6){
-                            @Html.Raw("<th width='20px'>")  
-                         }
-                         else{
-                               @Html.Raw("<th width='20px' bgcolor='#cccccc'>")
-                         }
-                                   @Html.TextBox("txt_"+item.Id+"_"+i,null,new { @style = "width: 20px; align:right" })
-                                   var idImg = "img_"+item.Id+"_"+i;
-                                   <img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="input-box1" onclick="OpenPopUp()" />
-                               @Html.Raw(" </th>  ")
-                         
-                     }
-                             
-                }
-              
-        </tr>                      
-        }
-      </thead>	
- </table>
+                  else {
+                      foreach(var item in taskData ){  
+                         Global_Variables.COUNT++;                      
+                         <tr>
+                              <th width="140px" align="left">@Global_Variables.COUNT.@item.Name</th>
+                               @for(int i = 1; i<8;i++){
+                                    if(i!=7 && i!=6){
+                                           @Html.Raw("<th width='20px'>")  
+                                     }
+                                     else{
+                                            @Html.Raw("<th width='20px' bgcolor='#cccccc'>")
+                                     }
+                                     @Html.TextBox("txt_"+item.Id+"_"+i,null,new { @style = "width: 20px; align:right" })
+                                     var idImg = "img_"+item.Id+"_"+i;
+                                     <img src="../Images/arrow_down_mini.gif" width="16" height="16" align="right" name="@idImg" id="@idImg" />
+                                     @Html.Raw(" </th>  ")
+                            
+                               }
+                         </tr>
+                      }         
+                 }
+        </tr>
+    </thead>			
+</table>
 

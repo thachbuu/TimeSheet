@@ -1,0 +1,27 @@
+﻿@functions{
+     /* public static List<TimeManagement.TimeManagementList>  timeManagementArray(int weekOfYear,int projectUserId,DynamicJsonArray jsonObject){
+            var timeMList = new List<TimeManagement.TimeManagementList>();
+            foreach(var items in jsonObject){
+                 var timeManagement = new TimeManagement.TimeManagementList();
+                 timeManagement.Project_UserId = projectUserId;
+                 timeManagement.Disable = false;
+                 timeManagement.WeekOfYear = weekOfYear;   
+                 foreach(var i in items.Value){
+                    if(i.Key == "TaskId") { string value= i.Value;timeManagement.TaskId = int.Parse(value);}
+                    if(i.Key == "Mon") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Mon = double.Parse(value);timeManagement.CommentForMon = "";}
+                    if(i.Key == "Tue") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Tue = double.Parse(value);timeManagement.CommentForTue = "";}
+                    if(i.Key == "Wed") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Wed = double.Parse(value);timeManagement.CommentForWed = "";}
+                    if(i.Key == "Thu") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Thu = double.Parse(value);timeManagement.CommentForThu = "";}
+                    if(i.Key == "Fri") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Fri = double.Parse(value);timeManagement.CommentForSun = "";}
+                    if(i.Key == "Sat") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Sat = double.Parse(value);timeManagement.CommentForSat = "";}
+                    if(i.Key == "Sun") { string value= i.Value;if(value ==""){value ="-1";} timeManagement.Sun = double.Parse(value);timeManagement.CommentForSun = "";}
+                 }
+                 timeMList.Add(timeManagement);
+                
+          }
+          return timeMList;                                                                 
+      } */
+     
+}
+
+

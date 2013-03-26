@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "";
+    var timeManagementList = new List<TimeManagement.TimeManagementList>();
+    var timeMList = new List<TimeManagement.TimeManagementList>();
+
+    var db = Database.Open("StarterSite");
+    var testTypeId = Request["TestTypeId"];
+    var idproject = Request["ProjectId"];
+    var weekOfYear = Request["WeekOfYear"];
+    //get UserId and ProjectId to get UserProjectId
+    var userQuery = "SELECT * FROM  UserProfile WHERE  Email=@0";
+    int userId=0;
+    if(Session["Email"] == null){
+        WebSecurity.RequireAuthenticatedUser();
+        WebSecurity.Logout();
+        Response.Redirect("../Account/Logout.cshtml");
+    }
+    else{
+         userId = db.QuerySingle(userQuery,Session["Email"]).UserId;
+         
+    }
+    int projectUserId=0;
+     if(userId != 0 && Request["ProjectId"] != null && Request["ProjectId"] != ""){
+       projectUserId = Project_User.getProjectUserId(userId,Request["ProjectId"].AsInt());
+       string[] arr = TimeManagement.getCommentName(Request["TaskName"]);
+       string contentComment = TimeManagement.getContentComment(projectUserId,weekOfYear.AsInt(),arr[1].AsInt(),arr[2].AsInt());
+       @contentComment;
+
+    }
+ 
+}
+
+
+

@@ -6,11 +6,7 @@
     <div>project=@Request["projectId"]</div>
     <div>testTypeId=@Request["testType"]</div>
     <div>weekOfYear=@Request["valueDatePicker"]</div>
-   // <div>ValueNONNULL= @Request["txt_1_1"]</div> 
-  //  var str= Request["datepicker"].Split('/');
- //   DateTime dateToSubmit = new DateTime(TimeManagement.getInt(str[2]),TimeManagement.getInt(str[0]),TimeManagement.getInt(str[1]));
-  //  <div>date convert=@dateToSubmit</div>
-  //  int weekOfYear = TimeManagement.WeeksInYear(dateToSubmit);
+
     var weekOfYear = Request["valueDatePicker"].AsInt();
     <div>week=@weekOfYear</div>
 /*
@@ -53,7 +49,6 @@ Init to add/update values into database
          childTM.WeekOfYear = weekOfYear; 
          for (var j = 1; j < 8; j++) {
              var strValue = Request["txt_"+i+"_"+j];
-           // <div>ValueNONNULL@("task_"+i+"_"+j) = @Request["task_1_1"]</div>
              if(strValue == "" || strValue == null){ strValue="-1";}
              double dValue = double.Parse(strValue);
              if(j==1){ childTM.Mon = dValue;childTM.CommentForMon = "";}
@@ -66,8 +61,6 @@ Init to add/update values into database
 
          }
          timeMList.Add(childTM);
-       //  int rsUpdate=TimeManagement.updateTimeManagement1(childTM,false);
-         // <div>go into update= @rsUpdate | taskId= @childTM.TaskId</div>
     }
     bool isUpdate = true;
     bool flagSave = true;
