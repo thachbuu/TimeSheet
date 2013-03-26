@@ -3,8 +3,10 @@
      foreach(var role in Roles.GetAllRoles()){
        if(role=="MASTER"){
            continue;
-       }      
-       @Html.RadioButton(name,role,role==currentRole?true:currentRole==null?true:false)@role                                                                               
+       }
+             
+       @Html.RadioButton(name,role,role==currentRole?true:currentRole==null?true:false,new {style="margin-left: 10px"})
+       <span>@role</span>                                                                               
      }        
 }
 

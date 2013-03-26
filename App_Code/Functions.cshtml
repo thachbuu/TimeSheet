@@ -193,6 +193,11 @@
         return succeedRow;
      }
 
+     public static IEnumerable<dynamic> getAllResources(){
+         var db = Database.Open(DATABASE);
+         return db.Query("SELECT * FROM UserProfile");
+     }
+
     //TIMEMANAGEMENT TABLE
     public static string getCommentFor(string dayOfWeek,float rowId){
         var db = Database.Open(DATABASE);

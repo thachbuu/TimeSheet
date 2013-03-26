@@ -5,6 +5,9 @@
     var db = Database.Open("StarterSite");
 
     //Initiate variables
+
+    var allMember = Functions.getAllResources();
+    WebGrid grid  = new WebGrid(allMember);
 }
 
 
@@ -12,6 +15,11 @@
     $(function () {
         $("#UpdateResource").click(function(){alert("Update successfully")});
     });
+
+    //SET CSS FOR ACTIVE TAB
+    $("#nav1").attr('class', 'componentActive');
+    $("#nav1 a").css('color', 'blue');
+    $("div#sub-nav1").removeClass("hidden");
 </script>
    
 <form method="post">
@@ -71,4 +79,8 @@
         //Delete User
         Membership.DeleteUser(userEmail,true);
     }                                                  
-} 
+}
+
+<div>
+    @grid.GetHtml()
+</div>
