@@ -10,18 +10,14 @@ img{
     display: inline;
 }
 body{
-    font-family: Helvetica, Geneva, Calibri, sans-serif;
+    /*font-family: Helvetica, Geneva, Calibri, sans-serif;*/
+    font-size: 12px;
+	font-family: Arial, Tahoma, Verdana;
 }
 
 /*  HEADER
     ---------------*/
-nav{
-    background-color: #00A3EF;
-    /*
-    background-image: -webkit-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
-    background-image: -moz-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
-    background-image: -ms-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);*/
-}
+
 /*--------------------CONTENT PAGE----------------------------------------------*/
 
 /*CLASS FIELD*/
@@ -49,7 +45,7 @@ nav{
         font-size: small;
         font-weight: bolder;
         text-align: center;
-        font-family: Helvetica;        
+        font-family: Helvetica;
 }
 
 .component {
@@ -68,10 +64,15 @@ nav{
         vertical-align: middle;
         display: table-cell;
         color: white;
-        font-size: small;
+        font-size: 1em;
         font-weight: bolder;
         text-align: center;
         font-family: Helvetica;
+        border-right: 1px solid white;
+}
+.component-small a{
+    color: white;
+    text-decoration: none;
 }
 
 .tk-button{
@@ -95,6 +96,21 @@ nav{
     height: 25px;
 }
 
+.sub-nav{
+    margin-top: 3px;
+    background-color: #9a9a9a;
+    padding: 2px;
+}
+
+.opacity{
+     opacity: 0.6;
+}
+
+.vm-member-email-detail:hover{
+        text-decoration: underline;
+        color: blue;
+        cursor: pointer;
+    }
 
 /*SPECIFIC ID FIELD*/
 #tslistProject,#tsTestType {
@@ -107,11 +123,17 @@ nav{
         margin: 20px 20px 20px 10px;
 }
 
-
-
-
 /*  HEADER
     ------------------------*/
+
+nav{
+    background-color: #00A3EF;
+    /*
+    background-image: -webkit-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
+    background-image: -moz-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);
+    background-image: -ms-linear-gradient(right, #FFFFFF 0%, #00A3EF 100%);*/
+}
+
 .projectHeader{
     font-size: medium;
     font-family: 'Courier New';
@@ -119,13 +141,6 @@ nav{
     margin-top: 10px;
     margin-bottom: 10px; 
     font-weight: 900;  
-}
-
-.spacer{    
-    border-top: 2px solid;
-    border-bottom: 0px;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
 }
 
 .buttonNavigation{   
@@ -137,6 +152,7 @@ h2{
     padding-top: 0px;
     text-align: left;
 }
+
 #logoutForm {
     text-align:right;
 }
@@ -151,7 +167,6 @@ h2{
     margin-top: 20px;
     text-align: center;        
 }
-
 
 #projectDescription{
     width: 500px;
@@ -190,7 +205,7 @@ h2{
 }
 .alternate{
     /*background: #d3ff80; */ 
-    background: #b0caf8;
+    background: #f5f9ff;
 }
 .gridheader, .gridfooter{
     /*background: #9ebf60; 
@@ -202,6 +217,10 @@ h2{
     color: #fff;    
     text-decoration:none;     
 } 
+
+tr:hover{
+    background-color: rgba(0,0,0,.1);
+}
 
 
 /*VALIDATION FIELD*/
@@ -256,9 +275,6 @@ fieldset {
         fieldset ol li {
             padding-bottom: 5px;
         }
-/* --------------------------------
-    GENERAL PAGES
-    -------------------------------   */
 
 
 /*  -------------------------------
@@ -266,9 +282,35 @@ fieldset {
     -------------------------------  */
 
 #paginationNext, #paginationPrevious:hover{
-        cursor: pointer;
+    cursor: pointer;
 }
 
+
+/*------------------------
+    VIEW MEMBERS PAGE
+    ----------------------*/
+.vm-search-field{
+        border-radius: 90px;
+        color: white;
+        width: 250px;
+        border: 1px solid grey;
+}
+
+.vm-search-field div{
+    display: inline-block; 
+    margin-bottom: 3px;
+}
+.vm-search-field button{
+    background-color: transparent;
+    border: 0px solid black;
+    box-shadow: none;
+    margin-top: 6px;
+    border-left: 1px solid black;
+}
+
+/* --------------------------------
+    GENERAL PAGES
+    -------------------------------   */
 .hidden{
     display: none
 }

@@ -69,6 +69,50 @@
             var cateName = Request["CateName"];
             db.Execute("UPDATE Categories SET Name=@0 WHERE Id=@1",cateName,cateId);
         }
+
+        /*------------------MANAGE MEMBER SECTION-------------------------*/
+
+        if(Request["Action"]=="EditMemberDetails" ||true){
+            var userId= Request["UserId"].AsInt();
+            var userInfo = Functions.getUserInfo(userId);
+            <div id="vm-member-info-detail-dialog">
+                 <fieldset>
+                    <ol>
+                        <li class="firstName">
+                            <div class="regis-component-small"><label for="firstName" @if(!ModelState.IsValidField("firstName")){<text>class="error-label"</text>}>First Name :</label></div>
+                            <div class="regis-component-small"><input type="text" id="firstName" name="firstName" value="@userInfo.FirstName" @Validation.For("firstName") /></div>
+                            @* Write any email validation errors to the page *@
+                            @Html.ValidationMessage("firstName")
+                        </li>
+                        <li class="lastName">
+                            <div class="regis-component-small"><label for="lastName" @if(!ModelState.IsValidField("lastName")){<text>class="error-label"</text>}>Last Name :</label></div>
+                            <div class="regis-component-small"><input type="text" id="lastName" name="lastName" value="@userInfo.LastName" @Validation.For("lastName") /></div>
+                            @* Write any email validation errors to the page *@
+                            @Html.ValidationMessage("lastName")
+                        </li>
+                        <li class="email">
+                            <div class="regis-component-small"><label for="email" @if(!ModelState.IsValidField("email")){<text>class="error-label"</text>}>Email address :</label></div>
+                            <div class="regis-component-small"><input type="text" id="email" name="email" value="@userInfo.Email" @Validation.For("email") /></div>
+                            @* Write any email validation errors to the page *@
+                            @Html.ValidationMessage("email")
+                        </li>
+                        <li>
+                            <div class="regis-component-small"><label for="employeeId" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Employee Id :</label></div>
+                            <div class="regis-component-small"><input type="text" id="employeeId" name="employeeId" @Validation.For("employeeId") /></div>
+                            @* Write any password validation errors to the page *@
+                            @Html.ValidationMessage("employeeId")
+                        </li>
+                        <li class="Supervisor">
+                           <div class="regis-component-small"><label for="supervisor">Project Manager :</label></div>
+                           <div class="regis-component-small">@Html.DropDownList("supervisor",@Functions.getResources(role: "PM"))</div>
+                        </li>
+                        <li class="roles">
+                            <div style="padding: 5px">@Helpers.RolesList()</div>
+                        </li>
+                    </ol>
+    </fieldset>
+            </div>
+        }
     }
 }
 

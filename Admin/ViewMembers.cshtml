@@ -5,41 +5,56 @@
     var db = Database.Open("StarterSite");
 
     //Initiate variables
+    int counter = 0;
 
     var allMember = Functions.getAllResources();
-    WebGrid grid  = new WebGrid(allMember);
+    WebGrid grid  = new WebGrid(allMember,defaultSort:"ProjectMangerId",canSort:false);
 }
-
 
 <script>
     $(function () {
-        $("#UpdateResource").click(function(){alert("Update successfully")});
+        $("#UpdateResource").click(function () { alert("Update successfully") });
+        $("div[id*=vm-member-email]").click(function(){
+        });
     });
 
     //SET CSS FOR ACTIVE TAB
     $("#nav1").attr('class', 'componentActive');
     $("#nav1 a").css('color', 'blue');
     $("div#sub-nav1").removeClass("hidden");
+    $("div#sub-nav1").children().eq(1).siblings().addClass("opacity");
 </script>
-   
-<form method="post">
+
+
+<form method="post" style="float: right; margin-right: 30px;">
     @AntiForgery.GetHtml()
-    <input type="text" name="CurrentUserId" placeholder="Enter ID or email address">
-    <input type="submit" value="Filter" name="Filter">
+    <div class="vm-search-field">
+        <div>
+            <input type="text" name="vm-text-filter" placeholder="Empl.ID / Email Address / Name" 
+            style="border: none; margin-left: 10px ;width: 200px; overflow: hidden; outline: none; background-color: transparent;">
+        </div>
+        <div>
+            <button><span><img src="/Images/searchBtn.png" alt="filter"></span></button>
+        </div>
+    </div>
 </form>      
 
 @if(IsPost){
     AntiForgery.Validate();
     //Initialize variables             
-        var userId = Request.Form["CurrentUserId"];
+        var strFilter = Request.Form["vm-text-filter"];
         var currentMemberRole = Request.Form["currentMemberRole"];                
         var newRole = Request.Form["role"];                
         var newSupervisor = Request.Form["supervisor"].AsInt();
         var userEmail = Request.Form["UserEmail"];
                        
     //In Case 1: Filter button is pressed
-    if(Request.Form["Filter"] == "Filter"){               
-        @Helpers.ResourceDetail(userId)
+    if(Request.Form["Filter"] == "Filter"){ 
+        var queryFilter = "SELECT * FROM UserProfile WHERE " +
+                           "FirstName LIKE @0 " + 
+                           "OR LastName LIKE @0 "+
+                           "OR Email LIKE @0";
+        grid = new WebGrid(db.Query(queryFilter,"%" + strFilter + "%"),canSort:false);
     }
 
         //In Case 2: 'Update' button is pressed
@@ -54,8 +69,8 @@
 
         //Update Supervisor
         var updateSupervisorQuery = "UPDATE UserProfile SET ProjectManagerId=@0 WHERE UserId=@1";
-        db.Execute(updateSupervisorQuery,newSupervisor,userId);                                
-        @Helpers.ResourceDetail(userId)
+        db.Execute(updateSupervisorQuery,newSupervisor,strFilter);                                
+        @Helpers.ResourceDetail(strFilter)
     }
             
     //In Case 3: 'Delete' button is pressed
@@ -64,23 +79,37 @@
         //Remove Project Manager from Projects and assign back to MASTER                
         var masterUserId = Functions.getMasterUserId();                                                                      
         var removeProjectManagerId = "UPDATE Projects SET ProjectManager = @0 WHERE ProjectManager=@1";
-        db.Execute(removeProjectManagerId,masterUserId,userId);
+        db.Execute(removeProjectManagerId,masterUserId,strFilter    );
 
         //Remove SupervisorId from UserProfile
         var removeSupervisorId = "UPDATE UserProfile SET SupervisorId = 0 WHERE SupervisorId=@0";
-        db.Execute(removeSupervisorId,userId);
+        db.Execute(removeSupervisorId,strFilter);
 
         //Remove Role from UserInRole
         Roles.RemoveUserFromRole(userEmail,currentMemberRole);
 
         //Remove Member from Membership table
-        db.Execute("DELETE FROM webpages_Membership WHERE UserId=@0",userId);
+        db.Execute("DELETE FROM webpages_Membership WHERE UserId=@0",strFilter);
                 
         //Delete User
         Membership.DeleteUser(userEmail,true);
     }                                                  
 }
 
-<div>
-    @grid.GetHtml()
+<div style="padding-bottom: 20px">
+    @grid.GetHtml(
+        tableStyle: "grid",
+        headerStyle: "gridheader",
+        alternatingRowStyle: "alternate",
+        columns: grid.Columns(
+            grid.Column(header: "No.",format:@<div>@{ counter++;}@counter</div>),
+            grid.Column("Email",format:@<div id="vm-member-email-@item.UserId" class="vm-member-email-detail">@item.Email</div>),
+            grid.Column("FirstName","First Name"),
+            grid.Column("LastName", "Last Name"),
+            grid.Column("EmployeeId", "Empl. Id"),
+            grid.Column("TitleId","Empl. Title",@<div>@Functions.getTitleName(item.TitleId)</div>),
+            grid.Column("ProjectManagerId","Project Manager",@<div>@{ var userinfo = Functions.getUserInfo(item.ProjectManagerId); if(userinfo !=null){<text>@userinfo.FirstName @userinfo.LastName</text>}}</div>)
+
+        )
+    )
 </div>

@@ -108,6 +108,7 @@
     $("#nav1").attr('class', 'componentActive');
     $("#nav1 a").css('color', 'blue');
     $("div#sub-nav1").removeClass("hidden");
+    $("div#sub-nav1").children().eq(0).siblings().addClass("opacity");
 </script>
 
 <style>
@@ -115,6 +116,12 @@
         width: 150px;
         display: inline-block;
         padding: 5px
+        
+    }
+    #reg-new-member{
+        margin-left: 55px;
+        margin-top: 20px;
+        margin-bottom: 20px;
     }
     
 </style>
@@ -123,7 +130,7 @@
     @* If at least one validation error exists, notify the user *@
     @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null) 
 
-    <fieldset>
+    <fieldset id="reg-new-member">
         <legend>Member Information</legend>
         <ol>
             <li class="firstName">
@@ -157,7 +164,7 @@
                 @Html.ValidationMessage("confirmPassword")
             </li>
             <li>
-                <div class="regis-component-small"><label for="employeeId" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Employee Id :</label></div>
+                <div class="regis-component-small"><label for="employeeId" @if(!ModelState.IsValidField("employeeId")) {<text>class="error-label"</text>}>Employee Id :</label></div>
                 <div class="regis-component-small"><input type="text" id="employeeId" name="employeeId" @Validation.For("employeeId") /></div>
                 @* Write any password validation errors to the page *@
                 @Html.ValidationMessage("employeeId")
@@ -167,7 +174,8 @@
                <div class="regis-component-small">@Html.DropDownList("supervisor",@Functions.getResources(role: "PM"))</div>
             </li>
             <li class="roles">
-                <div style="padding: 5px">@Helpers.RolesList()</div>
+                <div class="regis-component-small">Role: </div>
+                <div style="padding: 5px; display: inline-block">@Helpers.RolesList()</div>
             </li>
         </ol>
         <input type="submit" class="tk-button" value="Create" />

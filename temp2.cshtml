@@ -4,6 +4,40 @@
         <p>@Request["ffff"].AsDateTime()</p>
     }
 }
+<script>
+    $("button.aaa").removeClass();
+</script>
+<style>
+    .vm-search-field{
+        border-radius: 90px;
+        color: white;
+        width: 250px;
+        border: 1px solid grey;
+        padding-bottom: 5px;
+    }
 
+    .vm-search-field div{
+        display: inline-block; 
+        height: 20px;
+    }
+    .vm-search-field button{
+        background-color: transparent;
+        border: 0px solid black;
+        box-shadow: none;
+        margin-top: 6px;
+        border-left: 1px solid black;
+    }
+</style>
 
-<div class="havingComment"><span>1</span><img src="/Images/comment.png" alt="gg"></div>
+<form method="post" style="float: right; margin-right: 30px;">
+    @AntiForgery.GetHtml()
+    <div class="vm-search-field">
+        <div>
+            <input type="text" name="vm-text-filter" placeholder="Empl.ID / Email Address / Name" 
+            style="height: fit-content; border: none; margin-left: 10px; margin-bottom:10px ;width: 200px; overflow: hidden; outline: none;">
+        </div>
+        <div>
+            <button><span><img src="/Images/searchBtn.png" alt="filter"></span></button>
+        </div>
+    </div>
+</form> 
