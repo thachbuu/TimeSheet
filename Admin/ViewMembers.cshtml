@@ -14,7 +14,41 @@
 <script>
     $(function () {
         $("#UpdateResource").click(function () { alert("Update successfully") });
-        $("div[id*=vm-member-email]").click(function(){
+        $("div[id*=vm-member-email]").click(function () {
+            var userId = $(this).attr('id').match("[0-9]+").toString();
+            var posting = $.post("/Admin/Processing.cshtml", { Action: "EditMemberDetails", UserId: userId });
+            posting.done(function (data) {
+                var item = $("<div></div>").append(data).find("#vm-member-info-detail-dialog");
+                item.dialog({
+                    width: 570,
+                    buttons: [
+                        { text: "Save", click: function () {
+                            var fName = $("input#firstName").val().toString();
+                            var lName = $("input#lastName").val().toString();
+                            var emplId = $("input#employeeId").val().toString();
+                            var supervisorId = $("select#supervisor").find(":selected").val().toString();
+                            var roleId = $("input#role:checked").val().toString();
+                            var postingUpdate = $.post("/Admin/Processing.cshtml",
+                                            { Action: 'UpdateMemberDetails',
+                                                UserId: userId,
+                                                FirstName: fName,
+                                                LastName: lName,
+                                                EmplId: emplId,
+                                                SupervisorId: supervisorId,
+                                                RoleId: roleId
+                                            });
+                            postingUpdate.done(function (data) {
+                                alert(data);
+                            });
+                        }
+                        },
+                    {
+                        text: "Cancel", click: function () {
+                            item.dialog("close");
+                        }
+                    }]
+                });
+            })
         });
     });
 
@@ -30,11 +64,11 @@
     @AntiForgery.GetHtml()
     <div class="vm-search-field">
         <div>
-            <input type="text" name="vm-text-filter" placeholder="Empl.ID / Email Address / Name" 
+            <input type="text" name="vm-text-filter" placeholder="Empl.ID / Email Address / Name" value="@Request.Form["vm-text-filter"]"
             style="border: none; margin-left: 10px ;width: 200px; overflow: hidden; outline: none; background-color: transparent;">
         </div>
         <div>
-            <button><span><img src="/Images/searchBtn.png" alt="filter"></span></button>
+            <button type="submit" name="Filter" value="Filter"><span><img src="/Images/searchBtn.png" alt="filter"></span></button>
         </div>
     </div>
 </form>      

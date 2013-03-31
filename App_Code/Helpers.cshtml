@@ -4,7 +4,7 @@
            continue;
        }
              
-       @Html.RadioButton(name,role,role==currentRole?true:currentRole==null?true:false,new{style="margin-right: 2px"})
+       @Html.RadioButton(name,Functions.getRoleId(role),role==currentRole?true:currentRole==null?true:false,new{style="margin-right: 2px"})
        <span style="margin-right: 20px">@role</span>                                                                               
      }        
 }

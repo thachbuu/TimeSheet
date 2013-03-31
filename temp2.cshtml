@@ -3,41 +3,59 @@
     if(IsPost){
         <p>@Request["ffff"].AsDateTime()</p>
     }
+    var db = Database.Open("StarterSite");
+    var userInfo =Functions.getUserInfo(34);
 }
 <script>
     $("button.aaa").removeClass();
+
+    $(function () {
+        $("#vm-member-info-detail-dialog").dialog({
+            width: 570,
+            buttons: [{ text: "Save" }, {text: "Cancel"}]
+        });
+    })
 </script>
 <style>
-    .vm-search-field{
-        border-radius: 90px;
-        color: white;
-        width: 250px;
-        border: 1px solid grey;
-        padding-bottom: 5px;
-    }
-
-    .vm-search-field div{
-        display: inline-block; 
-        height: 20px;
-    }
-    .vm-search-field button{
-        background-color: transparent;
-        border: 0px solid black;
-        box-shadow: none;
-        margin-top: 6px;
-        border-left: 1px solid black;
+    fieldset{
+        margin: auto;
     }
 </style>
-
-<form method="post" style="float: right; margin-right: 30px;">
-    @AntiForgery.GetHtml()
-    <div class="vm-search-field">
-        <div>
-            <input type="text" name="vm-text-filter" placeholder="Empl.ID / Email Address / Name" 
-            style="height: fit-content; border: none; margin-left: 10px; margin-bottom:10px ;width: 200px; overflow: hidden; outline: none;">
-        </div>
-        <div>
-            <button><span><img src="/Images/searchBtn.png" alt="filter"></span></button>
-        </div>
-    </div>
-</form> 
+<div id="vm-member-info-detail-dialog" title="Edit Member Info">
+    <fieldset style="margin: auto">
+    <ol>
+        <li class="firstName">
+            <div class="regis-component-small"><label for="firstName" @if(!ModelState.IsValidField("firstName")){<text>class="error-label"</text>}>First Name :</label></div>
+            <div class="regis-component-small"><input type="text" id="firstName" name="firstName" value="@userInfo.FirstName" @Validation.For("firstName") /></div>
+            @* Write any email validation errors to the page *@
+            @Html.ValidationMessage("firstName")
+        </li>
+        <li class="lastName">
+            <div class="regis-component-small"><label for="lastName" @if(!ModelState.IsValidField("lastName")){<text>class="error-label"</text>}>Last Name :</label></div>
+            <div class="regis-component-small"><input type="text" id="lastName" name="lastName" value="@userInfo.LastName" @Validation.For("lastName") /></div>
+            @* Write any email validation errors to the page *@
+            @Html.ValidationMessage("lastName")
+        </li>
+        <li class="email">
+            <div class="regis-component-small"><label for="email">Email address :</label></div>
+            <div class="regis-component-small"><input type="text" id="email" name="email" value="@userInfo.Email" disabled /></div>
+            @* Write any email validation errors to the page *@
+            @Html.ValidationMessage("email")
+        </li>
+        <li>
+            <div class="regis-component-small"><label for="employeeId" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Employee Id :</label></div>
+            <div class="regis-component-small"><input type="text" id="employeeId" name="employeeId" @Validation.For("employeeId") value="@if(userInfo.EmployeeId != 0){<text>@userInfo.EmployeeId</text>}" /></div>
+            @* Write any password validation errors to the page *@
+            @Html.ValidationMessage("employeeId")
+        </li>
+        <li class="Supervisor">
+            <div class="regis-component-small"><label for="supervisor">Project Manager :</label></div>
+            <div class="regis-component-small">@Html.DropDownList("supervisor",null,Functions.getResources(role: "PM"),userInfo.ProjectManagerId,null)</div>
+        </li>
+        <li class="roles">
+            <div class="regis-component-small">Role: </div>
+            <div style="padding: 5px; display: inline-block">@Helpers.RolesList(currentRole: Roles.GetRolesForUser(userInfo.Email)[0])</div>
+        </li>
+    </ol>
+    </fieldset>
+</div>

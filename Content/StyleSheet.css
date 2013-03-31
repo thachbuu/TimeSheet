@@ -306,6 +306,25 @@ fieldset {
     box-shadow: none;
     margin-top: 6px;
     border-left: 1px solid black;
+    cursor: pointer;
+}
+
+/*-----------------------------
+    REGISTER PAGES 
+    ---------------------------*/
+
+
+.regis-component-small {
+        width: 150px;
+        display: inline-block;
+        padding: 5px
+        
+}
+
+#reg-new-member{
+    margin-left: 55px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /* --------------------------------

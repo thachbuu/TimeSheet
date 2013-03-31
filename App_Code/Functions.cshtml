@@ -177,20 +177,29 @@
          return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
      }
 
-     public static int updateUserInfo(int userId, string firstname, string lastname, String employeeid, int titleId, int newRoleId, int supervisorId){
+     public static string updateUserInfo(int userId, string firstname, string lastname, string employeeId, string titleId, string newRoleId, string leaderId, string projectManagerId){
          var db = Database.Open(DATABASE);
          var userInfo = Functions.getUserInfo(userId);
          var currentUsername = userInfo.Email;
          var currentRoleName = Roles.GetRolesForUser(currentUsername)[0];
-         var newRoleName = Functions.getRoleName(newRoleId);
-
+         var newRoleName = Functions.getRoleName(newRoleId.AsInt());
+         string fNameQ = firstname!=null? "FirstName=@0 ":"";
+         string lNameQ = lastname!=null?",LastName=@1 ":"";
+         string emplIdQ = employeeId!=null?",EmployeeId=@2 ":"";
+         string titleIdQ = titleId!=null? ",TitleId=@3" :"";
+         string leaderIdQ = leaderId!=null? ",LeaderId=@4" : "";
+         string pmIdQ = projectManagerId!=null? ",ProjectManagerId=@5 ": "";
+         var queryUpdate = "UPDATE UserProfile SET " + fNameQ + lNameQ + emplIdQ + titleIdQ + leaderIdQ + pmIdQ + "WHERE UserId=@6";
          //update in user profile table including firstname, lastname, title, employeeid
-         int succeedRow = db.Execute("UPDATE UserProfile SET FirstName=@0, LastName=@1, EmployeeId=@2, TitleId=@3, LeaderId=@4 WHERE UserId=@5",firstname,lastname,employeeid,titleId,supervisorId,userId);
+         int succeedRow = db.Execute(queryUpdate,firstname,lastname,employeeId.AsInt(),titleId.AsInt(),leaderId.AsInt(),projectManagerId.AsInt(),userId);
 
          //remove the old role and update new role
-        Roles.RemoveUserFromRole(currentUsername,currentRoleName);
-        Roles.AddUserToRole(currentUsername,newRoleName);
-        return succeedRow;
+         if(newRoleId!=null){
+            Roles.RemoveUserFromRole(currentUsername,currentRoleName);
+            Roles.AddUserToRole(currentUsername,newRoleName);     
+         }
+        
+        return succeedRow.ToString();
      }
 
      public static IEnumerable<dynamic> getAllResources(){
