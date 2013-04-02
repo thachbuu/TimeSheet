@@ -205,7 +205,9 @@ else{
 
 <div style="margin-top: 30px; padding-bottom: 20px">
     @grid.GetHtml(
+        tableStyle: "grid",
         headerStyle: "gridheader",
+        alternatingRowStyle: "alternate",
         columns: grid.Columns(
             grid.Column(header:"No.",format:@<div style="text-align: center">@{counter++;}@counter</div>),
             grid.Column("Name",format:@<div class="mt-task-item-name" id="mt-task-item-@item.Id">@item.Name</div>),

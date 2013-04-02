@@ -123,21 +123,19 @@
             var emplId = Request["EmplId"];
             var projectManagerId = Request["SupervisorId"];
             var role = Request["RoleId"];
-            <p>@userId</p>
+            @*<p>@userId</p>
             <p>@fName</p>
             <p>@emplId.AsInt()</p>
             <p>@projectManagerId</p>
-            <p>@role</p>
+            <p>@role</p>*@
             
             var updatedRows = Functions.updateUserInfo(userId,fName,lName,emplId,null,role,null,projectManagerId);
-            <p>@updatedRows</p>
-           @* if(updatedRows !=0){
+            if(updatedRows !=0){
                 <p style="color: green; font-weight: bold">YOU'VE UPDATED SUCCESSFULLY</p>
             }
             else{
                 <p style="color: red; font-weight: bold">CANNOT UPDATE USER INFO. PLEASE CHECK YOUR DATA OR CONTACT TO ADMIN</p>
             }
-*@
         }
     }
 }

@@ -177,7 +177,7 @@
          return db.QuerySingle("SELECT * FROM UserProfile WHERE UserId=@0",userId);
      }
 
-     public static string updateUserInfo(int userId, string firstname, string lastname, string employeeId, string titleId, string newRoleId, string leaderId, string projectManagerId){
+     public static int updateUserInfo(int userId, string firstname, string lastname, string employeeId, string titleId, string newRoleId, string leaderId, string projectManagerId){
          var db = Database.Open(DATABASE);
          var userInfo = Functions.getUserInfo(userId);
          var currentUsername = userInfo.Email;
@@ -199,12 +199,12 @@
             Roles.AddUserToRole(currentUsername,newRoleName);     
          }
         
-        return succeedRow.ToString();
+        return succeedRow;
      }
 
-     public static IEnumerable<dynamic> getAllResources(){
+     public static IEnumerable<dynamic> getAllResources(String excludedMasterEmailAddress){
          var db = Database.Open(DATABASE);
-         return db.Query("SELECT * FROM UserProfile");
+         return db.Query("SELECT * FROM UserProfile WHERE Email != @0",excludedMasterEmailAddress);
      }
 
     //TIMEMANAGEMENT TABLE

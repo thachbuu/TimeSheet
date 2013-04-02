@@ -106,6 +106,9 @@ body{
      opacity: 0.6;
 }
 
+.vm-member-email-detail {
+    color:  blue;
+}
 .vm-member-email-detail:hover{
         text-decoration: underline;
         color: blue;
@@ -185,9 +188,9 @@ h2{
     ------------------       
     */
 .grid{
-    margin-left: 10px;
+    /*margin-left: 10px;*/
     background: #fff;
-    width: 900px;
+    width: 100%;
     border-collapse: collapse;
     font-family: Helvetica;    
 } 
@@ -263,18 +266,18 @@ fieldset {
     padding: 0;
 }
 
-    fieldset legend {
-        display: none;
-    }
+fieldset legend {
+    display: none;
+}
 
-    fieldset ol {
-        padding: 0;
-        list-style: none;
-    }
+fieldset ol {
+    padding: 0;
+    list-style: none;
+}
 
-        fieldset ol li {
-            padding-bottom: 5px;
-        }
+fieldset ol li {
+    padding-bottom: 5px;
+}
 
 
 /*  -------------------------------
@@ -313,7 +316,6 @@ fieldset {
     REGISTER PAGES 
     ---------------------------*/
 
-
 .regis-component-small {
         width: 150px;
         display: inline-block;
@@ -337,3 +339,4 @@ fieldset {
 .shown{
     display: normal
 }
+

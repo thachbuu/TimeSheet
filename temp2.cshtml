@@ -10,52 +10,22 @@
     $("button.aaa").removeClass();
 
     $(function () {
-        $("#vm-member-info-detail-dialog").dialog({
-            width: 570,
-            buttons: [{ text: "Save" }, {text: "Cancel"}]
-        });
+        var item = $("#ggg").tooltip({ tooltipClass: "redcolor" });
+        $("#ggg").focusin();
+        $("#ggg").tooltip("instance").removeAttr("role").addClass("hide");
     })
 </script>
 <style>
     fieldset{
         margin: auto;
     }
+
+    .redcolor {
+        display: none;
+        color: red;
+    }
 </style>
-<div id="vm-member-info-detail-dialog" title="Edit Member Info">
-    <fieldset style="margin: auto">
-    <ol>
-        <li class="firstName">
-            <div class="regis-component-small"><label for="firstName" @if(!ModelState.IsValidField("firstName")){<text>class="error-label"</text>}>First Name :</label></div>
-            <div class="regis-component-small"><input type="text" id="firstName" name="firstName" value="@userInfo.FirstName" @Validation.For("firstName") /></div>
-            @* Write any email validation errors to the page *@
-            @Html.ValidationMessage("firstName")
-        </li>
-        <li class="lastName">
-            <div class="regis-component-small"><label for="lastName" @if(!ModelState.IsValidField("lastName")){<text>class="error-label"</text>}>Last Name :</label></div>
-            <div class="regis-component-small"><input type="text" id="lastName" name="lastName" value="@userInfo.LastName" @Validation.For("lastName") /></div>
-            @* Write any email validation errors to the page *@
-            @Html.ValidationMessage("lastName")
-        </li>
-        <li class="email">
-            <div class="regis-component-small"><label for="email">Email address :</label></div>
-            <div class="regis-component-small"><input type="text" id="email" name="email" value="@userInfo.Email" disabled /></div>
-            @* Write any email validation errors to the page *@
-            @Html.ValidationMessage("email")
-        </li>
-        <li>
-            <div class="regis-component-small"><label for="employeeId" @if(!ModelState.IsValidField("confirmPassword")) {<text>class="error-label"</text>}>Employee Id :</label></div>
-            <div class="regis-component-small"><input type="text" id="employeeId" name="employeeId" @Validation.For("employeeId") value="@if(userInfo.EmployeeId != 0){<text>@userInfo.EmployeeId</text>}" /></div>
-            @* Write any password validation errors to the page *@
-            @Html.ValidationMessage("employeeId")
-        </li>
-        <li class="Supervisor">
-            <div class="regis-component-small"><label for="supervisor">Project Manager :</label></div>
-            <div class="regis-component-small">@Html.DropDownList("supervisor",null,Functions.getResources(role: "PM"),userInfo.ProjectManagerId,null)</div>
-        </li>
-        <li class="roles">
-            <div class="regis-component-small">Role: </div>
-            <div style="padding: 5px; display: inline-block">@Helpers.RolesList(currentRole: Roles.GetRolesForUser(userInfo.Email)[0])</div>
-        </li>
-    </ol>
-    </fieldset>
+
+<div id="ggg" style="padding: 10px; color: green; border: 2px solid grey; text-align: center" title="mmmm">
+    Save successfully
 </div>

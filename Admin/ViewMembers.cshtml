@@ -7,19 +7,19 @@
     //Initiate variables
     int counter = 0;
 
-    var allMember = Functions.getAllResources();
+    var allMember = Functions.getAllResources("master@tmailinator.com");
     WebGrid grid  = new WebGrid(allMember,defaultSort:"ProjectMangerId",canSort:false);
 }
 
 <script>
     $(function () {
-        $("#UpdateResource").click(function () { alert("Update successfully") });
         $("div[id*=vm-member-email]").click(function () {
             var userId = $(this).attr('id').match("[0-9]+").toString();
             var posting = $.post("/Admin/Processing.cshtml", { Action: "EditMemberDetails", UserId: userId });
             posting.done(function (data) {
                 var item = $("<div></div>").append(data).find("#vm-member-info-detail-dialog");
                 item.dialog({
+                    modal: true,
                     width: 570,
                     buttons: [
                         { text: "Save", click: function () {
@@ -38,7 +38,10 @@
                                                 RoleId: roleId
                                             });
                             postingUpdate.done(function (data) {
-                                alert(data);
+                                item.dialog("close");
+                                $("<div></div>").append(data).dialog({
+                                    buttons: [{ text: "OK", click: function () { $(this).dialog("close"); location.reload();} }]
+                                });
                             });
                         }
                         },
@@ -60,7 +63,8 @@
 </script>
 
 
-<form method="post" style="float: right; margin-right: 30px;">
+<div style="float:right; margin: 20px">
+<form method="post">
     @AntiForgery.GetHtml()
     <div class="vm-search-field">
         <div>
@@ -71,7 +75,8 @@
             <button type="submit" name="Filter" value="Filter"><span><img src="/Images/searchBtn.png" alt="filter"></span></button>
         </div>
     </div>
-</form>      
+</form> 
+</div>   
 
 @if(IsPost){
     AntiForgery.Validate();
@@ -87,7 +92,8 @@
         var queryFilter = "SELECT * FROM UserProfile WHERE " +
                            "FirstName LIKE @0 " + 
                            "OR LastName LIKE @0 "+
-                           "OR Email LIKE @0";
+                           "OR Email LIKE @0 " +
+                           "OR EmployeeId LIKE @0";
         grid = new WebGrid(db.Query(queryFilter,"%" + strFilter + "%"),canSort:false);
     }
 
