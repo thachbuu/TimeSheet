@@ -76,15 +76,14 @@ body{
 }
 
 .tk-button{
-    height: 30px;
-    padding: 5px 5px 5px 5px;
+    padding: 5px 15px 5px 15px;
     text-align: center;
-    border-radius: 5px;
-    margin-top: 10px;
     min-width: 50px;
-}
-.tk-button:hover{
     cursor: pointer;
+    background: #1E82CC;
+    color: white;
+    font-weight: bold;
+    border: 0px;
 }
 
 .mt-line-up{
@@ -106,14 +105,7 @@ body{
      opacity: 0.6;
 }
 
-.vm-member-email-detail {
-    color:  blue;
-}
-.vm-member-email-detail:hover{
-        text-decoration: underline;
-        color: blue;
-        cursor: pointer;
-    }
+
 
 /*SPECIFIC ID FIELD*/
 #tslistProject,#tsTestType {
@@ -293,10 +285,10 @@ fieldset ol li {
     VIEW MEMBERS PAGE
     ----------------------*/
 .vm-search-field{
-        border-radius: 90px;
-        color: white;
-        width: 250px;
-        border: 1px solid grey;
+    border-radius: 90px;
+    color: white;
+    width: 250px;
+    border: 1px solid grey;
 }
 
 .vm-search-field div{
@@ -312,14 +304,23 @@ fieldset ol li {
     cursor: pointer;
 }
 
+.vm-member-email-detail {
+    color:  blue;
+}
+
+.vm-member-email-detail:hover{
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
 /*-----------------------------
     REGISTER PAGES 
     ---------------------------*/
 
 .regis-component-small {
-        width: 150px;
-        display: inline-block;
-        padding: 5px
+    width: 150px;
+    display: inline-block;
+    padding: 5px
         
 }
 
@@ -340,3 +341,6 @@ fieldset ol li {
     display: normal
 }
 
+input.inputFeedbackError{
+    outline: red solid 2px
+}

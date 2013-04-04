@@ -13,6 +13,8 @@
 
 <script>
     $(function () {
+        var charValidation = new RegExp("[!#$@@%^&*()+=-]|\\d");
+        var numValidation = new RegExp("[!#$%@@^&*()+=-]|[a-z]", "i");
         $("div[id*=vm-member-email]").click(function () {
             var userId = $(this).attr('id').match("[0-9]+").toString();
             var posting = $.post("/Admin/Processing.cshtml", { Action: "EditMemberDetails", UserId: userId });
@@ -28,7 +30,16 @@
                             var emplId = $("input#employeeId").val().toString();
                             var supervisorId = $("select#supervisor").find(":selected").val().toString();
                             var roleId = $("input#role:checked").val().toString();
-                            var postingUpdate = $.post("/Admin/Processing.cshtml",
+                            if (charValidation.test(fName) == true || charValidation.test(lName) == true || numValidation.test(emplId) == true) {
+                                $("input#firstName").removeClass("inputFeedbackError");
+                                $("input#lastName").removeClass("inputFeedbackError");
+                                $("input#employeeId").removeClass("inputFeedbackError");
+                                if (charValidation.test(fName) == true) { $("input#firstName").addClass("inputFeedbackError"); }
+                                if (charValidation.test(lName) == true) { $("input#lastName").addClass("inputFeedbackError"); }
+                                if (numValidation.test(emplId) == true) { $("input#employeeId").addClass("inputFeedbackError") }
+                            }
+                            else {
+                                var postingUpdate = $.post("/Admin/Processing.cshtml",
                                             { Action: 'UpdateMemberDetails',
                                                 UserId: userId,
                                                 FirstName: fName,
@@ -37,12 +48,13 @@
                                                 SupervisorId: supervisorId,
                                                 RoleId: roleId
                                             });
-                            postingUpdate.done(function (data) {
-                                item.dialog("close");
-                                $("<div></div>").append(data).dialog({
-                                    buttons: [{ text: "OK", click: function () { $(this).dialog("close"); location.reload();} }]
+                                postingUpdate.done(function (data) {
+                                    item.dialog("close");
+                                    $("<div></div>").append(data).dialog({
+                                        buttons: [{ text: "OK", click: function () { $(this).dialog("close"); location.reload(); } }]
+                                    });
                                 });
-                            });
+                            }
                         }
                         },
                     {

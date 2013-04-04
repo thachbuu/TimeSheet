@@ -3,8 +3,7 @@
 
 @{
     Layout = "~/_Layout.cshtml";
-    Page.Title = "Log in";
-
+    Page.Title = "Login";
     //Redirect Page
     if(User.IsInRole("LEADER") || User.IsInRole("PM")){
         Response.Redirect("~/Leader/ManageTimeSheet.cshtml");
@@ -63,8 +62,8 @@
     }
 }
 
-<section id="loginForm" style="padding-left: 10px">    
-    <h2>Login</h2>
+<section id="loginForm" style="padding-left: 10px">   
+    <h2>Login</h2> 
     <form method="post">
         @AntiForgery.GetHtml()
         @* If one or more validation errors exist, show an error *@
@@ -91,7 +90,7 @@
                     <label class="checkbox" for="rememberMe">Remember me?</label>
                 </li>
             </ol>
-            <input type="submit" value="Log in" />
+            <input type="submit" class="tk-button" value="Log in" />
         </fieldset>
     </form>
     <p>

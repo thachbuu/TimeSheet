@@ -25,7 +25,7 @@
     // Setup validation
     Validation.RequireField("email", "You must specify an email address.");
     Validation.RequireField("password", "Password cannot be blank.");
-    Validation.RequireField("employeeId","Employee ID cannot be blank");
+    Validation.RequireField("employeeId","Empl.ID cannot be blank");
     Validation.Add("confirmPassword",
         Validator.EqualsTo("password", "Password and confirmation password do not match."));
     Validation.Add("password",
