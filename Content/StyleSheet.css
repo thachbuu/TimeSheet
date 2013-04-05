@@ -45,7 +45,7 @@ body{
         font-size: small;
         font-weight: bolder;
         text-align: center;
-        font-family: Helvetica;
+        font-family: Helvetica;        
 }
 
 .component {
@@ -167,11 +167,6 @@ h2{
     width: 500px;
     height: auto;
     margin-left: 10px;
-}
-
-#datepickerStartedDate, #datepickerEndDate{
-    margin-left: 10px;
-    width: fit-content;
 }
 
 /*
@@ -309,7 +304,6 @@ fieldset ol li {
 }
 
 .vm-member-email-detail:hover{
-    text-decoration: underline;
     color: blue;
     cursor: pointer;
 }
@@ -317,7 +311,7 @@ fieldset ol li {
     REGISTER PAGES 
     ---------------------------*/
 
-.regis-component-small {
+.regis-component-small, .ap-component-small {
     width: 150px;
     display: inline-block;
     padding: 5px
@@ -328,6 +322,17 @@ fieldset ol li {
     margin-left: 55px;
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+/*---------------------------------
+    ADD PROJECT PAGE
+    -------------------------------*/
+.ap-component-small input,.ap-component-small select, .ap-component-small textarea{
+    width: 200px;
+}
+
+.ap-component-small textarea{
+    height: 100px;    
 }
 
 /* --------------------------------

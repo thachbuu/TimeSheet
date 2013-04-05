@@ -1,0 +1,21 @@
+﻿@{
+    Layout = "/_Layout.cshtml";
+    var db = Database.Open("StarterSite");
+    WebGrid grid = null;
+    
+}
+
+<script>
+    //SET CSS FOR ACTIVE TAB
+    $("#nav2").attr('class', 'componentActive');
+    $("#nav2 a").css('color', 'blue');
+    $("div#sub-nav2").removeClass("hidden");
+    $("div#sub-nav2").children().eq(1).siblings().addClass("opacity");
+</script>
+
+@if(IsPost){
+    
+}
+else{
+    
+}

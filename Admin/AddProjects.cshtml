@@ -47,46 +47,47 @@
     //SET CSS FOR ACTIVE TAB
     $("#nav2").attr('class', 'componentActive');
     $("#nav2 a").css('color', 'blue');
+    $("div#sub-nav2").removeClass("hidden");
+    $("div#sub-nav2").children().eq(0).siblings().addClass("opacity");
 
 </script>
 
 <form method="post">
     @AntiForgery.GetHtml()
     @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
-    <ul>
+    <fieldset>
+    <ol style="list-style-type: none;">
         <li>
-            @Html.Label("PROJECT NAME","projectName",null)               
-            <br>
-            @Html.TextBox("projectName",projectName,Validation.For("projectName"))
+            <div class="ap-component-small">@Html.Label("Project Name","projectName",null)</div>               
+            <div class="ap-component-small">@Html.TextBox("projectName",projectName,Validation.For("projectName"))</div>            
             @Html.ValidationMessage("projectName")
         </li>
-
         <li>
-            @Html.Label("STARTED DATE","datepickerStartedDate",null)             
-            <br>
-            @Html.TextBox("datepickerStartedDate",startedDate.Equals(DateTime.MinValue)?"":startedDate.ToShortDateString(),Validation.For("datepickerStartedDate"))
+            <div class="ap-component-small">@Html.Label("Project Id","projectId",null)</div>               
+            <div class="ap-component-small">@Html.TextBox("projectId",projectName,Validation.For("projectId"))</div>            
+            @Html.ValidationMessage("projectId")
+        </li>
+        <li>
+            <div class="ap-component-small">@Html.Label("Started Date","datepickerStartedDate",null)</div>
+            <div class="ap-component-small">@Html.TextBox("datepickerStartedDate",startedDate.Equals(DateTime.MinValue)?"":startedDate.ToShortDateString(),Validation.For("datepickerStartedDate"))</div>
             @Html.ValidationMessage("datepickerStartedDate")
         </li>
-
         <li>
-            @Html.Label("END DATE","datepickerEndDate",null)              
-            <br>
-            @Html.TextBox("datepickerEndDate",endDate.Equals(DateTime.MinValue)?"":endDate.ToShortDateString(),Validation.For("datepickerEndDate"))
+            <div class="ap-component-small">@Html.Label("End Date","datepickerEndDate",null)</div>
+            <div class="ap-component-small">@Html.TextBox("datepickerEndDate",endDate.Equals(DateTime.MinValue)?"":endDate.ToShortDateString(),Validation.For("datepickerEndDate"))</div>
             @Html.ValidationMessage("datepickerEndDate")
         </li>
-
         <li>
-            @Html.Label("PROJECT MANAGER","projectManager",null)
-            <br>
-            @Html.ListBox("projectManager",Functions.getResources(null,true,"PM"))
+            <div class="ap-component-small">@Html.Label("Project Manager","projectManager",null)</div>
+            <div class="ap-component-small">@Html.ListBox("projectManager",Functions.getResources(null,true,"PM"))</div>
         </li>
-
-        <li style="width: 600px">
-            @Html.Label("DESCRIPTION","projectInfo",null)
-            @Html.ValidationMessage("projectInfo")
-            @Html.TextArea("projectInfo",projectInfo,Validation.For("projectInfo"))            
+        <li>
+            <div class="ap-component-small" style="vertical-align: top">@Html.Label("Description","projectInfo",null)</div>
+            <div class="ap-component-small">@Html.TextArea("projectInfo",projectInfo,Validation.For("projectInfo"))</div>
+            @Html.ValidationMessage("projectInfo")            
         </li>
-    </ul>
-    <input type="submit" value="Add" class="submitBtn">
-    <input type="button" value="Cancel" class="submitBtn">
+    </ol>
+    </fieldset>
+    <input type="submit" value="Add" class="tk-button">
+    <input type="button" value="Cancel" class="tk-button">
 </form>
