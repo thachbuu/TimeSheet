@@ -28,9 +28,6 @@ body{
     margin: auto;
     box-shadow: 3px 3px 2px rgba(0,0,0,.1);
 }
-.submitBtn{
-    width: 120px;
-}
 
 .componentActive{
         border-width: 1px;
@@ -198,10 +195,9 @@ h2{
     background: #f5f9ff;
 }
 .gridheader, .gridfooter{
-    /*background: #9ebf60; 
-    background: #72286b;*/
     color: white;
     background-color: rgb(102, 193, 225);
+    height: 30px;
 } 
 .gridheader a, .gridfooter a{
     color: #fff;    
@@ -321,7 +317,7 @@ fieldset ol li {
 #reg-new-member{
     margin-left: 55px;
     margin-top: 20px;
-    margin-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 /*---------------------------------

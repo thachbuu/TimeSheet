@@ -1,21 +1,66 @@
 ﻿@{
     Layout = "/_Layout.cshtml";
     var db = Database.Open("StarterSite");
+    var data  = Functions.getAllProjects();
     WebGrid grid = null;
+    int counter = 1;
     
 }
 
 <script>
+    $(function () {
+        $("thead").append("<tr class='vp-col-filter'><th ></th><th><input type='text'></th><th><input type='text'></th><th><input type='text' class='vp-input-filter'></th><th><input type='text' class='vp-input-filter' id='inputEndDate'></th><th ><input type='text' class='vp-input-filter' id='inputStartDate'></th></tr>");
+        $("#inputStartDate,#inputEndDate").datepicker();
+    })
     //SET CSS FOR ACTIVE TAB
     $("#nav2").attr('class', 'componentActive');
     $("#nav2 a").css('color', 'blue');
     $("div#sub-nav2").removeClass("hidden");
     $("div#sub-nav2").children().eq(1).siblings().addClass("opacity");
-</script>
 
+</script>
+<style>
+    .vp-input-filter{
+        width: 100px;
+    }
+    .vp-col-filter{
+        padding: 10px;
+        height: 35px;
+        background-color: #ebebeb;
+    }
+</style>
 @if(IsPost){
     
 }
 else{
+    grid = new WebGrid(data);
     
 }
+@*
+<div>
+    <div><span>Started Date</span><input></div>
+    <div><span>End Date</span><input></div>
+    <div>@Html.DropDownList("vp-filter-pm-resource",Functions.getResources(role:"PM"))</div>
+</div>
+*@
+<div>
+    @grid.GetHtml(
+         tableStyle: "grid",
+        headerStyle: "gridheader",
+        alternatingRowStyle: "alternate",
+        columns: grid.Columns(
+            grid.Column(header: "No.",format: @<text>@(counter++)</text>),
+            grid.Column("ProjectName","Project Name", @<div style="width: 150px">@item.ProjectName</div>),
+            grid.Column("Description", "Project Description",@<div style="width: 300px">@item.Description</div>),
+            grid.Column("ProjectManager", "Project Manager",@<div>@Functions.getUserInfo(@item.ProjectManager).FirstName @Functions.getUserInfo(@item.ProjectManager).LastName</div>),
+            grid.Column("StartedDate", "Start Date", @<div>@item.StartedDate.ToShortDateString()</div>),
+            grid.Column("EndDate", "End Date", @<div>@item.EndDate.ToShortDateString()</div>)
+        )
+    )
+</div>
+
+<div>
+    <table>
+
+    </table>
+</div>

@@ -41,7 +41,6 @@
     $(function () {
         $("#datepickerStartedDate").datepicker({ showAnim: "fold" });
         $("#datepickerEndDate").datepicker({ showAnim: "fold" });
-        $("#projectInfo").jqte();
     });
 
     //SET CSS FOR ACTIVE TAB
@@ -55,7 +54,7 @@
 <form method="post">
     @AntiForgery.GetHtml()
     @Html.ValidationSummary("The new project cannot be added. Please correct the errors below.", excludeFieldErrors: true, htmlAttributes : null)
-    <fieldset>
+    <fieldset id="reg-new-member">
     <ol style="list-style-type: none;">
         <li>
             <div class="ap-component-small">@Html.Label("Project Name","projectName",null)</div>               
@@ -87,7 +86,6 @@
             @Html.ValidationMessage("projectInfo")            
         </li>
     </ol>
-    </fieldset>
-    <input type="submit" value="Add" class="tk-button">
-    <input type="button" value="Cancel" class="tk-button">
+    <input type="submit" value="Create" class="tk-button">
+    </fieldset>    
 </form>

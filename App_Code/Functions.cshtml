@@ -318,6 +318,10 @@
 
 
      //PROJECT TABLE
+     public static dynamic getAllProjects(){
+         var db = Database.Open(DATABASE);
+         return db.Query("SELECT * FROM Projects");
+     }
      
      
      /* ULTILITY METHODS

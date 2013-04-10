@@ -102,10 +102,11 @@
     //In Case 1: Filter button is pressed
     if(Request.Form["Filter"] == "Filter"){ 
         var queryFilter = "SELECT * FROM UserProfile WHERE " +
-                           "FirstName LIKE @0 " + 
+                           "(FirstName LIKE @0 " + 
                            "OR LastName LIKE @0 "+
                            "OR Email LIKE @0 " +
-                           "OR EmployeeId LIKE @0";
+                           "OR EmployeeId LIKE @0) " +
+                           "AND Email != 'master@tmailinator.com'";
         grid = new WebGrid(db.Query(queryFilter,"%" + strFilter + "%"),canSort:false);
     }
 
